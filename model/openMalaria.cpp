@@ -85,6 +85,9 @@ int main(int argc, char* argv[]) {
     } catch (const exception& e) {
         cerr << "Error: " << e.what() << endl;
         exitStatus = EXIT_FAILURE;
+    } catch (const char *msg) {
+        cerr << "Exception: " << msg << endl;
+        exitStatus = EXIT_FAILURE;
     } catch (...) {
         cerr << "Unknown error" << endl;
         exitStatus = EXIT_FAILURE;

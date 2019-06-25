@@ -27,6 +27,7 @@
 #include "WithinHost/Infection/MolineauxInfection.h"
 #include "WithinHost/Infection/PennyInfection.h"
 #include "WithinHost/Treatments.h"
+#include "white/driver.hpp"
 #include "util/random.h"
 #include "util/ModelOptions.h"
 #include "util/errors.h"
@@ -42,7 +43,7 @@ namespace WithinHost {
 
 using namespace OM::util;
 
-bool opt_vivax_simple = false,
+bool opt_vivax_simple = false, opt_vivax_white = false,
         opt_dummy_whm = false, opt_empirical_whm = false,
         opt_molineaux_whm = false, opt_penny_whm = false,
         opt_common_whm = false;
@@ -50,23 +51,27 @@ bool opt_vivax_simple = false,
 // -----  static functions  -----
 
 void WHInterface::init( const OM::Parameters& parameters, const scnXml::Scenario& scenario ) {
-    if( util::ModelOptions::option( util::VIVAX_SIMPLE_MODEL ) ){
-        opt_vivax_simple = true;
+    opt_vivax_simple = util::ModelOptions::option( util::VIVAX_SIMPLE_MODEL );
+    opt_vivax_white = util::ModelOptions::option( util::VIVAX_WHITE_MODEL );
+    opt_dummy_whm = util::ModelOptions::option (util::DUMMY_WITHIN_HOST_MODEL);
+    opt_empirical_whm = util::ModelOptions::option (util::EMPIRICAL_WITHIN_HOST_MODEL);
+    opt_molineaux_whm = util::ModelOptions::option (util::MOLINEAUX_WITHIN_HOST_MODEL);
+    opt_penny_whm = util::ModelOptions::option (util::PENNY_WITHIN_HOST_MODEL);
+    
+    if( opt_vivax_white ){
+        white::init_model( scenario );
+    } else if( opt_vivax_simple ){
         WHVivax::init( parameters, scenario.getModel() );
     }else{
         WHFalciparum::init( parameters, scenario.getModel() );
         
-        if (util::ModelOptions::option (util::DUMMY_WITHIN_HOST_MODEL)) {
-            opt_dummy_whm = true;
+        if (opt_dummy_whm) {
             DummyInfection::init ();
-        } else if (util::ModelOptions::option (util::EMPIRICAL_WITHIN_HOST_MODEL)) {
-            opt_empirical_whm = true;
+        } else if (opt_empirical_whm) {
             EmpiricalInfection::init();    // 1-day time step check
-        } else if (util::ModelOptions::option (util::MOLINEAUX_WITHIN_HOST_MODEL)) {
-            opt_molineaux_whm = true;
+        } else if (opt_molineaux_whm) {
             MolineauxInfection::init( parameters );
-        } else if (util::ModelOptions::option (util::PENNY_WITHIN_HOST_MODEL)) {
-            opt_penny_whm = true;
+        } else if (opt_penny_whm) {
             PennyInfection::init();
         } else {
             DescriptiveInfection::init( parameters );      // 5-day time step check

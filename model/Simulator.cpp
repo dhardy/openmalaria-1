@@ -30,6 +30,7 @@
 #include "WithinHost/WHInterface.h"
 #include "WithinHost/Diagnostic.h"
 #include "WithinHost/Genotypes.h"
+#include "white/driver.hpp"
 #include "mon/management.h"
 #include "util/timer.h"
 #include "util/CommandLine.h"
@@ -133,6 +134,12 @@ Simulator::Simulator( const scnXml::Scenario& scenario ) :
 // ———  run simulations  ———
 
 void Simulator::start(const scnXml::Monitoring& monitoring){
+    if( util::ModelOptions::option( util::VIVAX_WHITE_MODEL ) ){
+        white::run_model();
+        return;
+    }
+    
+    
     sim::s_t0 = SimTime::zero();
     sim::s_t1 = SimTime::zero();
     

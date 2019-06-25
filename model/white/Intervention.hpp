@@ -23,8 +23,10 @@
 #ifndef PVIVAX_MODEL_INTERVENTION
 #define PVIVAX_MODEL_INTERVENTION
 
-#include "Population.hpp"
+#include "white/Population.hpp"
 
+
+namespace OM { namespace white {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                     //
@@ -39,9 +41,10 @@ public:
     //  Class constructors and destructors
     //////////////////////////////////////////////////////////////////////////
     
-    /////////////////////////////////////
-    // Constructor: read intervention data from input files
-    Intervention(const char *coverage_File);
+    Intervention() {}
+    
+    /// read intervention data from input files
+    void read(const std::string& coverage_File);
     
     
     ////////////////////////////////////////////////////
@@ -172,5 +175,7 @@ private:
     vector<int>    SSAT_PQ_preg_risk;
     vector<double> SSAT_PQ_low_age;
 };
+
+} }
 
 #endif

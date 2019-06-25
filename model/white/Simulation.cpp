@@ -10,11 +10,13 @@
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
-#include "Simulation.hpp"
+#include "white/Simulation.hpp"
 
 #include <iostream>
 #include <fstream>
 #include <cmath>
+
+namespace OM { namespace white {
 
 using std::cout;
 using std::endl;
@@ -237,3 +239,5 @@ void Simulation::write_output(const char *output_File)
     cout << "Output successfully written to file......" << endl;
     cout << endl;
 }
+
+} }

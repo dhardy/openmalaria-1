@@ -110,6 +110,7 @@ Licence: GNU General Public Licence version 2 or later (see COPYING) -->
               </xs:element>
               <xs:element name="clinical" type="om:Clinical" />
               <xs:element name="human" type="om:Human"/>
+              <xs:element name="whiteVivax" type="om:WhiteVivax" minOccurs="0"/>
               <xs:element name="vivax" type="om:Vivax" minOccurs="0">
                 <xs:annotation>
                   <xs:documentation>

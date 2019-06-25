@@ -10,12 +10,14 @@
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
-#include "Population.hpp"
-#include "sim-rng.hpp"
+#include "white/Population.hpp"
+#include "white/sim-rng.hpp"
 
 #include <iostream>
 #include <cmath>
 #include "Eigen/Dense"
+
+namespace OM { namespace white {
 
 using std::cout;
 using std::endl;
@@ -1953,3 +1955,5 @@ void Population::equi_pop_setup(Params& theta)
     cout << "P = " << ((double)P_ind) / N_pop << "\t" << P_eqq << endl;
 
 }
+
+} }

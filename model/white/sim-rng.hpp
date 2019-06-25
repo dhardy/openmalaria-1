@@ -21,6 +21,8 @@
 #include <Eigen/Core>
 
 
+namespace OM { namespace white {
+
 extern std::mt19937 random_engine;
 
 
@@ -85,5 +87,7 @@ struct MultivariateNormal
         return transform * std::move(norm_vec);
     }
 };
+
+} }
 
 #endif

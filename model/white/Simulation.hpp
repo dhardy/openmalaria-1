@@ -22,8 +22,10 @@
 #ifndef PVIVAX_MODEL_SIMULATION
 #define PVIVAX_MODEL_SIMULATION
 
-#include "Intervention.hpp"
+#include "white/Intervention.hpp"
 
+
+namespace OM { namespace white {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                     //
@@ -99,5 +101,7 @@ public:
     vector<double> A_par_mean_t;
     vector<double> A_clin_mean_t;
 };
+
+} }
 
 #endif

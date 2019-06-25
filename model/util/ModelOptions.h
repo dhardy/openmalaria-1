@@ -241,9 +241,17 @@ namespace OM { namespace util {
          */
         CFR_PF_USE_HOSPITAL,
         
+        /** Use the Plasmodium vivax model by Michael White
+         * 
+         * See "Mathematical modelling of the impact of expanding levels of
+         * malaria control interventions on Plasmodium vivax", M. White et al,
+         * https://doi.org/10.1038/s41467-018-05860-8
+         */
+	VIVAX_WHITE_MODEL,
+        
 	// Used by tests; should be 1 more than largest option
 	NUM_OPTIONS,
-        
+	
         IGNORE  // special value for use in string to enum lookup
     };
     

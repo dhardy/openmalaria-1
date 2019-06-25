@@ -41,6 +41,15 @@ set (Model_CPP
   PkPd/Drug/LSTMDrugType.cpp
   PkPd/LSTMTreatments.cpp
   
+  white/Individual.cpp
+  white/Intervention.cpp
+  white/Mosquito.cpp
+  white/Params.cpp
+  white/Population.cpp
+  white/sim-rng.cpp
+  white/Simulation.cpp
+  white/driver.cpp
+  
   Transmission/TransmissionModel.cpp
   Transmission/NonVectorModel.cpp
   Transmission/VectorModel.cpp

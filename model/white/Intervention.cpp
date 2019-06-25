@@ -10,13 +10,15 @@
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
-#include "Intervention.hpp"
-#include "sim-rng.hpp"
+#include "white/Intervention.hpp"
+#include "white/sim-rng.hpp"
 
 #include <iostream>
 #include <fstream>
 #include <cmath>
 #include <limits>
+
+namespace OM { namespace white {
 
 using std::cerr;
 using std::cout;
@@ -34,7 +36,7 @@ double phi_inv(double pp, double mu, double sigma);
 
 /////////////////////////////////////
 // Read intervention data from input files
-Intervention::Intervention(const char *coverage_File)
+void Intervention::read(const std::string& coverage_File)
 {
     /////////////////////////////////////////////////////////////////////////
     //                                                                     //
@@ -1022,3 +1024,5 @@ double phi_inv(double pp, double mu, double sigma)
 
     return mu + sigma*temp;
 }
+
+} }

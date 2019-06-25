@@ -23,8 +23,11 @@
 #ifndef PVIVAX_MODEL_POPULATION
 #define PVIVAX_MODEL_POPULATION
 
-#include "Individual.hpp"
+#include "white/driver.hpp"
+#include "white/Individual.hpp"
 
+
+namespace OM { namespace white {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                     //
@@ -156,5 +159,7 @@ public:
 
     int index_age_20;
 };
+
+} }
 
 #endif

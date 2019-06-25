@@ -7,6 +7,30 @@ Licence: GNU General Public Licence version 2 or later (see COPYING) -->
            xmlns:om="http://openmalaria.org/schema/scenario_40"
            xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:include schemaLocation="util.xsd"/>
+  <xs:complexType name="WhiteVivax">
+    <xs:sequence>
+      <xs:element name="parametersW">
+        <xs:complexType>
+          <xs:attribute name="path" type="xs:string" use="required"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="mosquito" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:attribute name="path" type="xs:string" use="required"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="coverage">
+        <xs:complexType>
+          <xs:attribute name="path" type="xs:string" use="required"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="output">
+        <xs:complexType>
+          <xs:attribute name="path" type="xs:string" use="required"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
   <xs:complexType name="Vivax">
     <xs:all>
       <xs:element name="probBloodStageInfectiousToMosq" type="om:DoubleValue">

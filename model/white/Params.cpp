@@ -12,11 +12,13 @@
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
-#include "Params.hpp"
+#include "white/Params.hpp"
 
 #include <iostream>
 #include <fstream>
 #include <cmath>
+
+namespace OM { namespace white {
 
 using std::cout;
 using std::endl;
@@ -33,7 +35,7 @@ double gammln(const double xx);
 
 /////////////////////////////////////
 // Read parameters from input files
-SimTimes Params::read(const char *parameter_File, const char *mosquito_File[N_spec_max])
+SimTimes Params::read(const std::string& parameter_File, const std::string mosquito_File[N_spec_max])
 {
     cout << "Reading in parameter file............." << endl;
     cout << endl;
@@ -476,3 +478,5 @@ double gammln(const double xx)
     for (j = 0; j<14; j++) ser += cof[j] / ++y;
     return tmp + log(2.5066282746310005*ser / x);
 }
+
+} }

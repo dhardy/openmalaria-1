@@ -19,7 +19,9 @@
 #define PVIVAX_MODEL_PARAMS
 
 #include <vector>
-#include "sim-rng.hpp"
+#include "white/sim-rng.hpp"
+
+namespace OM { namespace white {
 
 using std::vector;
 using Eigen::MatrixXd;
@@ -67,7 +69,7 @@ struct Params
     
     /////////////////////////////////////
     // Read parameters from input files
-    SimTimes read(const char *parameter_File, const char *mosquito_File[N_spec_max]);
+    SimTimes read(const std::string& parameter_File, const std::string mosquito_File[N_spec_max]);
 
 
     //////////////////////////////////////////////////////////////////////////
@@ -367,5 +369,7 @@ struct Params
     MatrixXd L_MAT;
     MatrixXd H_MAT;
 };
+
+} }
 
 #endif

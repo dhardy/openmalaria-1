@@ -21,7 +21,9 @@
 #ifndef PVIVAX_MODEL_INDIVIDUAL
 #define PVIVAX_MODEL_INDIVIDUAL
 
-#include "Params.hpp"
+#include "white/Params.hpp"
+
+namespace OM { namespace white {
 
 enum class Gender { Male, Female };
 
@@ -205,5 +207,7 @@ public:
     double y_VC[N_spec];      // probability of mosquito feeding on this individual during a single attempt
     double w_VC[N_spec];      // probability of mosquito feeding and surviving on this individual during a single feeding attempt
 };
+
+} }
 
 #endif

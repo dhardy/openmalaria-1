@@ -10,11 +10,13 @@
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
-#include "Individual.hpp"
-#include "sim-rng.hpp"
+#include "white/Individual.hpp"
+#include "white/sim-rng.hpp"
 
 #include <cmath>
 #include <limits>
+
+namespace OM { namespace white {
 
 using std::numeric_limits;
 
@@ -1361,3 +1363,5 @@ size_t CH_sample(double weights[], size_t num)
 
     return num - 1; // just in case
 }
+
+} }

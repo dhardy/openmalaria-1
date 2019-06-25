@@ -14,9 +14,11 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-#include "sim-rng.hpp"
+#include "white/sim-rng.hpp"
 #include <Eigen/Cholesky>
 
+
+namespace OM { namespace white {
 
 void MultivariateNormal::set(Eigen::MatrixXd const& covar) {
     Eigen::LLT<Eigen::MatrixXd> llt(covar);
@@ -25,3 +27,5 @@ void MultivariateNormal::set(Eigen::MatrixXd const& covar) {
     }
     transform = llt.matrixL();
 }
+
+} }
