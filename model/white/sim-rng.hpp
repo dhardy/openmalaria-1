@@ -17,19 +17,22 @@
 #ifndef PVIVAX_MODEL_RNG
 #define PVIVAX_MODEL_RNG
 
-#include <random>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_01.hpp>
+#include <boost/random/exponential_distribution.hpp>
+#include <boost/random/normal_distribution.hpp>
 #include <Eigen/Core>
 
 
 namespace OM { namespace white {
 
-extern std::mt19937 random_engine;
+extern boost::random::mt19937 random_engine;
 
 
 /// Sample a double uniformly between 0 and 1
 inline double gen_u01() {
-    static std::uniform_real_distribution<> unif(0.0, 1.0);
-    return unif(random_engine);
+    static boost::random::uniform_01<boost::random::mt19937&> rng_uniform01 (random_engine);
+    return rng_uniform01();
 }
 
 /// Sample a boolean with given probability
@@ -39,13 +42,13 @@ inline bool gen_bool(double p) {
 
 /// Generate an exponential sample with λ=1 and given mean
 inline double gen_exp(double mean) {
-    static std::exponential_distribution<> exp(1.0);
+    static boost::random::exponential_distribution<> exp(1.0);
     return mean * exp(random_engine);
 }
 
 /// Generate a normal sample
 inline double gen_normal(double mean, double sd) {
-    std::normal_distribution<> norm(mean, sd);
+    boost::random::normal_distribution<> norm (mean, sd);
     return norm(random_engine);
 }
 
@@ -79,7 +82,7 @@ struct MultivariateNormal
 
     Eigen::VectorXd operator()() const {
         auto n = transform.rows();
-        std::normal_distribution<> std_norm(0.0, 1.0);
+        boost::random::normal_distribution<> std_norm(0.0, 1.0);
         auto norm_vec = Eigen::VectorXd(n);
         for (auto i = 0; i < n; ++i) {
             norm_vec(i) = std_norm(random_engine);

@@ -59,7 +59,7 @@ namespace OM { namespace white {
 using std::cout;
 using std::endl;
 
-std::mt19937 random_engine;
+boost::random::mt19937 random_engine;
 
 Population PNG_pop;
 Params Pv_mod_par;
