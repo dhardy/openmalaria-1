@@ -47,6 +47,7 @@ set (OM_BOXTEST_NAMES
   VecMonthly
   VecTest
   Vivax
+  White
 )
 # tests with broken checkpointing:
 set (OM_BOXTEST_NC_NAMES)
