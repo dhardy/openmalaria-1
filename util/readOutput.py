@@ -273,6 +273,10 @@ def robustFloat(s):
         else:
             raise
 
+class FormatError(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
 def readEntries (fname):
     """Return a dict of entries read from file. Keys have type Multi3Keys,
     where a corresponds to measure, b to survey and c to group.
@@ -283,9 +287,7 @@ def readEntries (fname):
     for line in fileObj:
         items=line.split()
         if (len(items) != 4):
-            print("expected 4 items on line; found (following line):")
-            print(line)
-            continue
+            raise FormatError("expected 4 items on line; found " + str(len(items)))
             
         key=Multi3Keys(int(items[2]),int(items[0]),int(items[1]))
         values[key]=robustFloat(items[3])

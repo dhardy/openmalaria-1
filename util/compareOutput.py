@@ -24,7 +24,7 @@ import sys
 import math
 from optparse import OptionParser
 from approxEqual import ApproxSame
-from readOutput import readEntries
+from readOutput import readEntries,FormatError
 
 REL_PRECISION=1e-6
 ABS_PRECISION=1e-6
@@ -66,6 +66,9 @@ ident is 1 if files are binary-equal."""
         values2=readEntries(fn2)
     # python 3000 syntax is "except IOError as e", backported to 2.6 but not always supported. Old syntax:
     except IOError as e:
+        print((str(e)))
+        return 1,False
+    except FormatError as e:
         print((str(e)))
         return 1,False
     values=dict()
