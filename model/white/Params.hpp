@@ -18,8 +18,8 @@
 #ifndef PVIVAX_MODEL_PARAMS
 #define PVIVAX_MODEL_PARAMS
 
+#include "util/sampler.h"
 #include <vector>
-#include "white/sim-rng.hpp"
 
 namespace OM { namespace white {
 
@@ -337,7 +337,7 @@ struct Params
     double sig_round_IRS;       // Derived parameter for correlation between rounds of IRS
     double sig_round_MDA;       // Derived parameter for correlation between rounds of MDA
 
-    MultivariateNormal V_sampler;
+    util::MultivariateNormal V_sampler;
 
 
     //////////////////////////////////////////////////////

@@ -49,6 +49,7 @@
 #include "white/Simulation.hpp"
 #include "util/errors.h"
 #include "util/CommandLine.h"
+#include "util/random.h"
 
 #include <iostream>
 #include <cmath>
@@ -58,8 +59,6 @@ namespace OM { namespace white {
 
 using std::cout;
 using std::endl;
-
-boost::random::mt19937 random_engine;
 
 Population PNG_pop;
 Params Pv_mod_par;
@@ -86,7 +85,7 @@ void init_model( const scnXml::Scenario& scenario ) {
 
     auto seed = model.getParameters().getIseed();
     cout << "Using fixed seed " << seed << endl;
-    random_engine.seed(seed);
+    util::random::seed(seed);
     
     
     ////////////////////////////////////////////

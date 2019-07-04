@@ -143,6 +143,7 @@ include_directories (SYSTEM
   ${GSL_INCLUDE_DIRS}
   ${Z_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
+  ${CMAKE_SOURCE_DIR}/contrib
 )
 include_directories (
   ${CMAKE_SOURCE_DIR}/model ${CMAKE_BINARY_DIR}

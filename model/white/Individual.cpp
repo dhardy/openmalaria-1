@@ -11,7 +11,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "white/Individual.hpp"
-#include "white/sim-rng.hpp"
+#include "util/random.h"
 
 #include <cmath>
 #include <limits>
@@ -68,20 +68,20 @@ Individual::Individual(Params& theta, double a, double zeta) :
     IRS(false), IRS_age(numeric_limits<double>::quiet_NaN()),
     T_last_BS(numeric_limits<double>::infinity())
 {
-    gender = gen_bool(0.5) ? Gender::Male : Gender::Female;
+    gender = util::random::bernoulli(0.5) ? Gender::Male : Gender::Female;
 
     if (gender == Gender::Male) {
-        G6PD_deficient = gen_bool(theta.G6PD_prev);
+        G6PD_deficient = util::random::bernoulli(theta.G6PD_prev);
     } else /* female */ {
         // p1 = P(homozygous deficiency)
         double p1 = theta.G6PD_prev * theta.G6PD_prev;
         // p2 = P(heterozygous deficiency)
         double p2 = 2 * theta.G6PD_prev * (1.0 - theta.G6PD_prev);
         // The model doesn't currently differentiate between these.
-        G6PD_deficient = gen_bool(p1 + p2);
+        G6PD_deficient = util::random::bernoulli(p1 + p2);
     }
 
-    CYP2D6_low = gen_bool(theta.CYP2D6_prev);
+    CYP2D6_low = util::random::bernoulli(theta.CYP2D6_prev);
     
     
     ///////////////////////////////////////////////////
@@ -172,7 +172,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
     {
         double S_out = lam_H_lag;       // Probability of exiting state
 
-        if (!gen_bool(exp(-t_step*S_out)))
+        if (!util::random::bernoulli(exp(-t_step*S_out)))
         {
             //theta.r_PCR   = 1.0/( theta.d_PCR_min + (theta.d_PCR_max-theta.d_PCR_min)/( 1.0 + pow((A_par+A_par_mat)*theta.A_PCR_50pc_inv,theta.K_PCR) )); 
             theta.phi_LM = theta.phi_LM_min + (theta.phi_LM_max - theta.phi_LM_min) / (1.0 + pow((A_par + A_par_mat)*theta.A_LM_50pc_inv, theta.K_LM));
@@ -193,7 +193,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
             if (CH_move == 0)
             {
-                if (gen_bool(lam_bite_lag / lam_H_lag))
+                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
                 {
                     if (PQ_proph == 0)
                     {
@@ -230,7 +230,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
             if (CH_move == 1)
             {
-                if (gen_bool(lam_bite_lag / lam_H_lag))
+                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
                 {
                     if (PQ_proph == 0)
                     {
@@ -268,7 +268,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
             if (CH_move == 2)
             {
-                if (gen_bool(lam_bite_lag / lam_H_lag))
+                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
                 {
                     if (PQ_proph == 0)
                     {
@@ -307,7 +307,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
             if (CH_move == 3)
             {
-                if (gen_bool(lam_bite_lag / lam_H_lag))
+                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
                 {
                     if (PQ_proph == 0)
                     {
@@ -334,7 +334,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
                 ACT_treat = 1;
 
-                if( gen_bool(theta.treat_BSeff) )
+                if( util::random::bernoulli(theta.treat_BSeff) )
                 {
                     S = 0;
                     T = 1;
@@ -353,7 +353,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
                 // For efficiency, the PQ related commands are only implemented if
                 // PQ is available
 
-                if( gen_bool(theta.PQ_treat_PQavail) )
+                if( util::random::bernoulli(theta.PQ_treat_PQavail) )
                 {
                     PQ_treat = 1;
 
@@ -388,7 +388,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
                     PQ_effective = 0;
 
-                    if (gen_bool(theta.PQ_treat_PQeff))
+                    if (util::random::bernoulli(theta.PQ_treat_PQeff))
                     {
                         PQ_effective = 0;
                     }
@@ -424,7 +424,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
         double I_PCR_out = lam_H_lag + theta.r_PCR;        // Probability of exiting state
 
-        if (!gen_bool(exp(-t_step*I_PCR_out)))
+        if (!util::random::bernoulli(exp(-t_step*I_PCR_out)))
         {
             theta.phi_LM = theta.phi_LM_min + (theta.phi_LM_max - theta.phi_LM_min) / (1.0 + pow((A_par + A_par_mat)*theta.A_LM_50pc_inv, theta.K_LM));
             theta.phi_D = theta.phi_D_min + (theta.phi_D_max - theta.phi_D_min) / (1.0 + pow((A_clin + A_clin_mat)*theta.A_D_50pc_inv, theta.K_D));
@@ -460,7 +460,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
             if (CH_move == 1)
             {
-                if (gen_bool(lam_bite_lag / lam_H_lag))
+                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
                 {
                     if (PQ_proph == 0)
                     {
@@ -490,7 +490,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
             if (CH_move == 2)
             {
-                if (gen_bool(lam_bite_lag / lam_H_lag))
+                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
                 {
                     if (PQ_proph == 0)
                     {
@@ -526,7 +526,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
             if (CH_move == 3)
             {
-                if (gen_bool(lam_bite_lag / lam_H_lag))
+                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
                 {
                     if (PQ_proph == 0)
                     {
@@ -564,7 +564,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
             if (CH_move == 4)
             {
-                if (gen_bool(lam_bite_lag / lam_H_lag))
+                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
                 {
                     if (PQ_proph == 0)
                     {
@@ -591,7 +591,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
                 ACT_treat = 1;
 
-                if (gen_bool(theta.treat_BSeff))
+                if (util::random::bernoulli(theta.treat_BSeff))
                 {
                     I_PCR = 0;
                     T = 1;
@@ -610,7 +610,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
                 // For efficiency, the PQ related commands are only implemented if
                 // PQ is available
 
-                if (gen_bool(theta.PQ_treat_PQavail))
+                if (util::random::bernoulli(theta.PQ_treat_PQavail))
                 {
                     PQ_treat = 1;
 
@@ -645,7 +645,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
                     PQ_effective = 0;
 
-                    if (gen_bool(theta.PQ_treat_PQeff))
+                    if (util::random::bernoulli(theta.PQ_treat_PQeff))
                     {
                         PQ_effective = 1;
                     }
@@ -680,7 +680,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
     {
         double I_LM_out = lam_H_lag + theta.r_LM;       // Probability of exiting state
 
-        if (!gen_bool(exp(-t_step*I_LM_out)))
+        if (!util::random::bernoulli(exp(-t_step*I_LM_out)))
         {
             //theta.r_PCR = 1.0/( theta.d_PCR_min + (theta.d_PCR_max-theta.d_PCR_min)/( 1.0 + pow((A_par+A_par_mat)*theta.A_PCR_50pc_inv,theta.K_PCR) ) ); 
             theta.phi_LM = theta.phi_LM_min + (theta.phi_LM_max - theta.phi_LM_min) / (1.0 + pow((A_par + A_par_mat)*theta.A_LM_50pc_inv, theta.K_LM));
@@ -716,7 +716,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
             if (CH_move == 1)
             {
-                if (gen_bool(lam_bite_lag / lam_H_lag))
+                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
                 {
                     if (PQ_proph == 0)
                     {
@@ -747,7 +747,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
             if (CH_move == 2)
             {
-                if (gen_bool(lam_bite_lag / lam_H_lag))
+                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
                 {
                     if (PQ_proph == 0)
                     {
@@ -785,7 +785,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
             if (CH_move == 3)
             {
-                if (gen_bool(lam_bite_lag / lam_H_lag))
+                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
                 {
                     if (PQ_proph == 0)
                     {
@@ -812,7 +812,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
                 ACT_treat = 1;
 
-                if (gen_bool(theta.treat_BSeff))
+                if (util::random::bernoulli(theta.treat_BSeff))
                 {
                     I_LM = 0;
                     T = 1;
@@ -832,7 +832,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
                 // For efficiency, the PQ related commands are only implemented if
                 // PQ is available
 
-                if (gen_bool(theta.PQ_treat_PQavail))
+                if (util::random::bernoulli(theta.PQ_treat_PQavail))
                 {
                     PQ_treat = 1;
 
@@ -867,7 +867,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
                     PQ_effective = 0;
 
-                    if (gen_bool(theta.PQ_treat_PQeff))
+                    if (util::random::bernoulli(theta.PQ_treat_PQeff))
                     {
                         PQ_effective = 1;
                     }
@@ -902,7 +902,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
     {
         double I_D_out = lam_H_lag + theta.r_D;     // Probability of exiting state
 
-        if (!gen_bool(exp(-t_step*I_D_out)))
+        if (!util::random::bernoulli(exp(-t_step*I_D_out)))
         {
             // Sample outcome from probabilities of competing hazards
             double r = 1.0 / I_D_out;
@@ -929,7 +929,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
             if (CH_move == 1)
             {
-                if (gen_bool(lam_bite_lag / lam_H_lag))
+                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
                 {
                     if (PQ_proph == 0)
                     {
@@ -968,7 +968,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
     {
         double T_out = lam_H_lag + theta.r_T;       // Probability of exiting state
 
-        if (!gen_bool(exp(-t_step*T_out)))
+        if (!util::random::bernoulli(exp(-t_step*T_out)))
         {
             // Sample outcome from probabilities of competing hazards
             double r = 1.0 / T_out;
@@ -999,7 +999,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
             if (CH_move == 1)
             {
-                if (gen_bool(lam_bite_lag / lam_H_lag))
+                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
                 {
                     if (PQ_proph == 0)
                     {
@@ -1040,7 +1040,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
     {
         double P_out = lam_H_lag + theta.r_P;       // Probability of exiting state
 
-        if (!gen_bool(exp(-t_step*P_out)))
+        if (!util::random::bernoulli(exp(-t_step*P_out)))
         {
             // Sample outcome from probabilities of competing hazards
             double r = 1.0 / P_out;
@@ -1071,7 +1071,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
             if (CH_move == 1)
             {
-                if (gen_bool(lam_bite_lag / lam_H_lag))
+                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
                 {
                     if (PQ_proph == 0)
                     {
@@ -1128,7 +1128,7 @@ void Individual::ager(Params& theta)
         Hyp = K_max;
     }
 
-    if (gen_bool(1.0 - exp(-t_step*theta.gamma_L*Hyp)))
+    if (util::random::bernoulli(1.0 - exp(-t_step*theta.gamma_L*Hyp)))
     {
         Hyp = Hyp - 1;
     }
@@ -1174,7 +1174,7 @@ void Individual::ager(Params& theta)
 
         if (pregnant == 0) {
             if (preg_age == 1) {
-                if (gen_bool(theta.P_preg)) {
+                if (util::random::bernoulli(theta.P_preg)) {
                     pregnant = 1;
                     preg_timer = 0.0;
                 }
@@ -1256,7 +1256,7 @@ void Individual::intervention_updater(Params& theta)
 
     if (LLIN == 1)
     {
-        if (gen_bool(theta.P_LLIN_loss))
+        if (util::random::bernoulli(theta.P_LLIN_loss))
         {
             LLIN = 0;
         }
@@ -1353,7 +1353,7 @@ size_t CH_sample(double weights[], size_t num)
         weights[k] += weights[k - 1];
     }
 
-    double unif = gen_u01();
+    double unif = util::random::uniform_01();
     
     for (size_t k = 0; k < num; k++) {
         if (unif < weights[k]) {

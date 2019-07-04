@@ -11,7 +11,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "white/Population.hpp"
-#include "white/sim-rng.hpp"
+#include "util/random.h"
 
 #include <iostream>
 #include <cmath>
@@ -56,7 +56,7 @@ void Population::human_step(Params& theta)
         /////////////////////////////////////////////
         // Everyone has an equal probability of dying
 
-        if (gen_bool(theta.P_dead))
+        if (util::random::bernoulli(theta.P_dead))
         {
             people.erase(people.begin() + n);
 
@@ -99,11 +99,11 @@ void Population::human_step(Params& theta)
 
     for (int n = 0; n<N_dead; n++)
     {
-        zeta_start = exp(gen_normal(-0.5*theta.sig_het*theta.sig_het, theta.sig_het));
+        zeta_start = util::random::log_normal(-0.5*theta.sig_het*theta.sig_het, theta.sig_het);
 
         while (zeta_start > theta.het_max)
         {
-            zeta_start = exp(gen_normal(-0.5*theta.sig_het*theta.sig_het, theta.sig_het));
+            zeta_start = util::random::log_normal(-0.5*theta.sig_het*theta.sig_het, theta.sig_het);
         }
 
         Individual HH(theta, 0.0, zeta_start);
@@ -1672,18 +1672,18 @@ void Population::equi_pop_setup(Params& theta)
         //////////////////////////////////////////////////////////////////
         // 3.7.4.2.1. Assign age and heterogeneity 
 
-        age_start = gen_exp(theta.age_mean);
+        age_start = util::random::exponential(theta.age_mean);
 
         while (age_start > theta.age_max)
         {
-            age_start = gen_exp(theta.age_mean);
+            age_start = util::random::exponential(theta.age_mean);
         }
 
-        zeta_start = exp(gen_normal(-0.5*theta.sig_het*theta.sig_het, theta.sig_het));
+        zeta_start = util::random::log_normal(-0.5*theta.sig_het*theta.sig_het, theta.sig_het);
 
         while (zeta_start > theta.het_max)
         {
-            zeta_start = exp(gen_normal(-0.5*theta.sig_het*theta.sig_het, theta.sig_het));
+            zeta_start = util::random::log_normal(-0.5*theta.sig_het*theta.sig_het, theta.sig_het);
         }
 
 
@@ -1732,7 +1732,7 @@ void Population::equi_pop_setup(Params& theta)
         ///////////////////////////////////////////////////////////////////
         // Randomly assign a state according to equilibrium probabilities
 
-        rand_comp = gen_u01();
+        rand_comp = util::random::uniform_01();
 
         if (rand_comp <= yH_eq_cumsum[i_index][j_index][0])
         {
@@ -1792,7 +1792,7 @@ void Population::equi_pop_setup(Params& theta)
 
         if ((HH.age > 6570.0) && (HH.age < 14600.0))
         {
-            if (gen_bool(0.05))
+            if (util::random::bernoulli(0.05))
             {
                 HH.pregnant = 1;
                 HH.preg_timer = 0;

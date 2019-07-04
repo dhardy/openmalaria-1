@@ -11,7 +11,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "white/Intervention.hpp"
-#include "white/sim-rng.hpp"
+#include "util/random.h"
 
 #include <iostream>
 #include <fstream>
@@ -285,7 +285,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
 
             for (int n = 0; n<POP.N_pop; n++)
             {
-                if (gen_normal(POP.people[n].zz_int[0], theta.sig_round_LLIN) < QQ)
+                if (util::random::normal(POP.people[n].zz_int[0], theta.sig_round_LLIN) < QQ)
                 {
                     POP.people[n].LLIN = 1;
                     POP.people[n].LLIN_age = 0.0;
@@ -316,7 +316,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
 
             for (int n = 0; n<POP.N_pop; n++)
             {
-                if (gen_normal(POP.people[n].zz_int[1], theta.sig_round_IRS) < QQ)
+                if (util::random::normal(POP.people[n].zz_int[1], theta.sig_round_IRS) < QQ)
                 {
                     POP.people[n].IRS = 1;
                     POP.people[n].IRS_age = 0.0;
@@ -449,11 +449,11 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
 
             for (int n = 0; n<POP.N_pop; n++)
             {
-                if (gen_normal(POP.people[n].zz_int[2], theta.sig_round_MDA) < QQ)
+                if (util::random::normal(POP.people[n].zz_int[2], theta.sig_round_MDA) < QQ)
                 {
                     POP.people[n].ACT_treat = 1;
 
-                    if (gen_bool(theta.MDA_BS_BSeff))
+                    if (util::random::bernoulli(theta.MDA_BS_BSeff))
                     {
                         if (POP.people[n].S == 1    ) { POP.people[n].S = 0;     POP.people[n].P = 1; }
                         if (POP.people[n].I_PCR == 1) { POP.people[n].I_PCR = 0; POP.people[n].P = 1; }
@@ -491,7 +491,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
 
             for (int n = 0; n<POP.N_pop; n++)
             {
-                if (gen_normal(POP.people[n].zz_int[3], theta.sig_round_MDA) < QQ)
+                if (util::random::normal(POP.people[n].zz_int[3], theta.sig_round_MDA) < QQ)
                 {
                     /////////////////////////////////////////////////////
                     // Blood-stage treatment is always administered
@@ -499,7 +499,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
 
                     BS_effective = 0;
 
-                    if (gen_bool(theta.MDA_PQ_BSeff))
+                    if (util::random::bernoulli(theta.MDA_PQ_BSeff))
                     {
                         BS_effective = 1;
                     }
@@ -510,7 +510,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
 
                     PQ_treat = 0;
 
-                    if( gen_bool(theta.MDA_PQ_PQavail) )
+                    if( util::random::bernoulli(theta.MDA_PQ_PQavail) )
                     {
                         PQ_treat = 1;
                     }
@@ -552,7 +552,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
 
                     PQ_effective = 1;
 
-                    if( !gen_bool(theta.MDA_PQ_PQeff) )
+                    if( !util::random::bernoulli(theta.MDA_PQ_PQeff) )
                     {
                         PQ_effective = 0;
                     }
@@ -634,7 +634,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
 
             for (int n = 0; n < POP.N_pop; n++)
             {
-                if (gen_normal(POP.people[n].zz_int[4], theta.sig_round_MDA) < QQ)
+                if (util::random::normal(POP.people[n].zz_int[4], theta.sig_round_MDA) < QQ)
                 {
                     /////////////////////////////////////////////////////
                     // Blood-stage treatment is always administered
@@ -648,7 +648,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
                     {
                         if ((POP.people[n].I_LM == 1) || (POP.people[n].I_D == 1) || (POP.people[n].T == 1))
                         {
-                            if (gen_bool(theta.MSAT_PQ_sens))
+                            if (util::random::bernoulli(theta.MSAT_PQ_sens))
                             {
                                 MSAT_pos = 1;
                             }
@@ -663,7 +663,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
                     {
                         if ((POP.people[n].I_PCR == 1) || (POP.people[n].I_LM == 1) || (POP.people[n].I_D == 1) || (POP.people[n].T == 1))
                         {
-                            if (gen_bool(theta.MSAT_PQ_sens))
+                            if (util::random::bernoulli(theta.MSAT_PQ_sens))
                             {
                                 MSAT_pos = 1;
                             }
@@ -676,7 +676,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
 
                     BS_effective = 0;
 
-                    if (gen_bool(theta.MSAT_PQ_BSeff))
+                    if (util::random::bernoulli(theta.MSAT_PQ_BSeff))
                     {
                         BS_effective = 1;
                     }
@@ -689,7 +689,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
 
                     if (MSAT_pos == 1)
                     {
-                        if (gen_bool(theta.MSAT_PQ_PQavail))
+                        if (util::random::bernoulli(theta.MSAT_PQ_PQavail))
                         {
                             PQ_treat = 1;
                         }
@@ -730,7 +730,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
 
                     PQ_effective = 1;
 
-                    if (!gen_bool(theta.MSAT_PQ_PQeff))
+                    if (!util::random::bernoulli(theta.MSAT_PQ_PQeff))
                     {
                         PQ_effective = 0;
                     }
@@ -815,7 +815,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
 
             for (int n = 0; n < POP.N_pop; n++)
             {
-                if (gen_normal(POP.people[n].zz_int[5], theta.sig_round_MDA) < QQ)
+                if (util::random::normal(POP.people[n].zz_int[5], theta.sig_round_MDA) < QQ)
                 {
                     /////////////////////////////////////////////////////
                     // Blood-stage treatment is always administered
@@ -828,7 +828,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
 
                     BS_effective = 0;
 
-                    if( gen_bool(theta.SSAT_PQ_BSeff) )
+                    if( util::random::bernoulli(theta.SSAT_PQ_BSeff) )
                     {
                         BS_effective = 1;
                     }
@@ -844,12 +844,12 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
 
                     // OPTION 1
 /*
-                    if( (POP.people[n].T_last_BS <= 270.0) && (gen_bool(theta.SSAT_PQ_sens)) )
+                    if( (POP.people[n].T_last_BS <= 270.0) && (util::random::bernoulli(theta.SSAT_PQ_sens)) )
                     {
                         SSAT_pos = 1;
                     }
 
-                    if( (POP.people[n].T_last_BS > 270.0) && (!gen_bool(theta.SSAT_PQ_spec)) )
+                    if( (POP.people[n].T_last_BS > 270.0) && (!util::random::bernoulli(theta.SSAT_PQ_spec)) )
                     {
                         SSAT_pos = 1;
                     }
@@ -857,12 +857,12 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
 
                     // OPTION 2
 
-                    if ((POP.people[n].Hyp > 0) && (gen_bool(theta.SSAT_PQ_sens)))
+                    if ((POP.people[n].Hyp > 0) && (util::random::bernoulli(theta.SSAT_PQ_sens)))
                     {
                         SSAT_pos = 1;
                     }
 
-                    if ((POP.people[n].Hyp == 0) && (!gen_bool(theta.SSAT_PQ_spec)))
+                    if ((POP.people[n].Hyp == 0) && (!util::random::bernoulli(theta.SSAT_PQ_spec)))
                     {
                         SSAT_pos = 1;
                     }
@@ -875,7 +875,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
 
                     if( SSAT_pos == 1 )
                     {
-                        if( gen_bool(theta.SSAT_PQ_PQavail) )
+                        if( util::random::bernoulli(theta.SSAT_PQ_PQavail) )
                         {
                             PQ_treat = 1;
                         }
@@ -916,7 +916,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
 
                     PQ_effective = 0;
 
-                    if( gen_bool(theta.SSAT_PQ_PQeff) )
+                    if( util::random::bernoulli(theta.SSAT_PQ_PQeff) )
                     {
                         PQ_effective = 1;
                     }

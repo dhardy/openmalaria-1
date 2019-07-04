@@ -22,6 +22,7 @@
 #include "util/errors.h"
 #include "util/random.h"
 #include <cmath>
+#include <Eigen/Cholesky>
 
 namespace OM { namespace util {
 
@@ -159,6 +160,14 @@ double BetaSampler::sample() const{
         assert( a>0.0 && b>0.0 );
         return random::beta( a, b );
     }
+}
+
+void MultivariateNormal::set(Eigen::MatrixXd const& covar) {
+    Eigen::LLT<Eigen::MatrixXd> llt(covar);
+    if (llt.info() != Eigen::ComputationInfo::Success) {
+        throw("Multivariate normal: Cholesky decomposition failed: covariance matrix must be positive definite");
+    }
+    transform = llt.matrixL();
 }
 
 

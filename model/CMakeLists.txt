@@ -46,7 +46,6 @@ set (Model_CPP
   white/Mosquito.cpp
   white/Params.cpp
   white/Population.cpp
-  white/sim-rng.cpp
   white/Simulation.cpp
   white/driver.cpp
   

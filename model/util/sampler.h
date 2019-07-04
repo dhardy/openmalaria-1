@@ -25,6 +25,7 @@
 #include "util/random.h"
 #include "schema/util.h"
 #include <limits>
+#include <Eigen/Core>
 
 namespace OM { namespace util {
     
@@ -204,5 +205,43 @@ namespace OM { namespace util {
         double scale, shape;    // λ, k
     };
     
+    /// A sampler for the multivariate normal distribution.
+    /// 
+    /// This implementation requires that the covariance matrix is positive
+    /// definite, and assumes a mean of zero (for non-zero mean, simply add the
+    /// mean to the generated sample).
+    /// 
+    /// Adapted from https://stackoverflow.com/a/40245513/314345
+    struct MultivariateNormal
+    {
+        /// Construct with an empty matrix.
+        MultivariateNormal() {}
+        
+        /// Construct with the given covariance matrix.
+        /// This matrix must be positive definite.
+        /// 
+        /// Only values from the lower triangular part of the martix are read.
+        MultivariateNormal(Eigen::MatrixXd const& covar) {
+            set(covar);
+        }
+        
+        /// Initialise with the given covariance matrix.
+        /// This matrix must be positive definite.
+        /// 
+        /// Only values from the lower triangular part of the martix are read.
+        void set(Eigen::MatrixXd const& covar);
+
+        Eigen::MatrixXd transform;
+
+        inline Eigen::VectorXd operator()() const {
+            auto n = transform.rows();
+            auto norm_vec = Eigen::VectorXd(n);
+            for (auto i = 0; i < n; ++i) {
+                norm_vec(i) = random::normal(0.0, 1.0);
+            }
+            return transform * std::move(norm_vec);
+        }
+    };
+
 } }
 #endif
