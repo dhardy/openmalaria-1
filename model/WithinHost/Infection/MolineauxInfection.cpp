@@ -213,7 +213,7 @@ MolineauxInfection::MolineauxInfection(uint32_t genotype):
             }while( mi[i]<1.0 );
         }else{
             do{
-                mi[i] = static_cast<float>(random::gauss(mu_m, sigma_m));
+                mi[i] = static_cast<float>(random::normal(mu_m, sigma_m));
             }while( mi[i]<1.0 );
         }
     }
@@ -234,7 +234,7 @@ MolineauxInfection::MolineauxInfection(uint32_t genotype):
             Pc_star = static_cast<float>( k_c * pow(10.0, random::gamma(
                 mean_shape_first_local_max, sd_scale_first_local_max)) );
         } else {
-            Pc_star = static_cast<float>( k_c * pow(10.0, random::gauss(
+            Pc_star = static_cast<float>( k_c * pow(10.0, random::normal(
                 mean_shape_first_local_max, sd_scale_first_local_max)) );
         }
         
@@ -243,7 +243,7 @@ MolineauxInfection::MolineauxInfection(uint32_t genotype):
             Pm_star = static_cast<float>( k_m * pow(10.0, random::gamma(
                 mean_shape_diff_pos_days,sd_scale_diff_pos_days)) );
         } else {
-            Pm_star = static_cast<float>( k_m * pow(10.0, random::gauss(
+            Pm_star = static_cast<float>( k_m * pow(10.0, random::normal(
                 mean_shape_diff_pos_days,sd_scale_diff_pos_days)) );
         }
     }

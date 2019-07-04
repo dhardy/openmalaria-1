@@ -78,7 +78,7 @@ CommonWithinHost::CommonWithinHost( double comorbidityFactor ) :
     int counter = 0;
 #endif
     do {
-        hetMassMultiplier = util::random::gauss( 1.0, hetMassMultStdDev );
+        hetMassMultiplier = util::random::normal( 1.0, hetMassMultStdDev );
 #ifndef NDEBUG
         assert( counter < 100 );        // too many resamples: resamples should rarely be needed...
         ++counter;

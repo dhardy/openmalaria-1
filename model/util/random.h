@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#ifndef UTIL_RANDOM_H
+#define UTIL_RANDOM_H
+
 #include "Global.h"
 #include <set>
 
@@ -41,12 +44,12 @@ namespace random {
     /** Generate a random number in the range [0,1). */
     double uniform_01 ();
     
+    /// Generate a variate from the exponential distribution with mean mu.
+    double exponential (double mean);
+    
     /** This function returns a Gaussian random variate, with mean mean and
      * standard deviation std. The sampled value x ~ N(mean, std^2) . */
-    double gauss (double mean, double std);
-    
-    /** This function returns a random variate from the gamma distribution. */
-    double gamma (double a, double b);
+    double normal (double mean, double std);
     
     /** This function returns a random variate from the lognormal distribution.
      * 
@@ -67,6 +70,9 @@ namespace random {
      * @param stdlog standard deviation of underlying Gaussian
      */
     double max_multi_log_normal (double start, int n, double meanlog, double stdlog);
+    
+    /** This function returns a random variate from the gamma distribution. */
+    double gamma (double a, double b);
     
     /** This function returns a random variate from the beta distribution. */
     double beta(double a, double b);
@@ -97,4 +103,7 @@ namespace random {
     double weibull( double lambda, double k );
     //@}
 }
+
 } }
+
+#endif

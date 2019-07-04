@@ -207,23 +207,23 @@ double random::uniform_01 () {
     return result;
 }
 
-double random::gauss (double mean, double std){
+double random::exponential (double mean) {
 # ifdef OM_RANDOM_USE_BOOST_DIST
-    boost::random::normal_distribution<> dist (mean, std);
-    double result = dist(generator);
+    static boost::random::exponential_distribution<> exp(1.0);
+    double result = mean * exp(generator);
 # else
-    double result = gsl_ran_gaussian(rng.gsl_generator,std)+mean;
+    double result = gsl_ran_exponential(rng.gsl_generator, mean);
 # endif
 //     util::streamValidate(result);
     return result;
 }
 
-double random::gamma (double a, double b){
+double random::normal (double mean, double std){
 # ifdef OM_RANDOM_USE_BOOST_DIST
-    boost::random::gamma_distribution<> dist (a, b);
+    boost::random::normal_distribution<> dist (mean, std);
     double result = dist(generator);
 # else
-    double result = gsl_ran_gamma(rng.gsl_generator, a, b);
+    double result = gsl_ran_gaussian(rng.gsl_generator, std)+mean;
 # endif
 //     util::streamValidate(result);
     return result;
@@ -260,6 +260,17 @@ double random::max_multi_log_normal (double start, int n, double meanlog, double
     double zval = gsl_cdf_ugaussian_Pinv (normp);
     double multi_sample = exp(meanlog + stdlog * zval);
     result = std::max(result, multi_sample);
+# endif
+//     util::streamValidate(result);
+    return result;
+}
+
+double random::gamma (double a, double b){
+# ifdef OM_RANDOM_USE_BOOST_DIST
+    boost::random::gamma_distribution<> dist (a, b);
+    double result = dist(boost_generator);
+# else
+    double result = gsl_ran_gamma(rng.gsl_generator, a, b);
 # endif
 //     util::streamValidate(result);
     return result;

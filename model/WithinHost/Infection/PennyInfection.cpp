@@ -178,9 +178,9 @@ PennyInfection::PennyInfection(uint32_t protID):
         } while(threshold_N <= threshold_C || threshold_N <= threshold_V);
     }else /* using lognormal distribution */{
         do {
-            threshold_N = exp(random::gauss(mu_TN,sigma_TN));
-            threshold_C = exp(random::gauss(mu_TC,sigma_TC));
-            threshold_V = exp(random::gauss(mu_TV,sigma_TV));
+            threshold_N = exp(random::normal(mu_TN,sigma_TN));
+            threshold_C = exp(random::normal(mu_TC,sigma_TC));
+            threshold_V = exp(random::normal(mu_TV,sigma_TV));
         } while(threshold_N <= threshold_C || threshold_N <= threshold_V);
     }
     
@@ -202,7 +202,7 @@ bool PennyInfection::updateDensity( double survivalFactor, SimTime bsAge, double
         if(update_density_gamma) {
             cirDensities[today] = exp(random::gamma(a_Y,b_Y));
         } else {
-            cirDensities[today] = exp(random::gauss(mu_Y,sigma_Y));
+            cirDensities[today] = exp(random::normal(mu_Y,sigma_Y));
         }
         
         m_density = cirDensities[today];
@@ -211,7 +211,7 @@ bool PennyInfection::updateDensity( double survivalFactor, SimTime bsAge, double
         if(update_density_gamma){
             seqDensities[today] = exp(random::gamma(a_X,b_X));
         } else {
-            seqDensities[today] = exp(random::gauss(mu_X,sigma_X));
+            seqDensities[today] = exp(random::normal(mu_X,sigma_X));
         }
     }
     else /*not first day*/
@@ -262,7 +262,7 @@ bool PennyInfection::updateDensity( double survivalFactor, SimTime bsAge, double
                 double b_cirDens = pow(sigma_epsilon,2)/log(cirDensity_new);
                 cirDensity_new = exp(random::gamma(a_cirDens,b_cirDens) ) * survivalFactor;
             } else {
-                cirDensity_new = exp(random::gauss(log(cirDensity_new),sigma_epsilon)) * survivalFactor;
+                cirDensity_new = exp(random::normal(log(cirDensity_new),sigma_epsilon)) * survivalFactor;
             }
             // please don't simplify this, we want more chance at ending infection
             if (cirDensity_new < Omega) {
