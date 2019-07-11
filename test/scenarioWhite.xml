@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <om:scenario xmlns:om="http://openmalaria.org/schema/scenario_40" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="MWhite model test" schemaVersion="40" xsi:schemaLocation="http://openmalaria.org/schema/scenario_40 scenario_current.xsd">
-  <!-- TODO: may not fit scenario -->
+  <!-- TODO: not used -->
   <demography maximumAgeYrs="90" name="Ifakara" popSize="500">
     <ageGroup lowerbound="0.0">
       <group poppercent="3.474714994" upperbound="1"/>
@@ -24,6 +24,7 @@
       <group poppercent="0.161614642" upperbound="90"/>
     </ageGroup>
   </demography>
+  <!-- TODO: not used -->
   <monitoring name="Quarterly Surveys" startDate="2000-1-1">
     <SurveyOptions>
       <option name="nHost" value="true"/>
@@ -59,8 +60,9 @@
       <group upperbound="99"/>
     </ageGroup>
   </monitoring>
+  <!-- TODO: not used -->
   <interventions name="none"/>
-  <!-- TODO: may not fit scenario -->
+  <!-- TODO: not used -->
   <healthSystem>
     <DecisionTree5Day name="test system">
       <pSeekOfficialCareUncomplicated1 value="0.2"/>
@@ -88,6 +90,7 @@
       <group lowerbound="0.0" value="0"/>
     </pSequelaeInpatient>
   </healthSystem>
+  <!-- TODO: not used -->
   <entomology mode="dynamic" name="Namawala1_16*1.0">
     <nonVector eipDuration="10">
       <EIRDaily origin="Namawala Pre">0.011646449</EIRDaily>
@@ -457,6 +460,7 @@
       <EIRDaily origin="Namawala Pre">0.0042975824</EIRDaily>
     </nonVector>
   </entomology>
+  <!-- TODO: not used -->
   <diagnostics>
     <diagnostic name="standard" units="Other">
       <deterministic minDensity="40"/>
@@ -468,8 +472,10 @@
   <model>
     <ModelOptions>
       <option name="VIVAX_WHITE_MODEL" value="true"/>
+      <!-- TODO: not used -->
       <option name="NON_MALARIA_FEVERS" value="true"/>
     </ModelOptions>
+    <!-- TODO: not used -->
     <clinical healthSystemMemory="30d">
       <NeonatalMortality diagnostic="neonatal"/>
       <NonMalariaFevers>
@@ -569,6 +575,7 @@
         </incidence>
       </NonMalariaFevers>
     </clinical>
+    <!-- TODO: not used -->
     <human>
       <availabilityToMosquitoes>
         <group lowerbound="0.0" value="0.225940909648"/>
@@ -599,6 +606,7 @@
       <coverage path="intervention_coverage.txt"/>
       <output path="output.txt"/>
     </whiteVivax>
+  <!-- TODO: not used (except iseed) -->
     <parameters interval="5" iseed="1548338683" latentp="15d">
       <parameter include="false" name="'-ln(1-Sinf)'" number="1" value="0.050736"/>
       <parameter include="false" name="Estar" number="2" value="0.03247"/>

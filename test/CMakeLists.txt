@@ -47,10 +47,12 @@ set (OM_BOXTEST_NAMES
   VecMonthly
   VecTest
   Vivax
-  White
 )
 # tests with broken checkpointing:
-set (OM_BOXTEST_NC_NAMES)
+set (OM_BOXTEST_NC_NAMES
+  # Recent addition; checkpointing support is not a priority:
+  White
+)
 # Disabled due to "in-progress" work: (none)
 
 # Use python script.
@@ -58,5 +60,5 @@ foreach (TEST_NAME ${OM_BOXTEST_NAMES})
     add_test (${TEST_NAME} ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/run.py ${TEST_NAME} -- --checkpoint-stop)
 endforeach (TEST_NAME)
 foreach (TEST_NAME ${OM_BOXTEST_NC_NAMES})
-    add_test (${TEST_NAME} ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/run.py -- ${TEST_NAME})
+    add_test (${TEST_NAME} ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/run.py ${TEST_NAME})
 endforeach (TEST_NAME)
