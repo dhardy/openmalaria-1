@@ -49,7 +49,6 @@
 #include "white/Simulation.hpp"
 #include "util/errors.h"
 #include "util/CommandLine.h"
-#include "util/random.h"
 
 #include <iostream>
 #include <cmath>
@@ -83,10 +82,6 @@ void init_model( const scnXml::Scenario& scenario ) {
     auto coverage_File = util::CommandLine::lookupResource(wv.getCoverage().getPath());
     output_File = wv.getOutput().getPath().c_str();
 
-    auto seed = model.getParameters().getIseed();
-    cout << "Using fixed seed " << seed << endl;
-    util::random::seed(seed);
-    
     
     ////////////////////////////////////////////
     //                                        //
