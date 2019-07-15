@@ -83,7 +83,7 @@ void VectorModel::ctsCbAlpha (const Population& population, ostream& stream){
         for(Population::ConstIter iter = population.cbegin(); iter != population.cend(); ++iter) {
             total += iter->perHostTransmission.entoAvailabilityFull( i, iter->age(sim::now()).inYears() );
         }
-        stream << '\t' << total / population.size();
+        stream << '\t' << total / Population::size();
     }
 }
 void VectorModel::ctsCbP_B (const Population& population, ostream& stream){
@@ -92,7 +92,7 @@ void VectorModel::ctsCbP_B (const Population& population, ostream& stream){
         for(Population::ConstIter iter = population.cbegin(); iter != population.cend(); ++iter) {
             total += iter->perHostTransmission.probMosqBiting( i );
         }
-        stream << '\t' << total / population.size();
+        stream << '\t' << total / Population::size();
     }
 }
 void VectorModel::ctsCbP_CD (const Population& population, ostream& stream){
@@ -101,7 +101,7 @@ void VectorModel::ctsCbP_CD (const Population& population, ostream& stream){
         for(Population::ConstIter iter = population.cbegin(); iter != population.cend(); ++iter) {
             total += iter->perHostTransmission.probMosqResting( i );
         }
-        stream << '\t' << total / population.size();
+        stream << '\t' << total / Population::size();
     }
 }
 void VectorModel::ctsNetInsecticideContent (const Population& population, ostream& stream){
@@ -121,7 +121,7 @@ void VectorModel::ctsIRSInsecticideContent (const Population& population, ostrea
 //     for(Population::ConstIter iter = population.cbegin(); iter != population.cend(); ++iter) {
 //         totalInsecticide += iter->perHostTransmission.getIRS().getInsecticideContent(_IRSParams);
 //     }
-//     stream << '\t' << totalInsecticide / population.size();
+//     stream << '\t' << totalInsecticide / Population::size();
 }
 void VectorModel::ctsIRSEffects (const Population& population, ostream& stream) {
     //TODO(monitoring): work out how this applies when multiple IRS effects are allowed
@@ -133,9 +133,9 @@ void VectorModel::ctsIRSEffects (const Population& population, ostream& stream) 
 //             totalPrePSF += iter->perHostTransmission.getIRS().preprandialSurvivalFactor(params);
 //             totalPostPSF += iter->perHostTransmission.getIRS().postprandialSurvivalFactor(params);
 //         }
-//         stream << '\t' << totalRA / population.size()
-//             << '\t' << totalPrePSF / population.size()
-//             << '\t' << totalPostPSF / population.size();
+//         stream << '\t' << totalRA / Population::size()
+//             << '\t' << totalPrePSF / Population::size()
+//             << '\t' << totalPostPSF / Population::size();
 //     }
 }
 
@@ -269,11 +269,10 @@ void VectorModel::init2 (const Population& population) {
         sumRelativeAvailability +=
                 human.perHostTransmission.relativeAvailabilityAge (human.age(sim::now()).inYears());
     }
-    int popSize = population.size();
     // value should be unimportant when no humans are available, though inf/nan is not acceptable
     double meanPopAvail = 1.0;
-    if( popSize > 0 ){
-        meanPopAvail = sumRelativeAvailability / popSize;    // mean-rel-avail
+    if( Population::size() > 0 ){
+        meanPopAvail = sumRelativeAvailability / Population::size();    // mean-rel-avail
     }
     
     for(size_t i = 0; i < speciesIndex.size(); ++i) {
@@ -292,7 +291,7 @@ void VectorModel::init2 (const Population& population) {
             sigma_dff += prod * host.probMosqResting(i) * host.relMosqFecundity(i);
         }
         
-        species[i].init2 (population.size(), meanPopAvail, sum_avail, sigma_f, sigma_df, sigma_dff);
+        species[i].init2 (Population::size(), meanPopAvail, sum_avail, sigma_f, sigma_df, sigma_dff);
     }
     simulationMode = forcedEIR;   // now we should be ready to start
 }

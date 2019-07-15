@@ -108,8 +108,7 @@ Simulator::Simulator( const scnXml::Scenario& scenario ) :
     // genotypes (both from Human, from Population::init()) and
     // mon::AgeGroup (from Surveys.init()):
     // Note: PerHost dependency can be postponed; it is only used to set adultAge
-    population = unique_ptr<Population>(
-            new Population( scenario.getDemography().getPopSize() ));
+    population = unique_ptr<Population>(new Population());
     transmission = unique_ptr<TransmissionModel>(
             TransmissionModel::createTransmissionModel(scenario.getEntomology(), population->size()) );
     

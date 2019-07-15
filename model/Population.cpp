@@ -47,8 +47,11 @@ namespace OM
 
 // -----  Population: static data / methods  -----
 
+size_t Population::s_populationSize;
+
 void Population::init( const Parameters& parameters, const scnXml::Scenario& scenario )
 {
+    s_populationSize = scenario.getDemography().getPopSize();
     Host::Human::init( parameters, scenario );
     Host::NeonatalMortality::init( scenario.getModel().getClinical() );
     
@@ -73,8 +76,7 @@ void Population::staticCheckpoint (ostream& stream)
 
 // -----  non-static methods: creation/destruction, checkpointing  -----
 
-Population::Population(size_t populationSize)
-    : populationSize (populationSize), recentBirths(0)
+Population::Population() : recentBirths(0)
 {
     using mon::Continuous;
     Continuous.registerCallback( "hosts", "\thosts", MakeDelegate( this, &Population::ctsHosts ) );
@@ -114,22 +116,20 @@ Population::Population(size_t populationSize)
 
 void Population::checkpoint (istream& stream)
 {
-    populationSize & stream;
     recentBirths & stream;
     
-    for(size_t i = 0; i < populationSize && !stream.eof(); ++i) {
+    for(size_t i = 0; i < s_populationSize && !stream.eof(); ++i) {
         // Note: calling this constructor of Host::Human is slightly wasteful, but avoids the need for another
         // ctor and leaves less opportunity for uninitialized memory.
         population.push_back( Host::Human (SimTime::zero()) );
         population.back() & stream;
     }
-    if (population.size() != populationSize)
+    if (population.size() != s_populationSize)
         throw util::checkpoint_error(
             (boost::format("Population: out of data (read %1% humans)") %population.size() ).str() );
 }
 void Population::checkpoint (ostream& stream)
 {
-    populationSize & stream;
     recentBirths & stream;
     
     for(Iter iter = population.begin(); iter != population.end(); ++iter)
@@ -155,7 +155,7 @@ void Population::createInitialHumans()
     for(size_t iage_prev = AgeStructure::getMaxTStepsPerLife(), iage = iage_prev - 1;
          iage_prev > 0; iage_prev = iage, iage -= 1 )
     {
-        int targetPop = AgeStructure::targetCumPop( iage, populationSize );
+        int targetPop = AgeStructure::targetCumPop( iage, s_populationSize );
         while (cumulativePop < targetPop) {
             newHuman( SimTime::zero() - SimTime::fromTS(iage) );
             ++cumulativePop;
@@ -184,10 +184,10 @@ void Population::update( const Transmission::TransmissionModel& transmission, Si
     Host::NeonatalMortality::update (*this);
     
     //NOTE: other parts of code are not set up to handle changing population size. Also
-    // populationSize is assumed to be the _actual and exact_ population size by other code.
+    // s_populationSize is assumed to be the _actual and exact_ population size by other code.
     //targetPop is the population size at time t allowing population growth
-    //int targetPop = (int) (populationSize * exp( AgeStructure::rho * sim::ts1().inSteps() ));
-    int targetPop = populationSize;
+    //int targetPop = (int) (s_populationSize * exp( AgeStructure::rho * sim::ts1().inSteps() ));
+    int targetPop = s_populationSize;
     int cumPop = 0;
 
     // Update each human in turn
@@ -236,7 +236,7 @@ void Population::update( const Transmission::TransmissionModel& transmission, Si
 // -----  non-static methods: reporting  -----
 
 void Population::ctsHosts (ostream& stream){
-    // this option is intended for debugging human initialization; normally this should equal populationSize.
+    // this option is intended for debugging human initialization; normally this should equal s_populationSize.
     stream << '\t' << population.size();
 }
 void Population::ctsHostDemography (ostream& stream){
@@ -267,7 +267,7 @@ void Population::ctsImmunityh (ostream& stream){
     for(Iter iter = population.begin(); iter != population.end(); ++iter) {
         x += iter->getWithinHostModel().getCumulative_h();
     }
-    x /= populationSize;
+    x /= s_populationSize;
     stream << '\t' << x;
 }
 void Population::ctsImmunityY (ostream& stream){
@@ -275,22 +275,22 @@ void Population::ctsImmunityY (ostream& stream){
     for(Iter iter = population.begin(); iter != population.end(); ++iter) {
         x += iter->getWithinHostModel().getCumulative_Y();
     }
-    x /= populationSize;
+    x /= s_populationSize;
     stream << '\t' << x;
 }
 void Population::ctsMedianImmunityY (ostream& stream){
     vector<double> list;
-    list.reserve( populationSize );
+    list.reserve( s_populationSize );
     for(Iter iter = population.begin(); iter != population.end(); ++iter) {
         list.push_back( iter->getWithinHostModel().getCumulative_Y() );
     }
     sort( list.begin(), list.end() );
     double x;
-    if( mod_nn(populationSize, 2) == 0 ){
-        size_t i = populationSize / 2;
+    if( mod_nn(s_populationSize, 2) == 0 ){
+        size_t i = s_populationSize / 2;
         x = (list[i-1]+list[i])/2.0;
     }else{
-        x = list[populationSize / 2];
+        x = list[s_populationSize / 2];
     }
     stream << '\t' << x;
 }
@@ -310,7 +310,7 @@ void Population::ctsITNCoverage (ostream& stream){
     for(Iter iter = population.begin(); iter != population.end(); ++iter) {
         nActive += iter->perHostTransmission.hasActiveInterv( interventions::Component::ITN );
     }
-    double coverage = static_cast<double>(nActive) / populationSize;
+    double coverage = static_cast<double>(nActive) / s_populationSize;
     stream << '\t' << coverage;
 }
 void Population::ctsIRSCoverage (ostream& stream){
@@ -318,7 +318,7 @@ void Population::ctsIRSCoverage (ostream& stream){
     for(Iter iter = population.begin(); iter != population.end(); ++iter) {
         nActive += iter->perHostTransmission.hasActiveInterv( interventions::Component::IRS );
     }
-    double coverage = static_cast<double>(nActive) / populationSize;
+    double coverage = static_cast<double>(nActive) / s_populationSize;
     stream << '\t' << coverage;
 }
 void Population::ctsGVICoverage (ostream& stream){
@@ -326,7 +326,7 @@ void Population::ctsGVICoverage (ostream& stream){
     for(Iter iter = population.begin(); iter != population.end(); ++iter) {
         nActive += iter->perHostTransmission.hasActiveInterv( interventions::Component::GVI );
     }
-    double coverage = static_cast<double>(nActive) / populationSize;
+    double coverage = static_cast<double>(nActive) / s_populationSize;
     stream << '\t' << coverage;
 }
 // void Population::ctsNetHoleIndex (ostream& stream){

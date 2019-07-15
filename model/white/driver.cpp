@@ -49,6 +49,7 @@
 #include "white/Simulation.hpp"
 #include "util/errors.h"
 #include "util/CommandLine.h"
+#include "Population.h"
 
 #include <iostream>
 #include <cmath>
@@ -99,7 +100,7 @@ void init_model( const scnXml::Scenario& scenario ) {
     }
     
     times = Pv_mod_par.read(parameter_File, mosquito_File);
-    PNG_pop.N_pop = Pv_mod_par.N_pop;
+    PNG_pop.N_pop = OM::Population::size();
 
     PNG_intven.read(coverage_File);
 

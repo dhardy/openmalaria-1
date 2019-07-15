@@ -53,8 +53,6 @@ SimTimes Params::read(const std::string& parameter_File, const std::string mosqu
     //////////////////////////////////////////////////
     // Population size and simulation time
 
-    parameter_Stream >> discard >> N_pop >> discard;               // Number of participants
-
     parameter_Stream >> discard >> EIR_equil >> discard;        // EIR at equilibrium
 
     for (int g = 0; g < N_spec_max; g++)

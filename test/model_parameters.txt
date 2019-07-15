@@ -1,4 +1,3 @@
-N_part	1000	Number_of_participants
 EIR_equil	0.05	equilibrium_EIR
 Prop_far	0.0	Proportion_farauti
 Prop_pun	0.0	Proportion_punctulatus

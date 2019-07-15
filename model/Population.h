@@ -46,8 +46,8 @@ public:
     static void staticCheckpoint (istream& stream);
     static void staticCheckpoint (ostream& stream); ///< ditto
 
-
-    Population( size_t populationSize );
+    /// Constructor
+    Population();
     
     void checkpoint (istream& stream);
     void checkpoint (ostream& stream);
@@ -98,8 +98,8 @@ public:
         return std::make_pair(population.cbegin(), population.cend());
     }
     /** Return the number of humans. */
-    inline size_t size() const {
-        return populationSize;
+    inline static size_t size() {
+        return s_populationSize;
     }
     //@}
 
@@ -133,7 +133,7 @@ private:
     
 
     //! Size of the human population
-    size_t populationSize;
+    static size_t s_populationSize;
     
     ///@brief Variables for continuous reporting
     //@{
