@@ -109,11 +109,11 @@ public:
     ////////////////////////////////////////////////////////////////
     // 0.3.3. Objects for storing summary output of the population
 
-    int yH[N_H_comp];   // Human compartmental states
+    Array<int, N_H_comp, 1> yH;   // Human compartmental states
 
-    int prev_all[11];   // Contains {N_pop, PvPR_PCR, PvPR_LM, Pv_clin, PvHR, PvHR_batches, new_PCR, new_LM, new_D, new_ACT, new_PQ} 
-    int prev_U5[11];    // Contains {N_pop, PvPR_PCR, PvPR_LM, Pv_clin, PvHR, PvHR_batches, new_PCR, new_LM, new_D, new_ACT, new_PQ} 
-    int prev_U10[11];   // Contains {N_pop, PvPR_PCR, PvPR_LM, Pv_clin, PvHR, PvHR_batches, new_PCR, new_LM, new_D, new_ACT, new_PQ} 
+    Array<int, 11, 1> prev_all;   // Contains {N_pop, PvPR_PCR, PvPR_LM, Pv_clin, PvHR, PvHR_batches, new_PCR, new_LM, new_D, new_ACT, new_PQ} 
+    Array<int, 11, 1> prev_U5;    // Contains {N_pop, PvPR_PCR, PvPR_LM, Pv_clin, PvHR, PvHR_batches, new_PCR, new_LM, new_D, new_ACT, new_PQ} 
+    Array<int, 11, 1> prev_U10;   // Contains {N_pop, PvPR_PCR, PvPR_LM, Pv_clin, PvHR, PvHR_batches, new_PCR, new_LM, new_D, new_ACT, new_PQ} 
 
     double EIR_t;       // EIR
     int LLIN_cov_t;     // LLIN coverage

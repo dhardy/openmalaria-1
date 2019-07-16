@@ -197,20 +197,20 @@ void Individual::state_mover(Params& theta, double lam_bite)
                 {
                     if (PQ_proph == 0)
                     {
-                        Hyp = Hyp + 1;
+                        Hyp += 1;
                     }
                 }
 
                 if (A_par_boost == 1)
                 {
-                    A_par = A_par + 1.0;
+                    A_par += 1.0;
                     A_par_timer = theta.u_par;
                     A_par_boost = 0;
                 }
 
                 if (A_clin_boost == 1)
                 {
-                    A_clin = A_clin + 1.0;
+                    A_clin += 1.0;
                     A_clin_timer = theta.u_clin;
                     A_clin_boost = 0;
                 }
@@ -234,20 +234,20 @@ void Individual::state_mover(Params& theta, double lam_bite)
                 {
                     if (PQ_proph == 0)
                     {
-                        Hyp = Hyp + 1;
+                        Hyp += 1;
                     }
                 }
 
                 if (A_par_boost == 1)
                 {
-                    A_par = A_par + 1.0;
+                    A_par += 1.0;
                     A_par_timer = theta.u_par;
                     A_par_boost = 0;
                 }
 
                 if (A_clin_boost == 1)
                 {
-                    A_clin = A_clin + 1.0;
+                    A_clin += 1.0;
                     A_clin_timer = theta.u_clin;
                     A_clin_boost = 0;
                 }
@@ -272,20 +272,20 @@ void Individual::state_mover(Params& theta, double lam_bite)
                 {
                     if (PQ_proph == 0)
                     {
-                        Hyp = Hyp + 1;
+                        Hyp += 1;
                     }
                 }
 
                 if (A_par_boost == 1)
                 {
-                    A_par = A_par + 1.0;
+                    A_par += 1.0;
                     A_par_timer = theta.u_par;
                     A_par_boost = 0;
                 }
 
                 if (A_clin_boost == 1)
                 {
-                    A_clin = A_clin + 1.0;
+                    A_clin += 1.0;
                     A_clin_timer = theta.u_clin;
                     A_clin_boost = 0;
                 }
@@ -311,20 +311,20 @@ void Individual::state_mover(Params& theta, double lam_bite)
                 {
                     if (PQ_proph == 0)
                     {
-                        Hyp = Hyp + 1;
+                        Hyp += 1;
                     }
                 }
 
                 if (A_par_boost == 1)
                 {
-                    A_par = A_par + 1.0;
+                    A_par += 1.0;
                     A_par_timer = theta.u_par;
                     A_par_boost = 0;
                 }
 
                 if (A_clin_boost == 1)
                 {
-                    A_clin = A_clin + 1.0;
+                    A_clin += 1.0;
                     A_clin_timer = theta.u_clin;
                     A_clin_boost = 0;
                 }
@@ -464,20 +464,20 @@ void Individual::state_mover(Params& theta, double lam_bite)
                 {
                     if (PQ_proph == 0)
                     {
-                        Hyp = Hyp + 1;
+                        Hyp += 1;
                     }
                 }
 
                 if (A_par_boost == 1)
                 {
-                    A_par = A_par + 1.0;
+                    A_par += 1.0;
                     A_par_timer = theta.u_par;
                     A_par_boost = 0;
                 }
 
                 if (A_clin_boost == 1)
                 {
-                    A_clin = A_clin + 1.0;
+                    A_clin += 1.0;
                     A_clin_timer = theta.u_clin;
                     A_clin_boost = 0;
                 }
@@ -494,20 +494,20 @@ void Individual::state_mover(Params& theta, double lam_bite)
                 {
                     if (PQ_proph == 0)
                     {
-                        Hyp = Hyp + 1;
+                        Hyp += 1;
                     }
                 }
 
                 if (A_par_boost == 1)
                 {
-                    A_par = A_par + 1.0;
+                    A_par += 1.0;
                     A_par_timer = theta.u_par;
                     A_par_boost = 0;
                 }
 
                 if (A_clin_boost == 1)
                 {
-                    A_clin = A_clin + 1.0;
+                    A_clin += 1.0;
                     A_clin_timer = theta.u_clin;
                     A_clin_boost = 0;
                 }
@@ -530,20 +530,20 @@ void Individual::state_mover(Params& theta, double lam_bite)
                 {
                     if (PQ_proph == 0)
                     {
-                        Hyp = Hyp + 1;
+                        Hyp += 1;
                     }
                 }
 
                 if (A_par_boost == 1)
                 {
-                    A_par = A_par + 1.0;
+                    A_par += 1.0;
                     A_par_timer = theta.u_par;
                     A_par_boost = 0;
                 }
 
                 if (A_clin_boost == 1)
                 {
-                    A_clin = A_clin + 1.0;
+                    A_clin += 1.0;
                     A_clin_timer = theta.u_clin;
                     A_clin_boost = 0;
                 }
@@ -568,20 +568,20 @@ void Individual::state_mover(Params& theta, double lam_bite)
                 {
                     if (PQ_proph == 0)
                     {
-                        Hyp = Hyp + 1;
+                        Hyp += 1;
                     }
                 }
 
                 if (A_par_boost == 1)
                 {
-                    A_par = A_par + 1.0;
+                    A_par += 1.0;
                     A_par_timer = theta.u_par;
                     A_par_boost = 0;
                 }
 
                 if (A_clin_boost == 1)
                 {
-                    A_clin = A_clin + 1.0;
+                    A_clin += 1.0;
                     A_clin_timer = theta.u_clin;
                     A_clin_boost = 0;
                 }
@@ -720,20 +720,20 @@ void Individual::state_mover(Params& theta, double lam_bite)
                 {
                     if (PQ_proph == 0)
                     {
-                        Hyp = Hyp + 1;
+                        Hyp += 1;
                     }
                 }
 
                 if (A_par_boost == 1)
                 {
-                    A_par = A_par + 1.0;
+                    A_par += 1.0;
                     A_par_timer = theta.u_par;
                     A_par_boost = 0;
                 }
 
                 if (A_clin_boost == 1)
                 {
-                    A_clin = A_clin + 1.0;
+                    A_clin += 1.0;
                     A_clin_timer = theta.u_clin;
                     A_clin_boost = 0;
                 }
@@ -751,20 +751,20 @@ void Individual::state_mover(Params& theta, double lam_bite)
                 {
                     if (PQ_proph == 0)
                     {
-                        Hyp = Hyp + 1;
+                        Hyp += 1;
                     }
                 }
 
                 if (A_par_boost == 1)
                 {
-                    A_par = A_par + 1.0;
+                    A_par += 1.0;
                     A_par_timer = theta.u_par;
                     A_par_boost = 0;
                 }
 
                 if (A_clin_boost == 1)
                 {
-                    A_clin = A_clin + 1.0;
+                    A_clin += 1.0;
                     A_clin_timer = theta.u_clin;
                     A_clin_boost = 0;
                 }
@@ -789,20 +789,20 @@ void Individual::state_mover(Params& theta, double lam_bite)
                 {
                     if (PQ_proph == 0)
                     {
-                        Hyp = Hyp + 1;
+                        Hyp += 1;
                     }
                 }
 
                 if (A_par_boost == 1)
                 {
-                    A_par = A_par + 1.0;
+                    A_par += 1.0;
                     A_par_timer = theta.u_par;
                     A_par_boost = 0;
                 }
 
                 if (A_clin_boost == 1)
                 {
-                    A_clin = A_clin + 1.0;
+                    A_clin += 1.0;
                     A_clin_timer = theta.u_clin;
                     A_clin_boost = 0;
                 }
@@ -933,20 +933,20 @@ void Individual::state_mover(Params& theta, double lam_bite)
                 {
                     if (PQ_proph == 0)
                     {
-                        Hyp = Hyp + 1;
+                        Hyp += 1;
                     }
                 }
 
                 if (A_par_boost == 1)
                 {
-                    A_par = A_par + 1.0;
+                    A_par += 1.0;
                     A_par_timer = theta.u_par;
                     A_par_boost = 0;
                 }
 
                 if (A_clin_boost == 1)
                 {
-                    A_clin = A_clin + 1.0;
+                    A_clin += 1.0;
                     A_clin_timer = theta.u_clin;
                     A_clin_boost = 0;
                 }
@@ -1003,20 +1003,20 @@ void Individual::state_mover(Params& theta, double lam_bite)
                 {
                     if (PQ_proph == 0)
                     {
-                        Hyp = Hyp + 1;
+                        Hyp += 1;
                     }
                 }
 
                 if (A_par_boost == 1)
                 {
-                    A_par = A_par + 1.0;
+                    A_par += 1.0;
                     A_par_timer = theta.u_par;
                     A_par_boost = 0;
                 }
 
                 if (A_clin_boost == 1)
                 {
-                    A_clin = A_clin + 1.0;
+                    A_clin += 1.0;
                     A_clin_timer = theta.u_clin;
                     A_clin_boost = 0;
                 }
@@ -1075,20 +1075,20 @@ void Individual::state_mover(Params& theta, double lam_bite)
                 {
                     if (PQ_proph == 0)
                     {
-                        Hyp = Hyp + 1;
+                        Hyp += 1;
                     }
                 }
 
                 if (A_par_boost == 1)
                 {
-                    A_par = A_par + 1.0;
+                    A_par += 1.0;
                     A_par_timer = theta.u_par;
                     A_par_boost = 0;
                 }
 
                 if (A_clin_boost == 1)
                 {
-                    A_clin = A_clin + 1.0;
+                    A_clin += 1.0;
                     A_clin_timer = theta.u_clin;
                     A_clin_boost = 0;
                 }
@@ -1117,7 +1117,7 @@ void Individual::ager(Params& theta)
     /////////////////////////
     // Ageing
 
-    age = age + t_step;
+    age += t_step;
 
 
     /////////////////////////
@@ -1137,8 +1137,8 @@ void Individual::ager(Params& theta)
     /////////////////////////
     // Immune decay
 
-    A_par = A_par*theta.A_par_decay;
-    A_clin = A_clin*theta.A_clin_decay;
+    A_par *= theta.A_par_decay;
+    A_clin *= theta.A_clin_decay;
 
 
     ///////////////////////////////////////////////////
@@ -1147,8 +1147,8 @@ void Individual::ager(Params& theta)
 
     if (age < 365.0)
     {
-        A_par_mat = A_par_mat*theta.mat_decay;
-        A_clin_mat = A_clin_mat*theta.mat_decay;
+        A_par_mat *= theta.mat_decay;
+        A_clin_mat *= theta.mat_decay;
     }
     else {
         A_par_mat = 0.0;
@@ -1169,7 +1169,7 @@ void Individual::ager(Params& theta)
         }
 
         if (pregnant) {
-            preg_timer = preg_timer + 1.0;
+            preg_timer += 1.0;
         }
 
         if (!pregnant) {
@@ -1235,7 +1235,7 @@ void Individual::ager(Params& theta)
 
     if (S == 1)
     {
-        T_last_BS = T_last_BS + 1.0;
+        T_last_BS += 1.0;
     }
 }
 
@@ -1273,12 +1273,12 @@ void Individual::intervention_updater(Params& theta)
 
     if (LLIN == 1 && IRS == 0)
     {
-        LLIN_age = LLIN_age + t_step;
+        LLIN_age += t_step;
 
         for (int g = 0; g < N_spec; g++)
         {
             r_LLIN[g] = theta.r_LLIN_net[g] + (r_LLIN[g] - theta.r_LLIN_net[g])*theta.P_PYR_decay;
-            d_LLIN[g] = d_LLIN[g] * theta.P_PYR_decay;
+            d_LLIN[g] *= theta.P_PYR_decay;
             s_LLIN[g] = 1.0 - r_LLIN[g] - d_LLIN[g];
 
             w_VC[g] = 1 - theta.PSI_bed[g] + theta.PSI_bed[g] * s_LLIN[g];
@@ -1289,12 +1289,12 @@ void Individual::intervention_updater(Params& theta)
 
     if (LLIN == 0 && IRS == 1)
     {
-        IRS_age = IRS_age + t_step;
+        IRS_age += t_step;
 
         for (int g = 0; g < N_spec; g++)
         {
-            r_IRS[g] = r_IRS[g] * theta.P_IRS_decay;
-            d_IRS[g] = d_IRS[g] * theta.P_IRS_decay;
+            r_IRS[g] *= theta.P_IRS_decay;
+            d_IRS[g] *= theta.P_IRS_decay;
             s_IRS[g] = 1.0 - r_IRS[g] - d_IRS[g];
 
             w_VC[g] = 1 - theta.PSI_indoors[g] + theta.PSI_indoors[g] * (1.0 - r_IRS[g])*s_IRS[g];
@@ -1305,17 +1305,17 @@ void Individual::intervention_updater(Params& theta)
 
     if (LLIN == 1 && IRS == 1)
     {
-        LLIN_age = LLIN_age + t_step;
-        IRS_age = IRS_age + t_step;
+        LLIN_age += t_step;
+        IRS_age += t_step;
 
         for (int g = 0; g < N_spec; g++)
         {
             r_LLIN[g] = theta.r_LLIN_net[g] + (r_LLIN[g] - theta.r_LLIN_net[g])*theta.P_PYR_decay;
-            d_LLIN[g] = d_LLIN[g] * theta.P_PYR_decay;
+            d_LLIN[g] *= theta.P_PYR_decay;
             s_LLIN[g] = 1.0 - r_LLIN[g] - d_LLIN[g];
 
-            r_IRS[g] = r_IRS[g] * theta.P_IRS_decay;
-            d_IRS[g] = d_IRS[g] * theta.P_IRS_decay;
+            r_IRS[g] *= theta.P_IRS_decay;
+            d_IRS[g] *= theta.P_IRS_decay;
             s_IRS[g] = 1.0 - r_IRS[g] - d_IRS[g];
 
             w_VC[g] = 1.0 - theta.PSI_indoors[g] + theta.PSI_bed[g] * (1.0 - r_IRS[g])*s_LLIN[g] * s_IRS[g] + (theta.PSI_indoors[g] - theta.PSI_bed[g])*(1.0 - r_IRS[g])*s_IRS[g];

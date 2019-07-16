@@ -67,7 +67,7 @@ void Population::human_step(Params& theta)
         {
             people.erase(people.begin() + n);
 
-            N_dead = N_dead + 1;
+            N_dead += 1;
             n = n - 1;      // If we erase something, the next one moves into it's place so we don't want to step forward.
         }
         else {
@@ -79,7 +79,7 @@ void Population::human_step(Params& theta)
             {
                 people.erase(people.begin() + n);
 
-                N_dead = N_dead + 1;
+                N_dead += 1;
                 n = n - 1;       // If we erase something, the next one moves into it's place so we don't want to step forward.
             }
         }
@@ -221,17 +221,11 @@ void Population::human_step(Params& theta)
 
 void Population::summary()
 {
-    for (int k = 0; k<N_H_comp; k++)
-    {
-        yH[k] = 0.0;
-    }
+    yH.setZero();
 
-    for (int k = 0; k<10; k++)
-    {
-        prev_all[k] = 0.0;
-        prev_U5[k] = 0.0;
-        prev_U10[k] = 0.0;
-    }
+    prev_all.setZero();
+    prev_U5.setZero();
+    prev_U10.setZero();
 
 
     for (int n = 0; n<N_pop; n++)
@@ -239,12 +233,12 @@ void Population::summary()
         ////////////////////////////////////////
         // Numbers in each compartment
 
-        yH[0] = yH[0] + people[n].S;
-        yH[1] = yH[1] + people[n].I_PCR;
-        yH[2] = yH[2] + people[n].I_LM;
-        yH[3] = yH[3] + people[n].I_D;
-        yH[4] = yH[4] + people[n].T;
-        yH[5] = yH[5] + people[n].P;
+        yH[0] += people[n].S;
+        yH[1] += people[n].I_PCR;
+        yH[2] += people[n].I_LM;
+        yH[3] += people[n].I_D;
+        yH[4] += people[n].T;
+        yH[5] += people[n].P;
 
 
         //////////////////////////////////////////////
@@ -254,28 +248,28 @@ void Population::summary()
         ////////////////////////////////////////
         // Prevalence
 
-        prev_all[0] = prev_all[0] + 1;                                                                        // Numbers - denominator
-        prev_all[1] = prev_all[1] + people[n].I_PCR + people[n].I_LM +
+        prev_all[0] += 1;                                                                        // Numbers - denominator
+        prev_all[1] += people[n].I_PCR + people[n].I_LM +
                                             + people[n].I_D + people[n].T;                                      // PCR detectable infections
-        prev_all[2] = prev_all[2] + people[n].I_LM + people[n].I_D + people[n].T;                // LM detectable infections
-        prev_all[3] = prev_all[3] + people[n].I_D + people[n].T;                                      // Clinical episodes
+        prev_all[2] += people[n].I_LM + people[n].I_D + people[n].T;                // LM detectable infections
+        prev_all[3] += people[n].I_D + people[n].T;                                      // Clinical episodes
 
         if (people[n].Hyp > 0)
         {
-            prev_all[4] = prev_all[4] + 1;                     // Hypnozoite positive
+            prev_all[4] += 1;                     // Hypnozoite positive
 
-            prev_all[5] = prev_all[5] + people[n].Hyp;    // Number of batches of hypnozoites
+            prev_all[5] += people[n].Hyp;    // Number of batches of hypnozoites
         }
 
 
         ////////////////////////////////////////
         // Incidence
 
-        prev_all[6]  = prev_all[6]  + people[n].I_PCR_new;
-        prev_all[7]  = prev_all[7]  + people[n].I_LM_new;
-        prev_all[8]  = prev_all[8]  + people[n].I_D_new;
-        prev_all[9]  = prev_all[9]  + people[n].ACT_treat;
-        prev_all[10] = prev_all[10] + people[n].PQ_treat;
+        prev_all[6]  += people[n].I_PCR_new;
+        prev_all[7]  += people[n].I_LM_new;
+        prev_all[8]  += people[n].I_D_new;
+        prev_all[9]  += people[n].ACT_treat;
+        prev_all[10] += people[n].PQ_treat;
 
 
         //////////////////////////////////////////////
@@ -287,28 +281,28 @@ void Population::summary()
             ////////////////////////////////////////
             // Prevalence
 
-            prev_U5[0] = prev_U5[0] + 1;                                                                // Numbers - denominator
-            prev_U5[1] = prev_U5[1] + people[n].I_PCR + people[n].I_LM
+            prev_U5[0] += 1;                                                                // Numbers - denominator
+            prev_U5[1] += people[n].I_PCR + people[n].I_LM
                                               + people[n].I_D + people[n].T;                              // PCR detectable infections
-            prev_U5[2] = prev_U5[2] + people[n].I_LM + people[n].I_D + people[n].T;        // LM detectable infections
-            prev_U5[3] = prev_U5[3] + people[n].I_D + people[n].T;                              // Clinical episodes
+            prev_U5[2] += people[n].I_LM + people[n].I_D + people[n].T;        // LM detectable infections
+            prev_U5[3] += people[n].I_D + people[n].T;                              // Clinical episodes
 
             if (people[n].Hyp > 0)
             {
-                prev_U5[4] = prev_U5[4] + 1;                     // Hypnozoite positive
+                prev_U5[4] += 1;                     // Hypnozoite positive
 
-                prev_U5[5] = prev_U5[5] + people[n].Hyp;    // Number of batches of hypnozoites
+                prev_U5[5] += people[n].Hyp;    // Number of batches of hypnozoites
             }
 
 
             ////////////////////////////////////////
             // Incidence
 
-            prev_U5[6] = prev_U5[6] + people[n].I_PCR_new;
-            prev_U5[7] = prev_U5[7] + people[n].I_LM_new;
-            prev_U5[8] = prev_U5[8] + people[n].I_D_new;
-            prev_U5[9] = prev_U5[9] + people[n].ACT_treat;
-            prev_U5[10] = prev_U5[10] + people[n].PQ_treat;
+            prev_U5[6] += people[n].I_PCR_new;
+            prev_U5[7] += people[n].I_LM_new;
+            prev_U5[8] += people[n].I_D_new;
+            prev_U5[9] += people[n].ACT_treat;
+            prev_U5[10] += people[n].PQ_treat;
         }
 
         //////////////////////////////////////////////
@@ -320,28 +314,28 @@ void Population::summary()
             ////////////////////////////////////////
             // Prevalence
 
-            prev_U10[0] = prev_U10[0] + 1;                                                            // Numbers - denominator
-            prev_U10[1] = prev_U10[1] + people[n].I_PCR + people[n].I_LM
+            prev_U10[0] += 1;                                                            // Numbers - denominator
+            prev_U10[1] += people[n].I_PCR + people[n].I_LM
                                                 + people[n].I_D + people[n].T;                          // PCR detectable infections
-            prev_U10[2] = prev_U10[2] + people[n].I_LM + people[n].I_D + people[n].T;    // LM detectable infections
-            prev_U10[3] = prev_U10[3] + people[n].I_D + people[n].T;                          // Clinical episodes
+            prev_U10[2] += people[n].I_LM + people[n].I_D + people[n].T;    // LM detectable infections
+            prev_U10[3] += people[n].I_D + people[n].T;                          // Clinical episodes
 
             if (people[n].Hyp > 0)
             {
-                prev_U10[4] = prev_U10[4] + 1;                     // Hypnozoite positive
+                prev_U10[4] += 1;                     // Hypnozoite positive
 
-                prev_U10[5] = prev_U10[5] + people[n].Hyp;    // Number of batches of hypnozoites
+                prev_U10[5] += people[n].Hyp;    // Number of batches of hypnozoites
             }
 
 
             ////////////////////////////////////////
             // Incidence
 
-            prev_U10[6]  = prev_U10[6]  + people[n].I_PCR_new;
-            prev_U10[7]  = prev_U10[7]  + people[n].I_LM_new;
-            prev_U10[8]  = prev_U10[8]  + people[n].I_D_new;
-            prev_U10[9]  = prev_U10[9]  + people[n].ACT_treat;
-            prev_U10[10] = prev_U10[10] + people[n].PQ_treat;
+            prev_U10[6]  += people[n].I_PCR_new;
+            prev_U10[7]  += people[n].I_LM_new;
+            prev_U10[8]  += people[n].I_D_new;
+            prev_U10[9]  += people[n].ACT_treat;
+            prev_U10[10] += people[n].PQ_treat;
         }
     }
 
@@ -361,14 +355,14 @@ void Population::summary()
 
     for (int n = 0; n<N_pop; n++)
     {
-        LLIN_cov_t  = LLIN_cov_t  + people[n].LLIN;
-        IRS_cov_t   = IRS_cov_t   + people[n].IRS;
-        ACT_treat_t = ACT_treat_t + people[n].ACT_treat;
-        PQ_treat_t  = PQ_treat_t  + people[n].PQ_treat;
+        LLIN_cov_t  += people[n].LLIN;
+        IRS_cov_t   += people[n].IRS;
+        ACT_treat_t += people[n].ACT_treat;
+        PQ_treat_t  += people[n].PQ_treat;
         pregnant_t  += (people[n].pregnant ? 1 : 0);
 
-        PQ_overtreat_t    = PQ_overtreat_t    + people[n].PQ_overtreat;
-        PQ_overtreat_9m_t = PQ_overtreat_9m_t + people[n].PQ_overtreat_9m;
+        PQ_overtreat_t    += people[n].PQ_overtreat;
+        PQ_overtreat_9m_t += people[n].PQ_overtreat_9m;
     }
 
 
@@ -379,8 +373,8 @@ void Population::summary()
 
     for (int n = 0; n<N_pop; n++)
     {
-        A_par_mean = A_par_mean + people[n].A_par;
-        A_clin_mean = A_clin_mean + people[n].A_clin;
+        A_par_mean += people[n].A_par;
+        A_clin_mean += people[n].A_clin;
     }
 
     A_par_mean_t = A_par_mean / ((double)N_pop);
@@ -539,7 +533,7 @@ void Population::gauher(Params& theta)
 
     for (int j = 0; j<N_het; j++)
     {
-        w_sum = w_sum + w[j];
+        w_sum += w[j];
     }
 
     ////////////////////////////////
@@ -670,7 +664,7 @@ void Population::equi_pop_setup(Params& theta)
 
     for (int i = 0; i<N_age; i++)
     {
-        omega_age = omega_age + age_demog[i] * age_bite[i];
+        omega_age += age_demog[i] * age_bite[i];
     }
 
     omega_age = 1 / omega_age;
@@ -926,11 +920,11 @@ void Population::equi_pop_setup(Params& theta)
         {
             G_VEC[k] = lam_eq(0, j) * HH_eq[0][j][k - 1] / HH_eq[0][j][k] + theta.ff*((double)k);
         }
-        G_VEC[K_max] = G_VEC[K_max] + lam_eq(0, j);
+        G_VEC[K_max] += lam_eq(0, j);
 
         for (size_t k = 0; k < K_dim; k++)
         {
-            G_VEC[k] = G_VEC[k] / (G_VEC[k] * theta.u_par + 1.0);
+            G_VEC[k] /= (G_VEC[k] * theta.u_par + 1.0);
         }
 
 
@@ -995,11 +989,11 @@ void Population::equi_pop_setup(Params& theta)
             {
                 G_VEC[k] = lam_eq(i, j) * HH_eq[i][j][k - 1] / HH_eq[i][j][k] + theta.ff*((double)k);
             }
-            G_VEC[K_max] = G_VEC[K_max] + lam_eq(i, j);
+            G_VEC[K_max] += lam_eq(i, j);
 
             for (size_t k = 0; k < K_dim; k++)
             {
-                G_VEC[k] = G_VEC[k] / (G_VEC[k] * theta.u_par + 1.0);
+                G_VEC[k] /= (G_VEC[k] * theta.u_par + 1.0);
             }
 
 
@@ -1066,12 +1060,12 @@ void Population::equi_pop_setup(Params& theta)
             for (size_t k = 0; k < K_dim; k++)
             {
                 w_HH[k] = HH_eq[i][j][k];
-                HH_denom = HH_denom + HH_eq[i][j][k];
+                HH_denom += HH_eq[i][j][k];
             }
 
             for (size_t k = 0; k < K_dim; k++)
             {
-                w_HH[k] = w_HH[k] / HH_denom;
+                w_HH[k] /= HH_denom;
             }
 
             /////////////////////////////
@@ -1106,11 +1100,11 @@ void Population::equi_pop_setup(Params& theta)
         {
             G_VEC[k] = lam_eq(0, j) * (HH_eq[0][j][k - 1] / HH_eq[0][j][k]) + theta.ff*((double)k);
         }
-        G_VEC[K_max] = G_VEC[K_max] + lam_eq(0, j);
+        G_VEC[K_max] += lam_eq(0, j);
 
         for (size_t k = 0; k < K_dim; k++)
         {
-            G_VEC[k] = G_VEC[k] / (G_VEC[k] * theta.u_clin + 1.0);
+            G_VEC[k] /= (G_VEC[k] * theta.u_clin + 1.0);
         }
 
 
@@ -1175,11 +1169,11 @@ void Population::equi_pop_setup(Params& theta)
             {
                 G_VEC[k] = lam_eq(i, j) * HH_eq[i][j][k - 1] / HH_eq[i][j][k] + theta.ff*((double)k);
             }
-            G_VEC[K_max] = G_VEC[K_max] + lam_eq(i, j);
+            G_VEC[K_max] += lam_eq(i, j);
 
             for (size_t k = 0; k < K_dim; k++)
             {
-                G_VEC[k] = G_VEC[k] / (G_VEC[k] * theta.u_clin + 1.0);
+                G_VEC[k] /= (G_VEC[k] * theta.u_clin + 1.0);
             }
 
 
@@ -1246,12 +1240,12 @@ void Population::equi_pop_setup(Params& theta)
             for (size_t k = 0; k < K_dim; k++)
             {
                 w_HH[k] = HH_eq[i][j][k];
-                HH_denom = HH_denom + HH_eq[i][j][k];
+                HH_denom += HH_eq[i][j][k];
             }
 
             for (size_t k = 0; k < K_dim; k++)
             {
-                w_HH[k] = w_HH[k] / HH_denom;
+                w_HH[k] /= HH_denom;
             }
 
             /////////////////////////////
@@ -1276,8 +1270,8 @@ void Population::equi_pop_setup(Params& theta)
         {
             for (size_t k = 0; k < K_dim; k++)
             {
-                A_par_eq[i][j][k] = A_par_eq[i][j][k] + A_par_eq_mean(index_age_20, j) * theta.P_mat*exp(-age_mids[i] / theta.d_mat);
-                A_clin_eq[i][j][k] = A_clin_eq[i][j][k] + A_clin_eq_mean(index_age_20, j) * theta.P_mat*exp(-age_mids[i] / theta.d_mat);
+                A_par_eq[i][j][k] += A_par_eq_mean(index_age_20, j) * theta.P_mat*exp(-age_mids[i] / theta.d_mat);
+                A_clin_eq[i][j][k] += A_clin_eq_mean(index_age_20, j) * theta.P_mat*exp(-age_mids[i] / theta.d_mat);
             }
         }
     }
@@ -1377,7 +1371,7 @@ void Population::equi_pop_setup(Params& theta)
     {
     for (int c = 0; c < N_H_comp; c++)
     {
-    yH_sum = yH_sum + yH_eq[i][j][k][c];
+    yH_sum += yH_eq[i][j][k][c];
     }
     }
     }
@@ -1429,7 +1423,7 @@ void Population::equi_pop_setup(Params& theta)
 
         for (int g = 1; g < N_spec; g++)
         {
-            a_I_M_sum = a_I_M_sum + (theta.Prop_mosq[g] / theta.Prop_mosq[0])*theta.aa[g] * I_M_star[g];
+            a_I_M_sum += (theta.Prop_mosq[g] / theta.Prop_mosq[0])*theta.aa[g] * I_M_star[g];
         }
 
         theta.mm_0[0] = theta.EIR_equil / a_I_M_sum;
@@ -1448,7 +1442,7 @@ void Population::equi_pop_setup(Params& theta)
 
         for (int g = 2; g < N_spec; g++)
         {
-            a_I_M_sum = a_I_M_sum + (theta.Prop_mosq[g] / theta.Prop_mosq[1])*theta.aa[g] * I_M_star[g];
+            a_I_M_sum += (theta.Prop_mosq[g] / theta.Prop_mosq[1])*theta.aa[g] * I_M_star[g];
         }
 
         theta.mm_0[1] = theta.EIR_equil / a_I_M_sum;
@@ -1517,7 +1511,7 @@ void Population::equi_pop_setup(Params& theta)
     double EIR_out = 0.0;
     for (int g = 0; g < N_spec; g++)
     {
-        EIR_out = EIR_out + 365.0*theta.aa[g] * yM(g, 5);
+        EIR_out += 365.0*theta.aa[g] * yM(g, 5);
     }
 
     cout << "EIR = " << EIR_out << endl;
@@ -1586,7 +1580,7 @@ void Population::equi_pop_setup(Params& theta)
         {
             for (size_t k = 0; k < N_H_comp * K_dim; k++)
             {
-                yH_eq_cumsum[i][j][k] = yH_eq_cumsum[i][j][k] / yH_eq_cumsum[i][j][N_H_comp*K_dim - 1];
+                yH_eq_cumsum[i][j][k] /= yH_eq_cumsum[i][j][N_H_comp*K_dim - 1];
             }
         }
     }
@@ -1776,7 +1770,7 @@ void Population::equi_pop_setup(Params& theta)
         SIGMA_PI[g] = 0.0;
         for (int n = 0; n<N_pop; n++)
         {
-            SIGMA_PI[g] = SIGMA_PI[g] + pi_n(n, g);
+            SIGMA_PI[g] += pi_n(n, g);
         }
 
         for (int n = 0; n<N_pop; n++)
@@ -1799,8 +1793,8 @@ void Population::equi_pop_setup(Params& theta)
 
         for (int n = 0; n < N_pop; n++)
         {
-            SUM_pi_w[g] = SUM_pi_w[g] + pi_n(n, g) * people[n].w_VC[g];
-            SUM_pi_z[g] = SUM_pi_z[g] + pi_n(n, g) * people[n].z_VC[g];
+            SUM_pi_w[g] += pi_n(n, g) * people[n].w_VC[g];
+            SUM_pi_z[g] += pi_n(n, g) * people[n].z_VC[g];
         }
     }
 
@@ -1848,12 +1842,12 @@ void Population::equi_pop_setup(Params& theta)
 
     for (int n = 0; n<N_pop; n++)
     {
-        S_ind = S_ind + people[n].S;
-        I_PCR_ind = I_PCR_ind + people[n].I_PCR;
-        I_LM_ind = I_LM_ind + people[n].I_LM;
-        I_D_ind = I_D_ind + people[n].I_D;
-        T_ind = T_ind + people[n].T;
-        P_ind = P_ind + people[n].P;
+        S_ind += people[n].S;
+        I_PCR_ind += people[n].I_PCR;
+        I_LM_ind += people[n].I_LM;
+        I_D_ind += people[n].I_D;
+        T_ind += people[n].T;
+        P_ind += people[n].P;
     }
 
 
@@ -1863,12 +1857,12 @@ void Population::equi_pop_setup(Params& theta)
         {
             for (size_t k = 0; k < K_dim; k++)
             {
-                S_eqq = S_eqq + yH_eq[i][j][k][0];
-                I_PCR_eqq = I_PCR_eqq + yH_eq[i][j][k][1];
-                I_LM_eqq = I_LM_eqq + yH_eq[i][j][k][2];
-                I_D_eqq = I_D_eqq + yH_eq[i][j][k][3];
-                T_eqq = T_eqq + yH_eq[i][j][k][4];
-                P_eqq = P_eqq + yH_eq[i][j][k][5];
+                S_eqq += yH_eq[i][j][k][0];
+                I_PCR_eqq += yH_eq[i][j][k][1];
+                I_LM_eqq += yH_eq[i][j][k][2];
+                I_D_eqq += yH_eq[i][j][k][3];
+                T_eqq += yH_eq[i][j][k][4];
+                P_eqq += yH_eq[i][j][k][5];
             }
         }
     }

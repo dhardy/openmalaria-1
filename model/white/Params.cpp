@@ -381,12 +381,12 @@ SimTimes Params::read(const std::string& parameter_File, const std::string mosqu
 
     for (int g = 0; g < N_spec; g++)
     {
-        Prop_mosq_denom = Prop_mosq_denom + Prop_mosq[g];
+        Prop_mosq_denom += Prop_mosq[g];
     }
 
     for (int g = 0; g < N_spec; g++)
     {
-        Prop_mosq[g] = Prop_mosq[g] / Prop_mosq_denom;
+        Prop_mosq[g] /= Prop_mosq_denom;
     }
 
 

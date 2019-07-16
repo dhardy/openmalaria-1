@@ -85,7 +85,7 @@ Intervention::Intervention(const std::string& coverage_File)
 
         line_read.erase(0, space_find + 1);
 
-        N_cov_rounds = N_cov_rounds + 1;
+        N_cov_rounds += 1;
     }
 
     N_cov_rounds = N_cov_rounds - 2;
