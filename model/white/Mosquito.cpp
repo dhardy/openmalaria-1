@@ -169,7 +169,7 @@ void mosquito_step(double t, Params& theta, Population& POP)
     {
         for (int g = 0; g < N_spec; g++)
         {
-            theta.lam_M[g] = theta.lam_M[g] + POP.lam_n[n][g] * (theta.c_PCR*POP.people[n].I_PCR + theta.c_LM*POP.people[n].I_LM +
+            theta.lam_M[g] = theta.lam_M[g] + POP.lam_n(n, g) * (theta.c_PCR*POP.people[n].I_PCR + theta.c_LM*POP.people[n].I_LM +
                               theta.c_D*POP.people[n].I_D + theta.c_T*POP.people[n].T);
         }
     }

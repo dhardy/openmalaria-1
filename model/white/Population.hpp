@@ -26,6 +26,8 @@
 #include "white/driver.hpp"
 #include "white/Individual.hpp"
 
+using Eigen::Array;
+using Eigen::Dynamic;
 
 namespace OM { namespace white {
 
@@ -41,6 +43,9 @@ namespace OM { namespace white {
 class Population
 {
 public:
+    /// Constructor
+    Population(size_t N_pop);
+    
     //////////////////////////////////////////////////////////////////////////
     //  Class member functions
     //////////////////////////////////////////////////////////////////////////
@@ -69,12 +74,12 @@ public:
     ////////////////////////////////////////////////
     // 0.3.1. Human population
 
-    int N_pop;                      // Population size - we have balanced demography at the moment so this will be effectively constant 
+    size_t N_pop;                      // Population size - we have balanced demography at the moment so this will be effectively constant 
 
     vector<Individual> people;      // A vector of individuals
 
-    vector<vector<double>> pi_n;    // Proportion of bites on humans that person n receives
-    vector<vector<double>> lam_n;   // Biting rate of a single mosquito on person n
+    Array<double, Dynamic, N_spec> pi_n;    // Proportion of bites on humans that person n receives
+    Array<double, Dynamic, N_spec> lam_n;   // Biting rate of a single mosquito on person n
 
 
     ///////////////////////////////////////////////

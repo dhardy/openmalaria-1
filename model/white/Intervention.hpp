@@ -41,10 +41,8 @@ public:
     //  Class constructors and destructors
     //////////////////////////////////////////////////////////////////////////
     
-    Intervention() {}
-    
     /// read intervention data from input files
-    void read(const std::string& coverage_File);
+    Intervention(const std::string& coverage_File);
     
     
     ////////////////////////////////////////////////////

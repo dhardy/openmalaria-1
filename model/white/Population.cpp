@@ -25,6 +25,13 @@ using Eigen::VectorXd;
 using Eigen::MatrixXd;
 
 
+Population::Population(size_t N_pop):
+    N_pop(N_pop),
+    pi_n(N_pop, N_spec),
+    lam_n(N_pop, N_spec)
+{
+}
+
 //////////////////////////////////////////////////////////////////////////////
 //                                                                          //
 //  2.4. Update the vector of human classes                                 //
@@ -60,9 +67,6 @@ void Population::human_step(Params& theta)
         {
             people.erase(people.begin() + n);
 
-            pi_n.erase(pi_n.begin() + n);
-            lam_n.erase(lam_n.begin() + n);
-
             N_dead = N_dead + 1;
             n = n - 1;      // If we erase something, the next one moves into it's place so we don't want to step forward.
         }
@@ -74,9 +78,6 @@ void Population::human_step(Params& theta)
             if (people[n].age > theta.age_max)
             {
                 people.erase(people.begin() + n);
-
-                pi_n.erase(pi_n.begin() + n);
-                lam_n.erase(lam_n.begin() + n);
 
                 N_dead = N_dead + 1;
                 n = n - 1;       // If we erase something, the next one moves into it's place so we don't want to step forward.
@@ -128,9 +129,6 @@ void Population::human_step(Params& theta)
         // 2.4.5. Push the created individual onto the vector of people
 
         people.push_back(std::move(HH));
-
-        pi_n.push_back(vector<double>{ N_spec, 0.0 });
-        lam_n.push_back(vector<double>{ N_spec, 0.0 });
     }
 
 
@@ -157,9 +155,9 @@ void Population::human_step(Params& theta)
     {
         for (int g = 0; g < N_spec; g++)
         {
-            pi_n[n][g] = people[n].zeta_het*(1.0 - theta.rho_age*exp(-people[n].age*theta.age_0_inv));
+            pi_n(n, g) = people[n].zeta_het*(1.0 - theta.rho_age*exp(-people[n].age*theta.age_0_inv));
 
-            //pi_n[n][g] = people[n].zeta_het - (people[n].zeta_het - people[n].zeta_het)*P_age_bite;   // Slightly quicker - no calling of exponentials
+            //pi_n(n, g) = people[n].zeta_het - (people[n].zeta_het - people[n].zeta_het)*P_age_bite;   // Slightly quicker - no calling of exponentials
         }
     }
 
@@ -173,7 +171,7 @@ void Population::human_step(Params& theta)
     {
         for (int g = 0; g < N_spec; g++)
         {
-            SIGMA_PI[g] += pi_n[n][g];
+            SIGMA_PI[g] += pi_n(n, g);
         }
     }
 
@@ -186,7 +184,7 @@ void Population::human_step(Params& theta)
     {
         for (int g = 0; g < N_spec; g++)
         {
-            pi_n[n][g] = pi_n[n][g] * SIGMA_PI[g];
+            pi_n(n, g) *= SIGMA_PI[g];
         }
     }
 
@@ -203,7 +201,7 @@ void Population::human_step(Params& theta)
     {
         for (int g = 0; g < N_spec; g++)
         {
-            SUM_pi_w[g] += pi_n[n][g] * people[n].w_VC[g];
+            SUM_pi_w[g] += pi_n(n, g) * people[n].w_VC[g];
         }
     }
 
@@ -236,7 +234,7 @@ void Population::human_step(Params& theta)
     {
         for (int g = 0; g < N_spec; g++)
         {
-            lam_n[n][g] = aa_VC[g] * pi_n[n][g] * people[n].w_VC[g] / SUM_pi_w[g];
+            lam_n(n, g) = aa_VC[g] * pi_n(n, g) * people[n].w_VC[g] / SUM_pi_w[g];
         }
     }
 
@@ -257,7 +255,7 @@ void Population::human_step(Params& theta)
         double lam_bite = 0.0;
         for (int g = 0; g < N_spec; g++)
         {
-            lam_bite += lam_n[n][g] * lam_bite_base[g];
+            lam_bite += lam_n(n, g) * lam_bite_base[g];
         }
 
         people[n].state_mover(theta, lam_bite);
@@ -1812,17 +1810,11 @@ void Population::equi_pop_setup(Params& theta)
     ///////////////////////////////////////////////////////////
     // 3.7.5.1. Proportion of bites received by each person
 
-    pi_n.resize(N_pop);
-    for (int n = 0; n < N_pop; n++)
-    {
-        pi_n[n].resize(N_spec);
-    }
-
     for (int n = 0; n<N_pop; n++)
     {
         for (int g = 0; g < N_spec; g++)
         {
-            pi_n[n][g] = people[n].zeta_het*(1.0 - theta.rho_age*exp(-people[n].age*theta.age_0_inv));
+            pi_n(n, g) = people[n].zeta_het*(1.0 - theta.rho_age*exp(-people[n].age*theta.age_0_inv));
         }
     }
 
@@ -1835,12 +1827,12 @@ void Population::equi_pop_setup(Params& theta)
         SIGMA_PI[g] = 0.0;
         for (int n = 0; n<N_pop; n++)
         {
-            SIGMA_PI[g] = SIGMA_PI[g] + pi_n[n][g];
+            SIGMA_PI[g] = SIGMA_PI[g] + pi_n(n, g);
         }
 
         for (int n = 0; n<N_pop; n++)
         {
-            pi_n[n][g] = pi_n[n][g] / SIGMA_PI[g];
+            pi_n(n, g) /= SIGMA_PI[g];
         }
     }
 
@@ -1858,8 +1850,8 @@ void Population::equi_pop_setup(Params& theta)
 
         for (int n = 0; n < N_pop; n++)
         {
-            SUM_pi_w[g] = SUM_pi_w[g] + pi_n[n][g] * people[n].w_VC[g];
-            SUM_pi_z[g] = SUM_pi_z[g] + pi_n[n][g] * people[n].z_VC[g];
+            SUM_pi_w[g] = SUM_pi_w[g] + pi_n(n, g) * people[n].w_VC[g];
+            SUM_pi_z[g] = SUM_pi_z[g] + pi_n(n, g) * people[n].z_VC[g];
         }
     }
 
@@ -1887,18 +1879,12 @@ void Population::equi_pop_setup(Params& theta)
     /////////////////////////////////////////////////////////////////////////
     // 3.7.5.2. The rate at which person n is bitten by a single mosquito
 
-    lam_n.resize(N_pop);
-    for (int n = 0; n < N_pop; n++)
-    {
-        lam_n[n].resize(N_spec);
-    }
-
 
     for (int n = 0; n < N_pop; n++)
     {
         for (int g = 0; g < N_spec; g++)
         {
-            lam_n[n][g] = theta.aa[g] * pi_n[n][g];
+            lam_n(n, g) = theta.aa[g] * pi_n(n, g);
         }
     }
 

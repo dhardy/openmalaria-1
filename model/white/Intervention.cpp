@@ -36,7 +36,7 @@ double phi_inv(double pp, double mu, double sigma);
 
 /////////////////////////////////////
 // Read intervention data from input files
-void Intervention::read(const std::string& coverage_File)
+Intervention::Intervention(const std::string& coverage_File)
 {
     /////////////////////////////////////////////////////////////////////////
     //                                                                     //

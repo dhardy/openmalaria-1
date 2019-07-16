@@ -60,10 +60,10 @@ namespace OM { namespace white {
 using std::cout;
 using std::endl;
 
-Population PNG_pop;
-Params Pv_mod_par;
+unique_ptr<Population> PNG_pop;
+unique_ptr<Params> Pv_mod_par;
 SimTimes times;
-Intervention PNG_intven;
+unique_ptr<Intervention> PNG_intven;
 const char* output_File;
 
 
@@ -99,10 +99,11 @@ void init_model( const scnXml::Scenario& scenario ) {
         mosquito_File[i] = util::CommandLine::lookupResource (wv.getMosquito()[i].getPath()).c_str();
     }
     
-    times = Pv_mod_par.read(parameter_File, mosquito_File);
-    PNG_pop.N_pop = OM::Population::size();
+    Pv_mod_par = unique_ptr<Params>(new Params{});
+    times = Pv_mod_par->read(parameter_File, mosquito_File);
+    PNG_pop = unique_ptr<Population>(new Population{ OM::Population::size() });
 
-    PNG_intven.read(coverage_File);
+    PNG_intven = unique_ptr<Intervention>(new Intervention{ coverage_File });
 
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -112,12 +113,13 @@ void init_model( const scnXml::Scenario& scenario ) {
     //                                                                       // 
     ///////////////////////////////////////////////////////////////////////////
 
-    cout << "Initialise population of individuals for simulation at equilbirium EIR of " << 365.0*Pv_mod_par.EIR_equil << endl;
+    cout << "Initialise population of individuals for simulation at equilbirium EIR of "
+            << 365.0 * Pv_mod_par->EIR_equil << endl;
     cout << endl;
 
-    PNG_pop.equi_pop_setup(Pv_mod_par);
+    PNG_pop->equi_pop_setup(*Pv_mod_par);
 
-    cout << "Population of size " << PNG_pop.N_pop << " initialised!" << endl;
+    cout << "Population of size " << PNG_pop->N_pop << " initialised!" << endl;
     cout << endl;
 }
 
@@ -139,7 +141,7 @@ void run_model() {
 
     cout << "Starting model simulations......." << endl;
 
-    PNG_sim.run(Pv_mod_par, PNG_pop, PNG_intven);
+    PNG_sim.run(*Pv_mod_par, *PNG_pop, *PNG_intven);
 
     cout << "Model simulations completed....." << endl;
     cout << endl;
