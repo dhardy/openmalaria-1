@@ -44,7 +44,7 @@ using Eigen::MatrixXd;
 
 #define N_age 58            // Number of age categories for calculation of equilibrium set up (indexed by i)
 #define N_het 21            // Number of heterogeneity categories for calculation of equilibrium set up (indexed by j)
-#define K_max 30            // Maximum umber of hypnozoites (indexed by k)
+#define K_max 30            // Maximum number of hypnozoites (indexed by k)
 #define N_int 6             // Number of interventions
 
 #define N_spec_max 3        // Maximum number of mosquito species that can be modelled

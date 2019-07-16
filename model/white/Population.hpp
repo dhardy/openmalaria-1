@@ -136,25 +136,25 @@ public:
     ////////////////////////////////////////
     // Age and heterogeneity demographics 
 
-    double age_bounds[N_age + 1];
+    Array<double, N_age + 1, 1> age_bounds;
 
-    double age_demog[N_age];
-    double age_bite[N_age];
-    double age_mids[N_age];
+    Array<double, N_age, 1> age_demog;
+    Array<double, N_age, 1> age_bite;
+    Array<double, N_age, 1> age_mids;
 
-    double x_het_bounds[N_het + 1];
+    Array<double, N_het + 1, 1> x_het_bounds;
 
-    double x_het[N_het];
-    double w_het[N_het];
+    Array<double, N_het, 1> x_het;
+    Array<double, N_het, 1> w_het;
 
-    double x_age_het[N_age][N_het];
-    double w_age_het[N_age][N_het];
+    Array<double, N_age, N_het> x_age_het;
+    Array<double, N_age, N_het> w_age_het;
 
 
     ////////////////////////////////////////
     // Ageing rates 
 
-    double r_age[N_age];
+    Array<double, N_age, 1> r_age;
 
     double P_age_bite;     // Proportional change for age-dependent biting
 
