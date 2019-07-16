@@ -23,6 +23,8 @@
 
 #include "white/Params.hpp"
 
+using Eigen::Array;
+
 namespace OM { namespace white {
 
 enum class Gender { Male, Female };
@@ -205,7 +207,7 @@ public:
 
     double z_VC[N_spec];      // probability of mosquito being repelled from this individual during a single feeding attempt
     double y_VC[N_spec];      // probability of mosquito feeding on this individual during a single attempt
-    double w_VC[N_spec];      // probability of mosquito feeding and surviving on this individual during a single feeding attempt
+    Array<double, N_spec, 1> w_VC;      // probability of mosquito feeding and surviving on this individual during a single feeding attempt
 };
 
 } }

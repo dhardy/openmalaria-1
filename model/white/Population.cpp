@@ -153,89 +153,46 @@ void Population::human_step(Params& theta)
 
     for (int n = 0; n<N_pop; n++)
     {
-        for (int g = 0; g < N_spec; g++)
-        {
-            pi_n(n, g) = people[n].zeta_het*(1.0 - theta.rho_age*exp(-people[n].age*theta.age_0_inv));
-
-            //pi_n(n, g) = people[n].zeta_het - (people[n].zeta_het - people[n].zeta_het)*P_age_bite;   // Slightly quicker - no calling of exponentials
-        }
+        double pi = people[n].zeta_het*(1.0 - theta.rho_age*exp(-people[n].age*theta.age_0_inv));
+        pi_n.row(n) = pi;
     }
 
-    double SIGMA_PI[N_spec];
-    for (int g = 0; g < N_spec; g++)
-    {
-        SIGMA_PI[g] = 0.0;
-    }
-
-    for (int n = 0; n < N_pop; n++)
-    {
-        for (int g = 0; g < N_spec; g++)
-        {
-            SIGMA_PI[g] += pi_n(n, g);
-        }
-    }
-
-    for (int g = 0; g < N_spec; g++)
-    {
-        SIGMA_PI[g] = 1.0 / SIGMA_PI[g];
-    }
-
-    for (int n = 0; n < N_pop; n++)
-    {
-        for (int g = 0; g < N_spec; g++)
-        {
-            pi_n(n, g) *= SIGMA_PI[g];
-        }
-    }
+    auto sigma_pi = pi_n.colwise().sum().inverse();
+    pi_n.rowwise() *= sigma_pi;
 
 
     ///////////////////////////////////////////////////
     // 2.4.8 Update population-level vector control quantities
 
-    for (int g = 0; g < N_spec; g++)
-    {
-        SUM_pi_w[g] = 0;
-    }
-
-    for (int n = 0; n < N_pop; n++)
-    {
-        for (int g = 0; g < N_spec; g++)
-        {
-            SUM_pi_w[g] += pi_n(n, g) * people[n].w_VC[g];
-        }
+    SUM_pi_w.setZero();
+    for (int n = 0; n < N_pop; n++) {
+        SUM_pi_w += pi_n.row(n).transpose() * people[n].w_VC;
     }
 
 
-    for (int g = 0; g < N_spec; g++)
-    {
-        W_VC[g] = 1.0 - theta.Q_0[g] + theta.Q_0[g] * SUM_pi_w[g];
-        Z_VC[g] = theta.Q_0[g] * SUM_pi_z[g];
+    W_VC = 1.0 + theta.Q_0 * (SUM_pi_w - 1.0);
+    Z_VC = theta.Q_0 * SUM_pi_z;
+    
+    delta_1_VC = theta.delta_1 / (1.0 - Z_VC);
+    delta_VC = delta_1_VC + theta.delta_2;
 
-        delta_1_VC[g] = theta.delta_1 / (1.0 - Z_VC[g]);
-        delta_VC[g] = delta_1_VC[g] + theta.delta_2;
+    p_1_VC = theta.p_1 * W_VC / (1.0 - Z_VC * theta.p_1);
 
-        p_1_VC[g] = theta.p_1[g] * W_VC[g] / (1.0 - Z_VC[g] * theta.p_1[g]);
+    mu_M_VC = -log(p_1_VC * theta.p_2) / delta_VC;
 
-        mu_M_VC[g] = -log(p_1_VC[g] * theta.p_2[g]) / delta_VC[g];
+    Q_VC = 1.0 - (1.0 - theta.Q_0) / W_VC;
 
-        Q_VC[g] = 1.0 - (1.0 - theta.Q_0[g]) / W_VC[g];
+    aa_VC = Q_VC / delta_VC;
 
-        aa_VC[g] = Q_VC[g] / delta_VC[g];
-
-        exp_muM_tauM_VC[g] = exp(-mu_M_VC[g] * theta.tau_M[g]);
-        beta_VC[g] = theta.eps_max[g] * mu_M_VC[g] / (exp(delta_VC[g] * mu_M_VC[g]) - 1.0);
-    }
+    exp_muM_tauM_VC = exp(-mu_M_VC * theta.tau_M);
+    beta_VC = theta.eps_max * mu_M_VC / (exp(delta_VC * mu_M_VC) - 1.0);
 
 
     ///////////////////////////////////////////////////
     // 2.4.9. Update individual-level force of infection on humans
 
-    for (int n = 0; n < N_pop; n++)
-    {
-        for (int g = 0; g < N_spec; g++)
-        {
-            lam_n(n, g) = aa_VC[g] * pi_n(n, g) * people[n].w_VC[g] / SUM_pi_w[g];
-        }
+    for (int n = 0; n < N_pop; n++) {
+        lam_n.row(n).transpose() = aa_VC * pi_n.row(n).transpose() * people[n].w_VC / SUM_pi_w;
     }
 
 
@@ -244,20 +201,12 @@ void Population::human_step(Params& theta)
     //
     // TO DO: Can take some multiplications out of the loop.
 
-    double lam_bite_base[N_spec];
-    for (int g = 0; g < N_spec; g++)
-    {
-        lam_bite_base[g] = N_pop * theta.bb * yM[g][5];
-    }
+    Array<double, N_spec, 1> lam_bite_base = N_pop * theta.bb * yM.col(5);
 
     for (int n = 0; n<N_pop; n++)
     {
-        double lam_bite = 0.0;
-        for (int g = 0; g < N_spec; g++)
-        {
-            lam_bite += lam_n(n, g) * lam_bite_base[g];
-        }
-
+        double lam_bite = (lam_n.row(n).transpose() * lam_bite_base).sum();
+        
         people[n].state_mover(theta, lam_bite);
     }
 
@@ -1524,12 +1473,12 @@ void Population::equi_pop_setup(Params& theta)
 
     for (int g = 0; g < N_spec; g++)
     {
-        yM[g][0] = 2.0*theta.omega_larvae[g] * theta.mu_M[g] * theta.d_L_larvae*(1.0 + theta.d_pupae*theta.mu_P)*theta.mm_0[g];
-        yM[g][1] = 2.0*theta.mu_M[g] * theta.d_L_larvae*(1.0 + theta.d_pupae*theta.mu_P)*theta.mm_0[g];
-        yM[g][2] = 2.0*theta.d_pupae*theta.mu_M[g] * theta.mm_0[g];
-        yM[g][3] = theta.mm_0[g] * (theta.mu_M[g] / (theta.lam_M[g] + theta.mu_M[g]));
-        yM[g][4] = theta.mm_0[g] * (theta.lam_M[g] / (theta.lam_M[g] + theta.mu_M[g]))*(1.0 - exp(-theta.mu_M[g] * theta.tau_M[g]));
-        yM[g][5] = theta.mm_0[g] * (theta.lam_M[g] / (theta.lam_M[g] + theta.mu_M[g]))*exp(-theta.mu_M[g] * theta.tau_M[g]);
+        yM(g, 0) = 2.0*theta.omega_larvae[g] * theta.mu_M[g] * theta.d_L_larvae*(1.0 + theta.d_pupae*theta.mu_P)*theta.mm_0[g];
+        yM(g, 1) = 2.0*theta.mu_M[g] * theta.d_L_larvae*(1.0 + theta.d_pupae*theta.mu_P)*theta.mm_0[g];
+        yM(g, 2) = 2.0*theta.d_pupae*theta.mu_M[g] * theta.mm_0[g];
+        yM(g, 3) = theta.mm_0[g] * (theta.mu_M[g] / (theta.lam_M[g] + theta.mu_M[g]));
+        yM(g, 4) = theta.mm_0[g] * (theta.lam_M[g] / (theta.lam_M[g] + theta.mu_M[g]))*(1.0 - exp(-theta.mu_M[g] * theta.tau_M[g]));
+        yM(g, 5) = theta.mm_0[g] * (theta.lam_M[g] / (theta.lam_M[g] + theta.mu_M[g]))*exp(-theta.mu_M[g] * theta.tau_M[g]);
 
         theta.Karry[g] = theta.mm_0[g] * 2.0*theta.d_L_larvae*theta.mu_M[g] * (1.0 + theta.d_pupae*theta.mu_P)*theta.gamma_larvae*(theta.omega_larvae[g] + 1.0) /
             (theta.omega_larvae[g] / (theta.mu_L0*theta.d_E_larvae) - 1.0 / (theta.mu_L0*theta.d_L_larvae) - 1.0);   // Larval carry capacity
@@ -1546,16 +1495,16 @@ void Population::equi_pop_setup(Params& theta)
         if (g == 1) { cout << "An. punctulatus:  " << 100.0 * theta.Prop_mosq[1] << "%" << endl; }
         if (g == 2) { cout << "An. koliensis:  " << 100.0 * theta.Prop_mosq[2] << "%" << endl; }
 
-        cout << "EL_M  " << yM[g][0] << endl;
-        cout << "LL_M  " << yM[g][1] << endl;
-        cout << "P_M  " << yM[g][2] << endl;
-        cout << "S_M  " << yM[g][3] << endl;
-        cout << "E_M  " << yM[g][4] << endl;
-        cout << "I_M  " << yM[g][5] << endl;
+        cout << "EL_M  " << yM(g, 0) << endl;
+        cout << "LL_M  " << yM(g, 1) << endl;
+        cout << "P_M  " << yM(g, 2) << endl;
+        cout << "S_M  " << yM(g, 3) << endl;
+        cout << "E_M  " << yM(g, 4) << endl;
+        cout << "I_M  " << yM(g, 5) << endl;
 
         cout << "lam_M = " << theta.lam_M[g] << endl;
 
-        cout << "I_M = " << yM[g][5] << endl;
+        cout << "I_M = " << yM(g, 5) << endl;
 
         cout << "mm = " << theta.mm_0[g] << endl;
 
@@ -1568,7 +1517,7 @@ void Population::equi_pop_setup(Params& theta)
     double EIR_out = 0.0;
     for (int g = 0; g < N_spec; g++)
     {
-        EIR_out = EIR_out + 365.0*theta.aa[g] * yM[g][5];
+        EIR_out = EIR_out + 365.0*theta.aa[g] * yM(g, 5);
     }
 
     cout << "EIR = " << EIR_out << endl;
@@ -1587,7 +1536,7 @@ void Population::equi_pop_setup(Params& theta)
     {
         for (int k = 0; k < theta.M_track; k++)
         {
-            theta.lam_S_M_track[g].push_back(theta.lam_M[g] * yM[g][3]);
+            theta.lam_S_M_track[g].push_back(theta.lam_M[g] * yM(g, 3));
         }
     }
 

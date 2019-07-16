@@ -21,6 +21,8 @@
 #include "util/sampler.h"
 #include <vector>
 
+using Eigen::Array;
+
 namespace OM { namespace white {
 
 using std::vector;
@@ -190,14 +192,14 @@ struct Params
     /////////////////////////////////
     // Entomological paramters
 
-    double Prop_mosq[N_spec_max];      // Proportion of An. farauti
+    Array<double, N_spec_max, 1> Prop_mosq;      // Proportion of An. farauti
 
-    double mm_0[N_spec];               // number of mosquitoes per human (An. farauti)
-    double aa[N_spec];                 // mosquito biting rate (in the absence of vector control)        
-    double mu_M[N_spec];               // mosquito death rate
-    double tau_M[N_spec];              // duration of sporogony
+    Array<double, N_spec, 1> mm_0;               // number of mosquitoes per human (An. farauti)
+    Array<double, N_spec, 1> aa;                 // mosquito biting rate (in the absence of vector control)        
+    Array<double, N_spec, 1> mu_M;               // mosquito death rate
+    Array<double, N_spec, 1> tau_M;              // duration of sporogony
 
-    double lam_M[N_spec];              // Force of infection on mosquites - updated dynamically
+    Array<double, N_spec, 1> lam_M;              // Force of infection on mosquites - updated dynamically
 
     int M_track;                           // Number of steps for tracking lagged lam_M*S_M (needed for lag due to duration of sporogony)
     vector<vector<double>> lam_S_M_track;  // Lagged force of infection on moquitoes
@@ -224,11 +226,11 @@ struct Params
     double beta_larvae;             // Number of eggs laid per day per mosquito
     double gamma_larvae;            // Effect of density dependence on late instars relative to early instars
 
-    double omega_larvae[N_spec];    // Useful pre-calculated quantity
+    Array<double, N_spec, 1> omega_larvae;    // Useful pre-calculated quantity
 
-    double Karry[N_spec];           // Larval carry capacity
+    Array<double, N_spec, 1> Karry;           // Larval carry capacity
 
-    double eps_max[N_spec];         // Number of eggs per day
+    Array<double, N_spec, 1> eps_max;         // Number of eggs per day
 
 
     ////////////////////////////////
@@ -311,7 +313,7 @@ struct Params
     double d_IRS_0[N_spec];     // Probability mosquito killed by IRS (full insecticide activity)
     double s_IRS_0[N_spec];     // Probability mosquito survives feeding attempt with IRS (full insecticide activity)
 
-    double Q_0[N_spec];         // Human Blood Index (proportion of blood meals taken on humans)
+    Array<double, N_spec, 1> Q_0;         // Human Blood Index (proportion of blood meals taken on humans)
     double CHI_endo[N_spec];    // Endophily - proportion of mosquitoes resting indoors after feeding (no intervention)
     double PSI_indoors[N_spec]; // Proportion of bites taken on humans indoors
     double PSI_bed[N_spec];     // Proportion of bites taken on humans in bed
@@ -320,8 +322,8 @@ struct Params
     double delta_2;             // Time_spent_digesting_blood_meal
     double delta;               // Duration of gonotrophic cycle
 
-    double p_1[N_spec];         // Daily? death probability when foraging for a blood meal
-    double p_2[N_spec];         // Daily? death probability when digesting blood meal
+    Array<double, N_spec, 1> p_1;         // Daily? death probability when foraging for a blood meal
+    Array<double, N_spec, 1> p_2;         // Daily? death probability when digesting blood meal
 
     double rho_round_LLIN;      // Between round correlation of LLINS
     double rho_round_IRS;       // Between round correlation of IRS

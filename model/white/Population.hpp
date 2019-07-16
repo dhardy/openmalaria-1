@@ -87,23 +87,23 @@ public:
     //
     //        Depends dynamically on vector control
 
-    double yM[N_spec][N_M_comp];      // mosquito state
+    Array<double, N_spec, N_M_comp> yM;      // mosquito state
 
-    double SUM_pi_w[N_spec];
-    double SUM_pi_z[N_spec];
+    Array<double, N_spec, 1> SUM_pi_w;
+    Array<double, N_spec, 1> SUM_pi_z;
 
 
-    double delta_1_VC[N_spec];        // duration spent foraging
-    double delta_VC[N_spec];          // duration of gonotrophic cycle = duration between blood meals
+    Array<double, N_spec, 1> delta_1_VC;        // duration spent foraging
+    Array<double, N_spec, 1> delta_VC;          // duration of gonotrophic cycle = duration between blood meals
 
-    double Z_VC[N_spec];              // average probability of mosquito repeating during a single attempt
-    double W_VC[N_spec];              // average probability of successfully feeding on a human during a single attempt
-    double Q_VC[N_spec];              // human blood index
-    double p_1_VC[N_spec];            // probability of surviving foraging
-    double mu_M_VC[N_spec];           // mosquito death rate
-    double aa_VC[N_spec];             // mosquito biting rate
-    double exp_muM_tauM_VC[N_spec];   // probability of surviving sporogony
-    double beta_VC[N_spec];           // egg oviposition rate
+    Array<double, N_spec, 1> Z_VC;              // average probability of mosquito repeating during a single attempt
+    Array<double, N_spec, 1> W_VC;              // average probability of successfully feeding on a human during a single attempt
+    Array<double, N_spec, 1> Q_VC;              // human blood index
+    Array<double, N_spec, 1> p_1_VC;            // probability of surviving foraging
+    Array<double, N_spec, 1> mu_M_VC;           // mosquito death rate
+    Array<double, N_spec, 1> aa_VC;             // mosquito biting rate
+    Array<double, N_spec, 1> exp_muM_tauM_VC;   // probability of surviving sporogony
+    Array<double, N_spec, 1> beta_VC;           // egg oviposition rate
 
 
     ////////////////////////////////////////////////////////////////

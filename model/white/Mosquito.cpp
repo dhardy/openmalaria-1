@@ -149,7 +149,7 @@ void mosquito_step(double t, Params& theta, Population& POP)
     {
         for (int k = 0; k<N_M_comp; k++)
         {
-            yM[g][k] = POP.yM[g][k];
+            yM[g][k] = POP.yM(g, k);
         }
     }
 
@@ -193,7 +193,7 @@ void mosquito_step(double t, Params& theta, Population& POP)
     {
         for (int k = 0; k < N_M_comp; k++)
         {
-            POP.yM[g][k] = yM[g][k];
+            POP.yM(g, k) = yM[g][k];
         }
     }
 }

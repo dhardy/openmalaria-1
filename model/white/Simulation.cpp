@@ -137,7 +137,7 @@ void Simulation::run(Params& theta, Population& POP, Intervention& INTVEN)
         {
             for (int g = 0; g < N_spec; g++)
             {
-                yM_t[i][g][k] = POP.yM[g][k];
+                yM_t[i][g][k] = POP.yM(g, k);
             }
         }
 
@@ -162,7 +162,7 @@ void Simulation::run(Params& theta, Population& POP, Intervention& INTVEN)
         EIR_t[i] = 0.0;
         for (int g = 0; g < N_spec; g++)
         {
-            EIR_t[i] = EIR_t[i] + POP.aa_VC[g] * POP.yM[g][5];
+            EIR_t[i] = EIR_t[i] + POP.aa_VC[g] * POP.yM(g, 5);
         }
 
         A_par_mean_t[i] = POP.A_par_mean_t;
