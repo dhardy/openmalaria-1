@@ -528,7 +528,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
                     /////////////////////////////////////////////////////////////////////
                     // Exclude PQ because of pregancy
 
-                    if( (theta.MDA_PQ_preg_risk == 1) && (POP.people[n].pregnant == 1) )
+                    if( (theta.MDA_PQ_preg_risk == 1) && POP.people[n].pregnant )
                     {
                         PQ_treat = 0;
                     }
@@ -707,7 +707,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
                     /////////////////////////////////////////////////////////////////////
                     // Exclude PQ because of pregancy
 
-                    if ( (theta.MSAT_PQ_preg_risk == 1) && (POP.people[n].pregnant == 1) )
+                    if ( (theta.MSAT_PQ_preg_risk == 1) && POP.people[n].pregnant )
                     {
                         PQ_treat = 0;
                     }
@@ -893,7 +893,7 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
                     /////////////////////////////////////////////////////////////////////
                     // Exclude PQ because of pregancy
 
-                    if( (theta.SSAT_PQ_preg_risk == 1) && (POP.people[n].pregnant == 1) )
+                    if( (theta.SSAT_PQ_preg_risk == 1) && POP.people[n].pregnant )
                     {
                         PQ_treat = 0;
                     }

@@ -88,23 +88,14 @@ void Population::human_step(Params& theta)
     // 2.4.4. Births - set up to ensure balanced population.
     //        Can be adjusted to account for changing demography.
 
-    double zeta_start, het_dif_track;
-
-    vector<double> zero_push(N_spec);
-    for (int g = 0; g < N_spec; g++)
-    {
-        zero_push[g] = 0.0;
-    }
-
-
     for (int n = 0; n<N_dead; n++)
     {
-        zeta_start = util::random::log_normal(-0.5*theta.sig_het*theta.sig_het, theta.sig_het);
-
-        while (zeta_start > theta.het_max)
+        double zeta_start;
+        do
         {
             zeta_start = util::random::log_normal(-0.5*theta.sig_het*theta.sig_het, theta.sig_het);
         }
+        while (zeta_start > theta.het_max);
 
         Individual HH(theta, 0.0, zeta_start);
 
@@ -116,7 +107,7 @@ void Population::human_step(Params& theta)
         // by finding women of child-bearing age with the
         // closest level of heterogeneity
 
-        het_dif_track = 1e10;
+        double het_dif_track = 1e10;
 
         for (size_t j = 0; j<people.size(); j++)
         {
@@ -138,8 +129,8 @@ void Population::human_step(Params& theta)
 
         people.push_back(std::move(HH));
 
-        pi_n.push_back(zero_push);
-        lam_n.push_back(zero_push);
+        pi_n.push_back(vector<double>{ N_spec, 0.0 });
+        lam_n.push_back(vector<double>{ N_spec, 0.0 });
     }
 
 
@@ -182,7 +173,7 @@ void Population::human_step(Params& theta)
     {
         for (int g = 0; g < N_spec; g++)
         {
-            SIGMA_PI[g] = SIGMA_PI[g] + pi_n[n][g];
+            SIGMA_PI[g] += pi_n[n][g];
         }
     }
 
@@ -212,7 +203,7 @@ void Population::human_step(Params& theta)
     {
         for (int g = 0; g < N_spec; g++)
         {
-            SUM_pi_w[g] = SUM_pi_w[g] + pi_n[n][g] * people[n].w_VC[g];
+            SUM_pi_w[g] += pi_n[n][g] * people[n].w_VC[g];
         }
     }
 
@@ -427,7 +418,7 @@ void Population::summary()
         IRS_cov_t   = IRS_cov_t   + people[n].IRS;
         ACT_treat_t = ACT_treat_t + people[n].ACT_treat;
         PQ_treat_t  = PQ_treat_t  + people[n].PQ_treat;
-        pregnant_t  = pregnant_t  + people[n].pregnant;
+        pregnant_t  += (people[n].pregnant ? 1 : 0);
 
         PQ_overtreat_t    = PQ_overtreat_t    + people[n].PQ_overtreat;
         PQ_overtreat_9m_t = PQ_overtreat_9m_t + people[n].PQ_overtreat_9m;
@@ -792,8 +783,6 @@ void Population::equi_pop_setup(Params& theta)
     }
 
 
-    MatrixXd lam_eq(N_age, N_het);
-
     vector<vector<vector<double>>> A_par_eq;
     A_par_eq.resize(N_age);
     for (int i = 0; i < N_age; i++)
@@ -865,6 +854,7 @@ void Population::equi_pop_setup(Params& theta)
     //
     //   Only the contribution from mosquito bites
 
+    MatrixXd lam_eq(N_age, N_het);
     for (int i = 0; i<N_age; i++)
     {
         for (int j = 0; j<N_het; j++)
@@ -1466,8 +1456,12 @@ void Population::equi_pop_setup(Params& theta)
             {
                 for (size_t k = 0; k < K_dim; k++)
                 {
-                    theta.lam_M[g] = theta.lam_M[g] + x_age_het[i][j] * theta.aa[g] * (theta.c_PCR*yH_eq[i][j][k][1] + theta.c_LM*yH_eq[i][j][k][2] +
-                        theta.c_D*yH_eq[i][j][k][3] + theta.c_T*yH_eq[i][j][k][4]);
+                    theta.lam_M[g] += x_age_het[i][j] * theta.aa[g] * (
+                            theta.c_PCR*yH_eq[i][j][k][1] +
+                            theta.c_LM*yH_eq[i][j][k][2] +
+                            theta.c_D*yH_eq[i][j][k][3] +
+                            theta.c_T*yH_eq[i][j][k][4]
+                        );
                 }
             }
         }
@@ -1658,7 +1652,6 @@ void Population::equi_pop_setup(Params& theta)
     ///////////////////////////////////////////////////////////////////////////
     // 3.7.4.1. Temporary objects for setting up individuals            
 
-    double rand_comp;
     double age_start, zeta_start;
 
     int i_index, j_index;
@@ -1672,19 +1665,18 @@ void Population::equi_pop_setup(Params& theta)
         //////////////////////////////////////////////////////////////////
         // 3.7.4.2.1. Assign age and heterogeneity 
 
-        age_start = util::random::exponential(theta.age_mean);
-
-        while (age_start > theta.age_max)
+        do
         {
             age_start = util::random::exponential(theta.age_mean);
         }
+        while (age_start > theta.age_max);
 
-        zeta_start = util::random::log_normal(-0.5*theta.sig_het*theta.sig_het, theta.sig_het);
 
-        while (zeta_start > theta.het_max)
+        do
         {
             zeta_start = util::random::log_normal(-0.5*theta.sig_het*theta.sig_het, theta.sig_het);
         }
+        while (zeta_start > theta.het_max);
 
 
         //////////////////////////////////////////////////////////////////
@@ -1724,7 +1716,7 @@ void Population::equi_pop_setup(Params& theta)
         {
             if ((HH.age > 6570.0) && (HH.age < 14600.0))
             {
-                HH.preg_age = 1;
+                HH.preg_age = true;
             }
         }
 
@@ -1732,7 +1724,7 @@ void Population::equi_pop_setup(Params& theta)
         ///////////////////////////////////////////////////////////////////
         // Randomly assign a state according to equilibrium probabilities
 
-        rand_comp = util::random::uniform_01();
+        double rand_comp = util::random::uniform_01();
 
         if (rand_comp <= yH_eq_cumsum[i_index][j_index][0])
         {
@@ -1794,7 +1786,7 @@ void Population::equi_pop_setup(Params& theta)
         {
             if (util::random::bernoulli(0.05))
             {
-                HH.pregnant = 1;
+                HH.pregnant = true;
                 HH.preg_timer = 0;
             }
         }

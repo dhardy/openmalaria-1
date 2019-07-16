@@ -95,7 +95,7 @@ void NeonatalMortality::update (const Population& population) {
     int nCounter=0;	// total number
     int pCounter=0;	// number with patent infections, needed for prev in 20-25y
     
-    for(Population::ConstIter iter = population.cbegin(); iter != population.cend(); ++iter){
+    for(auto iter = population.cbegin(); iter != population.cend(); ++iter){
         // diagnosticDefault() gives patency after the last time step's
         // update, so it's appropriate to use age at the beginning of this step.
         SimTime age = iter->age(sim::ts0());

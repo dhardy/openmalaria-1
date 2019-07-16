@@ -369,7 +369,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
                     /////////////////////////////////////////////////////////////////////
                     // Exclude PQ because of pregancy
 
-                    if ((theta.PQ_treat_preg_risk == 1) && (pregnant == 1))
+                    if ((theta.PQ_treat_preg_risk == 1) && pregnant)
                     {
                         PQ_treat = 0;
                     }
@@ -626,7 +626,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
                     /////////////////////////////////////////////////////////////////////
                     // Exclude PQ because of pregancy
 
-                    if ((theta.PQ_treat_preg_risk == 1) && (pregnant == 1))
+                    if ((theta.PQ_treat_preg_risk == 1) && pregnant)
                     {
                         PQ_treat = 0;
                     }
@@ -848,7 +848,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
                     /////////////////////////////////////////////////////////////////////
                     // Exclude PQ because of pregancy
 
-                    if ((theta.PQ_treat_preg_risk == 1) && (pregnant == 1))
+                    if ((theta.PQ_treat_preg_risk == 1) && pregnant)
                     {
                         PQ_treat = 0;
                     }
@@ -1163,29 +1163,29 @@ void Individual::ager(Params& theta)
     if (gender == Gender::Female)
     {
         if ((age > 18. * 365.) && (age < 40. * 365.)) {
-            preg_age = 1;
+            preg_age = true;
         } else {
-            preg_age = 0;
+            preg_age = false;
         }
 
-        if (pregnant == 1) {
+        if (pregnant) {
             preg_timer = preg_timer + 1.0;
         }
 
-        if (pregnant == 0) {
-            if (preg_age == 1) {
+        if (!pregnant) {
+            if (preg_age) {
                 if (util::random::bernoulli(theta.P_preg)) {
-                    pregnant = 1;
+                    pregnant = true;
                     preg_timer = 0.0;
                 }
             }
         }
 
-        if (pregnant == 1)
+        if (pregnant)
         {
             if (preg_timer > 270.0)
             {
-                pregnant = 0;
+                pregnant = false;
                 preg_timer = 0.0;
             }
         }
