@@ -65,7 +65,7 @@ public:
     int N_time;
     SimTimes times;
 
-    vector<double> t_vec;
+    vector<double> t_vec;   // units: days
 
 
     //////////////////////////////////////////

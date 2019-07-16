@@ -177,15 +177,51 @@ void Simulation::write_output(const char *output_File)
     cout << "Start writing output to file......" << endl;
     cout << endl;
 
-    std::ofstream output_Stream(output_File);
+    std::ofstream out(output_File);
+    
+    // Write header
+    out << "\
+time (days)\t\
+S\tI_PCR\tI_LM\tI_D\tT\tP\t";
+    for (int g = 0; g < N_spec; g++)
+    {
+        // Write only compartments S, E and I in mosquitoes
+        for (int k = 3; k < N_M_comp; k++)
+        // Write all compartments in mosquitoes
+        // for (int k = 0; k < N_M_comp; k++)
+        {
+            out << "yM_" << g << "_" << k << "\t";
+        }
+    }
+    out << "\
+N_pop\t\
+PvPR_PCR\t\
+PvPR_LM\t\
+Pv_clin\t\
+PvHR\t\
+PvHR_batches\t\
+new_PCR\t\
+new_LM\t\
+new_D\t\
+new_T\t\
+";
+    out << "\
+EIR\t\
+LLIN_cov\t\
+IRS_cov\t\
+ACT_treat\t\
+PQ_treat\t\
+PQ_overtreat\t\
+PQ_overtreat_9m\t\
+" << endl;
 
     for (int i = (int) (1/t_step)*(times.burnin)*365; i<N_time; i++)
     {
-        output_Stream << t_vec[i] << "\t";
+        out << t_vec[i] << "\t";
 
         for (int k = 0; k<N_H_comp; k++)
         {
-            output_Stream << yH_t[i][k] << "\t";
+            out << yH_t[i][k] << "\t";
         }
 
         for (int g = 0; g < N_spec; g++)
@@ -195,45 +231,45 @@ void Simulation::write_output(const char *output_File)
             // Write all compartments in mosquitoes
             // for (int k = 0; k < N_M_comp; k++)
             {
-                output_Stream << yM_t[i][g][k] << "\t";
+                out << yM_t[i][g][k] << "\t";
             }
         }
 
         for (int k = 0; k<10; k++)
         {
-            output_Stream << prev_all[i][k] << "\t";
+            out << prev_all[i][k] << "\t";
         }
 
         // Write output for age categories U5 and U10
         /*for (int k = 0; k<10; k++)
         {
-            output_Stream << prev_U5[i][k] << "\t";
+            out << prev_U5[i][k] << "\t";
         }
 
         for (int k = 0; k<10; k++)
         {
-            output_Stream << prev_U10[i][k] << "\t";
+            out << prev_U10[i][k] << "\t";
         }*/
 
-        output_Stream << EIR_t[i] << "\t";
-        output_Stream << LLIN_cov_t[i] << "\t";
-        output_Stream << IRS_cov_t[i] << "\t";
-        output_Stream << ACT_treat_t[i] << "\t";
-        output_Stream << PQ_treat_t[i] << "\t";
+        out << EIR_t[i] << "\t";
+        out << LLIN_cov_t[i] << "\t";
+        out << IRS_cov_t[i] << "\t";
+        out << ACT_treat_t[i] << "\t";
+        out << PQ_treat_t[i] << "\t";
         // Write number of pregnant women
-        // output_Stream << pregnant_t[i] << "\t";
+        // out << pregnant_t[i] << "\t";
 
-        output_Stream << PQ_overtreat_t[i] << "\t";
-        output_Stream << PQ_overtreat_9m_t[i] << "\t";
+        out << PQ_overtreat_t[i] << "\t";
+        out << PQ_overtreat_9m_t[i] << "\t";
 
         // Write A_par_mean_t and A_clin_mean_t
-        /*output_Stream << A_par_mean_t[i] << "\t";
-        output_Stream << A_clin_mean_t[i] << "\t";*/
+        /*out << A_par_mean_t[i] << "\t";
+        out << A_clin_mean_t[i] << "\t";*/
 
-        output_Stream << endl;
+        out << endl;
     }
 
-    output_Stream.close();
+    out.close();
 
 
     cout << "Output successfully written to file......" << endl;
