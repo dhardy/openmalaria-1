@@ -377,17 +377,8 @@ SimTimes Params::read(const std::string& parameter_File, const std::string mosqu
     // Normalise relative proprotions of 
     // different mosquito species
 
-    double Prop_mosq_denom = 0.0;
-
-    for (int g = 0; g < N_spec; g++)
-    {
-        Prop_mosq_denom += Prop_mosq[g];
-    }
-
-    for (int g = 0; g < N_spec; g++)
-    {
-        Prop_mosq[g] /= Prop_mosq_denom;
-    }
+    double Prop_mosq_denom = Prop_mosq.sum();
+    Prop_mosq /= Prop_mosq_denom;
 
 
     ///////////////////////////////////////////////////////////

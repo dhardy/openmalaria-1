@@ -99,19 +99,17 @@ Individual::Individual(Params& theta, double a, double zeta) :
     ///////////////////////////////////////////////////
     // Born with no interventions
     
-    for (size_t g = 0; g < N_spec; g++) {
-        r_LLIN[g] = numeric_limits<double>::quiet_NaN();
-        d_LLIN[g] = numeric_limits<double>::quiet_NaN();
-        s_LLIN[g] = numeric_limits<double>::quiet_NaN();
-        
-        r_IRS[g] = numeric_limits<double>::quiet_NaN();
-        d_IRS[g] = numeric_limits<double>::quiet_NaN();
-        s_IRS[g] = numeric_limits<double>::quiet_NaN();
-        
-        w_VC[g] = 1.0;
-        y_VC[g] = 1.0;
-        z_VC[g] = 0.0;
-    }
+    r_LLIN = numeric_limits<double>::quiet_NaN();
+    d_LLIN = numeric_limits<double>::quiet_NaN();
+    s_LLIN = numeric_limits<double>::quiet_NaN();
+    
+    r_IRS = numeric_limits<double>::quiet_NaN();
+    d_IRS = numeric_limits<double>::quiet_NaN();
+    s_IRS = numeric_limits<double>::quiet_NaN();
+    
+    w_VC = 1.0;
+    y_VC = 1.0;
+    z_VC = 0.0;
 
 }
 
@@ -818,32 +816,26 @@ void Individual::intervention_updater(Params& theta)
     {
         LLIN_age += t_step;
 
-        for (int g = 0; g < N_spec; g++)
-        {
-            r_LLIN[g] = theta.r_LLIN_net[g] + (r_LLIN[g] - theta.r_LLIN_net[g])*theta.P_PYR_decay;
-            d_LLIN[g] *= theta.P_PYR_decay;
-            s_LLIN[g] = 1.0 - r_LLIN[g] - d_LLIN[g];
+        r_LLIN = theta.r_LLIN_net + (r_LLIN - theta.r_LLIN_net)*theta.P_PYR_decay;
+        d_LLIN *= theta.P_PYR_decay;
+        s_LLIN = 1.0 - r_LLIN - d_LLIN;
 
-            w_VC[g] = 1 - theta.PSI_bed[g] + theta.PSI_bed[g] * s_LLIN[g];
-            y_VC[g] = w_VC[g];
-            z_VC[g] = theta.PSI_bed[g] * r_LLIN[g];
-        }
+        w_VC = 1.0 - theta.PSI_bed + theta.PSI_bed * s_LLIN;
+        y_VC = w_VC;
+        z_VC = theta.PSI_bed * r_LLIN;
     }
 
     if (LLIN == 0 && IRS == 1)
     {
         IRS_age += t_step;
 
-        for (int g = 0; g < N_spec; g++)
-        {
-            r_IRS[g] *= theta.P_IRS_decay;
-            d_IRS[g] *= theta.P_IRS_decay;
-            s_IRS[g] = 1.0 - r_IRS[g] - d_IRS[g];
+        r_IRS *= theta.P_IRS_decay;
+        d_IRS *= theta.P_IRS_decay;
+        s_IRS = 1.0 - r_IRS - d_IRS;
 
-            w_VC[g] = 1 - theta.PSI_indoors[g] + theta.PSI_indoors[g] * (1.0 - r_IRS[g])*s_IRS[g];
-            y_VC[g] = 1 - theta.PSI_indoors[g] + theta.PSI_indoors[g] * (1.0 - r_IRS[g]);
-            z_VC[g] = theta.PSI_indoors[g] * r_IRS[g];
-        }
+        w_VC = 1 - theta.PSI_indoors + theta.PSI_indoors * (1.0 - r_IRS)*s_IRS;
+        y_VC = 1 - theta.PSI_indoors + theta.PSI_indoors * (1.0 - r_IRS);
+        z_VC = theta.PSI_indoors * r_IRS;
     }
 
     if (LLIN == 1 && IRS == 1)
@@ -851,31 +843,24 @@ void Individual::intervention_updater(Params& theta)
         LLIN_age += t_step;
         IRS_age += t_step;
 
-        for (int g = 0; g < N_spec; g++)
-        {
-            r_LLIN[g] = theta.r_LLIN_net[g] + (r_LLIN[g] - theta.r_LLIN_net[g])*theta.P_PYR_decay;
-            d_LLIN[g] *= theta.P_PYR_decay;
-            s_LLIN[g] = 1.0 - r_LLIN[g] - d_LLIN[g];
+        r_LLIN = theta.r_LLIN_net + (r_LLIN - theta.r_LLIN_net)*theta.P_PYR_decay;
+        d_LLIN *= theta.P_PYR_decay;
+        s_LLIN = 1.0 - r_LLIN - d_LLIN;
 
-            r_IRS[g] *= theta.P_IRS_decay;
-            d_IRS[g] *= theta.P_IRS_decay;
-            s_IRS[g] = 1.0 - r_IRS[g] - d_IRS[g];
+        r_IRS *= theta.P_IRS_decay;
+        d_IRS *= theta.P_IRS_decay;
+        s_IRS = 1.0 - r_IRS - d_IRS;
 
-            w_VC[g] = 1.0 - theta.PSI_indoors[g] + theta.PSI_bed[g] * (1.0 - r_IRS[g])*s_LLIN[g] * s_IRS[g] + (theta.PSI_indoors[g] - theta.PSI_bed[g])*(1.0 - r_IRS[g])*s_IRS[g];
-            y_VC[g] = 1.0 - theta.PSI_indoors[g] + theta.PSI_bed[g] * (1.0 - r_IRS[g])*s_LLIN[g] + (theta.PSI_indoors[g] - theta.PSI_bed[g])*(1.0 - r_IRS[g]);
-            z_VC[g] = theta.PSI_bed[g] * (1.0 - r_IRS[g])*r_LLIN[g] + theta.PSI_indoors[g] * r_IRS[g];
-        }
-
+        w_VC = 1.0 - theta.PSI_indoors + theta.PSI_bed * (1.0 - r_IRS)*s_LLIN * s_IRS + (theta.PSI_indoors - theta.PSI_bed)*(1.0 - r_IRS)*s_IRS;
+        y_VC = 1.0 - theta.PSI_indoors + theta.PSI_bed * (1.0 - r_IRS)*s_LLIN + (theta.PSI_indoors - theta.PSI_bed)*(1.0 - r_IRS);
+        z_VC = theta.PSI_bed * (1.0 - r_IRS)*r_LLIN + theta.PSI_indoors * r_IRS;
     }
 
     if (LLIN == 0 && IRS == 0)
     {
-        for (int g = 0; g < N_spec; g++)
-        {
-            w_VC[g] = 1.0;
-            y_VC[g] = 1.0;
-            z_VC[g] = 0.0;
-        }
+        w_VC = 1.0;
+        y_VC = 1.0;
+        z_VC = 0.0;
 
     }
 

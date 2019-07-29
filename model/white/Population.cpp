@@ -1047,23 +1047,20 @@ void Population::equi_pop_setup(Params& theta)
     //////////////////////////////////////////////////////////////
     // 3.7.3. Calculate equilibrium of model in mosquitoes
 
-    for (int g = 0; g < N_spec; g++)
-    {
-        theta.lam_M[g] = 0.0;
+    theta.lam_M = 0.0;
 
-        for (int i = 0; i<N_age; i++)
+    for (int i = 0; i<N_age; i++)
+    {
+        for (int j = 0; j<N_het; j++)
         {
-            for (int j = 0; j<N_het; j++)
+            for (size_t k = 0; k < K_dim; k++)
             {
-                for (size_t k = 0; k < K_dim; k++)
-                {
-                    theta.lam_M[g] += x_age_het(i, j) * theta.aa[g] * (
-                            theta.c_PCR*yH_eq(i, j)(k, 1) +
-                            theta.c_LM*yH_eq(i, j)(k, 2) +
-                            theta.c_D*yH_eq(i, j)(k, 3) +
-                            theta.c_T*yH_eq(i, j)(k, 4)
-                        );
-                }
+                theta.lam_M += x_age_het(i, j) * theta.aa * (
+                        theta.c_PCR*yH_eq(i, j)(k, 1) +
+                        theta.c_LM*yH_eq(i, j)(k, 2) +
+                        theta.c_D*yH_eq(i, j)(k, 3) +
+                        theta.c_T*yH_eq(i, j)(k, 4)
+                    );
             }
         }
     }
@@ -1407,20 +1404,9 @@ void Population::equi_pop_setup(Params& theta)
 
 
 
-    double SIGMA_PI[N_spec];
-
-    for (int g = 0; g < N_spec; g++)
-    {
-        SIGMA_PI[g] = 0.0;
-        for (int n = 0; n<N_pop; n++)
-        {
-            SIGMA_PI[g] += pi_n(n, g);
-        }
-
-        for (int n = 0; n<N_pop; n++)
-        {
-            pi_n(n, g) /= SIGMA_PI[g];
-        }
+    Array<double, N_spec, 1> SIGMA_PI = pi_n.colwise().sum();
+    for (int g = 0; g < N_spec; g++) {
+        pi_n.col(g) /= SIGMA_PI[g];
     }
 
     ///////////////////////////////////////////////////////////
@@ -1429,12 +1415,11 @@ void Population::equi_pop_setup(Params& theta)
     //////////////////////////////////////////////
     // 3.7.5.1. Vector control quantities
 
+    SUM_pi_w = 0;
+    SUM_pi_z = 0;
+    
     for (int g = 0; g < N_spec; g++)
     {
-        SUM_pi_w[g] = 0;
-        SUM_pi_z[g] = 0;
-
-
         for (int n = 0; n < N_pop; n++)
         {
             SUM_pi_w[g] += pi_n(n, g) * people[n].w_VC[g];
@@ -1443,24 +1428,21 @@ void Population::equi_pop_setup(Params& theta)
     }
 
 
-    for (int g = 0; g < N_spec; g++)
-    {
-        W_VC[g] = 1.0 - theta.Q_0[g] + theta.Q_0[g] * SUM_pi_w[g];
-        Z_VC[g] = theta.Q_0[g] * SUM_pi_z[g];
+    W_VC = 1.0 - theta.Q_0 + theta.Q_0 * SUM_pi_w;
+    Z_VC = theta.Q_0 * SUM_pi_z;
 
-        delta_1_VC[g] = theta.delta_1 / (1.0 - Z_VC[g]);
-        delta_VC[g] = delta_1_VC[g] + theta.delta_2;
+    delta_1_VC = theta.delta_1 / (1.0 - Z_VC);
+    delta_VC = delta_1_VC + theta.delta_2;
 
-        p_1_VC[g] = exp(-theta.mu_M[g] * delta_1_VC[g]);
-        mu_M_VC[g] = -log(p_1_VC[g] * theta.p_2[g]) / delta_VC[g];
+    p_1_VC = exp(-theta.mu_M * delta_1_VC);
+    mu_M_VC = -log(p_1_VC * theta.p_2) / delta_VC;
 
-        Q_VC[g] = 1.0 - (1.0 - theta.Q_0[g]) / W_VC[g];
+    Q_VC = 1.0 - (1.0 - theta.Q_0) / W_VC;
 
-        aa_VC[g] = Q_VC[g] / delta_VC[g];
+    aa_VC = Q_VC / delta_VC;
 
-        exp_muM_tauM_VC[g] = exp(-mu_M_VC[g] * theta.tau_M[g]);
-        beta_VC[g] = theta.eps_max[g] * mu_M_VC[g] / (exp(delta_VC[g] * mu_M_VC[g]) - 1.0);
-    }
+    exp_muM_tauM_VC = exp(-mu_M_VC * theta.tau_M);
+    beta_VC = theta.eps_max * mu_M_VC / (exp(delta_VC * mu_M_VC) - 1.0);
 
 
     /////////////////////////////////////////////////////////////////////////

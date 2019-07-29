@@ -194,9 +194,9 @@ public: // TODO: access control
     bool LLIN;                 // Does the person have an LLIN?
     double LLIN_age;           // How old is the LLIN
 
-    double r_LLIN[N_spec];     // repellency
-    double d_LLIN[N_spec];     // killing effect
-    double s_LLIN[N_spec];     // survival
+    Array<double, N_spec, 1> r_LLIN;     // repellency
+    Array<double, N_spec, 1> d_LLIN;     // killing effect
+    Array<double, N_spec, 1> s_LLIN;     // survival
 
 
     ///////////////////////////////
@@ -205,9 +205,9 @@ public: // TODO: access control
     bool IRS;                 // Is the person protected by IRS
     double IRS_age;           // How long ago was their house sprayed?
 
-    double r_IRS[N_spec];     // repellency
-    double d_IRS[N_spec];     // killing effect
-    double s_IRS[N_spec];     // survival
+    Array<double, N_spec, 1> r_IRS;     // repellency
+    Array<double, N_spec, 1> d_IRS;     // killing effect
+    Array<double, N_spec, 1> s_IRS;     // survival
 
 
     ///////////////////////////////
@@ -218,8 +218,8 @@ public: // TODO: access control
     ///////////////////////////////////////////////////
     // Individual-level effect of vector control
 
-    double z_VC[N_spec];      // probability of mosquito being repelled from this individual during a single feeding attempt
-    double y_VC[N_spec];      // probability of mosquito feeding on this individual during a single attempt
+    Array<double, N_spec, 1> z_VC;      // probability of mosquito being repelled from this individual during a single feeding attempt
+    Array<double, N_spec, 1> y_VC;      // probability of mosquito feeding on this individual during a single attempt
     Array<double, N_spec, 1> w_VC;      // probability of mosquito feeding and surviving on this individual during a single feeding attempt
 };
 

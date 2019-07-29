@@ -306,22 +306,22 @@ struct Params
     double PYR_half_life;       // Half-life of pyrethroid decay on LLINs
     double PYR_decay;           // Daily pyrethroid decay - pre-calculated for efficiency
 
-    double r_LLIN_0[N_spec];    // Probability mosquito repelled (with full insecticide activity)
-    double r_LLIN_net[N_spec];  // Probability mosquito repelled due to barrier effect of net (no insecticide)
-    double s_LLIN_0[N_spec];    // Probability mosquito feeds successfully
-    double d_LLIN_0[N_spec];    // Probability mosquito dies during feeding attempt
+    Array<double, N_spec, 1> r_LLIN_0;    // Probability mosquito repelled (with full insecticide activity)
+    Array<double, N_spec, 1> r_LLIN_net;  // Probability mosquito repelled due to barrier effect of net (no insecticide)
+    Array<double, N_spec, 1> s_LLIN_0;    // Probability mosquito feeds successfully
+    Array<double, N_spec, 1> d_LLIN_0;    // Probability mosquito dies during feeding attempt
 
     double IRS_half_life;       // Half-life of IRS insecticide decay
     double IRS_decay;           // Daily IRS insecticide decay - pre-calculated for efficiency
 
-    double r_IRS_0[N_spec];     // Probability mosquito repelled by IRS (full insecticide activity)
-    double d_IRS_0[N_spec];     // Probability mosquito killed by IRS (full insecticide activity)
-    double s_IRS_0[N_spec];     // Probability mosquito survives feeding attempt with IRS (full insecticide activity)
+    Array<double, N_spec, 1> r_IRS_0;     // Probability mosquito repelled by IRS (full insecticide activity)
+    Array<double, N_spec, 1> d_IRS_0;     // Probability mosquito killed by IRS (full insecticide activity)
+    Array<double, N_spec, 1> s_IRS_0;     // Probability mosquito survives feeding attempt with IRS (full insecticide activity)
 
     Array<double, N_spec, 1> Q_0;         // Human Blood Index (proportion of blood meals taken on humans)
-    double CHI_endo[N_spec];    // Endophily - proportion of mosquitoes resting indoors after feeding (no intervention)
-    double PSI_indoors[N_spec]; // Proportion of bites taken on humans indoors
-    double PSI_bed[N_spec];     // Proportion of bites taken on humans in bed
+    Array<double, N_spec, 1> CHI_endo;    // Endophily - proportion of mosquitoes resting indoors after feeding (no intervention)
+    Array<double, N_spec, 1> PSI_indoors; // Proportion of bites taken on humans indoors
+    Array<double, N_spec, 1> PSI_bed;     // Proportion of bites taken on humans in bed
 
     double delta_1;             // Time spent foraging for a blood meal
     double delta_2;             // Time_spent_digesting_blood_meal

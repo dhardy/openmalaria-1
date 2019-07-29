@@ -290,12 +290,9 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
                     POP.people[n].LLIN = 1;
                     POP.people[n].LLIN_age = 0.0;
 
-                    for (int g = 0; g < N_spec; g++)
-                    {
-                        POP.people[n].d_LLIN[g] = theta.d_LLIN_0[g];
-                        POP.people[n].r_LLIN[g] = theta.r_LLIN_0[g];
-                        POP.people[n].s_LLIN[g] = 1.0 - POP.people[n].d_LLIN[g] - POP.people[n].r_LLIN[g];
-                    }
+                    POP.people[n].d_LLIN = theta.d_LLIN_0;
+                    POP.people[n].r_LLIN = theta.r_LLIN_0;
+                    POP.people[n].s_LLIN = 1.0 - POP.people[n].d_LLIN - POP.people[n].r_LLIN;
                 }
             }
         }
@@ -321,12 +318,9 @@ void Intervention::distribute(double t, Params& theta, Population& POP)
                     POP.people[n].IRS = 1;
                     POP.people[n].IRS_age = 0.0;
 
-                    for (int g = 0; g < N_spec; g++)
-                    {
-                        POP.people[n].d_IRS[g] = theta.d_IRS_0[g];
-                        POP.people[n].r_IRS[g] = theta.r_IRS_0[g];
-                        POP.people[n].s_IRS[g] = 1.0 - POP.people[n].d_IRS[g] - POP.people[n].r_IRS[g];
-                    }
+                    POP.people[n].d_IRS = theta.d_IRS_0;
+                    POP.people[n].r_IRS = theta.r_IRS_0;
+                    POP.people[n].s_IRS = 1.0 - POP.people[n].d_IRS - POP.people[n].r_IRS;
                 }
             }
         }
