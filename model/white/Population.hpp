@@ -26,6 +26,8 @@
 #include "white/driver.hpp"
 #include "white/Individual.hpp"
 
+#define N_PREV 11
+
 using Eigen::Array;
 using Eigen::Dynamic;
 
@@ -111,9 +113,9 @@ public:
 
     Array<int, N_H_comp, 1> yH;   // Human compartmental states
 
-    Array<int, 11, 1> prev_all;   // Contains {N_pop, PvPR_PCR, PvPR_LM, Pv_clin, PvHR, PvHR_batches, new_PCR, new_LM, new_D, new_ACT, new_PQ} 
-    Array<int, 11, 1> prev_U5;    // Contains {N_pop, PvPR_PCR, PvPR_LM, Pv_clin, PvHR, PvHR_batches, new_PCR, new_LM, new_D, new_ACT, new_PQ} 
-    Array<int, 11, 1> prev_U10;   // Contains {N_pop, PvPR_PCR, PvPR_LM, Pv_clin, PvHR, PvHR_batches, new_PCR, new_LM, new_D, new_ACT, new_PQ} 
+    Array<int, N_PREV, 1> prev_all;   // Contains {N_pop, PvPR_PCR, PvPR_LM, Pv_clin, PvHR, PvHR_batches, new_PCR, new_LM, new_D, new_ACT, new_PQ} 
+    Array<int, N_PREV, 1> prev_U5;    // Contains {N_pop, PvPR_PCR, PvPR_LM, Pv_clin, PvHR, PvHR_batches, new_PCR, new_LM, new_D, new_ACT, new_PQ} 
+    Array<int, N_PREV, 1> prev_U10;   // Contains {N_pop, PvPR_PCR, PvPR_LM, Pv_clin, PvHR, PvHR_batches, new_PCR, new_LM, new_D, new_ACT, new_PQ} 
 
     double EIR_t;       // EIR
     int LLIN_cov_t;     // LLIN coverage

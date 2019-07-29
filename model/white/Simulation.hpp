@@ -72,15 +72,15 @@ private:
     //////////////////////////////////////////
     // 0.5.2. Tracking output
 
-    vector<vector<int>> yH_t;
-    vector<vector<vector<double>>> yM_t;
+    Array<int, Dynamic, N_H_comp> yH_t;
+    Array<Array<double, N_spec, N_H_comp>, Dynamic, 1> yM_t;
 
+
+    Array<int, Dynamic, N_PREV> prev_all;   // Contains {N_pop, PvPR_PCR, PvPR_LM, Pv_clin, PvHR, PvHR_batches, new_PCR, new_LM, new_D, new_T} 
+    Array<int, Dynamic, N_PREV> prev_U5;    // Contains {N_pop, PvPR_PCR, PvPR_LM, Pv_clin, PvHR, PvHR_batches, new_PCR, new_LM, new_D, new_T} 
+    Array<int, Dynamic, N_PREV> prev_U10;   // Contains {N_pop, PvPR_PCR, PvPR_LM, Pv_clin, PvHR, PvHR_batches, new_PCR, new_LM, new_D, new_T} 
 
     vector<double> EIR_t;
-
-    vector<vector<int>> prev_all;   // Contains {N_pop, PvPR_PCR, PvPR_LM, Pv_clin, PvHR, PvHR_batches, new_PCR, new_LM, new_D, new_T} 
-    vector<vector<int>> prev_U5;    // Contains {N_pop, PvPR_PCR, PvPR_LM, Pv_clin, PvHR, PvHR_batches, new_PCR, new_LM, new_D, new_T} 
-    vector<vector<int>> prev_U10;   // Contains {N_pop, PvPR_PCR, PvPR_LM, Pv_clin, PvHR, PvHR_batches, new_PCR, new_LM, new_D, new_T} 
 
 
     ////////////////////////////////////////

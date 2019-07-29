@@ -49,41 +49,12 @@ Simulation::Simulation(SimTimes times):
     /////////////////////////////////////////////////////////////////////////
     // 1.9.2. Create storage for output
 
-    yH_t.resize(N_time);
-    for (int i = 0; i<N_time; i++)
-    {
-        yH_t[i].resize(N_H_comp);
-    }
-
-
+    yH_t.resize(N_time, N_H_comp);
     yM_t.resize(N_time);
-    for (int i = 0; i<N_time; i++)
-    {
-        yM_t[i].resize(N_spec);
-        for (int g = 0; g < N_spec; g++)
-        {
-            yM_t[i][g].resize(N_M_comp);
-        }
-    }
 
-
-    prev_all.resize(N_time);
-    for (int i = 0; i<N_time; i++)
-    {
-        prev_all[i].resize(11);
-    }
-
-    prev_U5.resize(N_time);
-    for (int i = 0; i<N_time; i++)
-    {
-        prev_U5[i].resize(11);
-    }
-
-    prev_U10.resize(N_time);
-    for (int i = 0; i<N_time; i++)
-    {
-        prev_U10[i].resize(11);
-    }
+    prev_all.resize(N_time, N_PREV);
+    prev_U5.resize(N_time, N_PREV);
+    prev_U10.resize(N_time, N_PREV);
 
     EIR_t.resize(N_time);
 
@@ -130,26 +101,12 @@ void Simulation::run(Params& theta, Population& POP, Intervention& INTVEN)
         //////////////////////////////////////
         // Fill out Simulation object
 
-        for (int k = 0; k<N_H_comp; k++)
-        {
-            yH_t[i][k] = POP.yH[k];
-        }
+        yH_t.row(i) = POP.yH;
+        yM_t[i] = POP.yM;
 
-        for (int k = 0; k<N_M_comp; k++)
-        {
-            for (int g = 0; g < N_spec; g++)
-            {
-                yM_t[i][g][k] = POP.yM(g, k);
-            }
-        }
-
-        for (int k = 0; k<11; k++)
-        {
-            prev_all[i][k] = POP.prev_all[k];
-            prev_U5[i][k] = POP.prev_U5[k];
-            prev_U10[i][k] = POP.prev_U10[k];
-        }
-
+        prev_all.row(i) = POP.prev_all;
+        prev_U5.row(i) = POP.prev_U5;
+        prev_U10.row(i) = POP.prev_U10;
 
         LLIN_cov_t[i] = POP.LLIN_cov_t;
         IRS_cov_t[i] = POP.IRS_cov_t;
@@ -161,11 +118,7 @@ void Simulation::run(Params& theta, Population& POP, Intervention& INTVEN)
         PQ_overtreat_9m_t[i] = POP.PQ_overtreat_9m_t;
 
 
-        EIR_t[i] = 0.0;
-        for (int g = 0; g < N_spec; g++)
-        {
-            EIR_t[i] += POP.aa_VC[g] * POP.yM(g, 5);
-        }
+        EIR_t[i] = (POP.aa_VC * POP.yM.col(5)).sum();
 
         A_par_mean_t[i] = POP.A_par_mean_t;
         A_clin_mean_t[i] = POP.A_clin_mean_t;
@@ -223,7 +176,7 @@ PQ_overtreat_9m\t\
 
         for (int k = 0; k<N_H_comp; k++)
         {
-            out << yH_t[i][k] << "\t";
+            out << yH_t(i, k) << "\t";
         }
 
         for (int g = 0; g < N_spec; g++)
@@ -233,24 +186,24 @@ PQ_overtreat_9m\t\
             // Write all compartments in mosquitoes
             // for (int k = 0; k < N_M_comp; k++)
             {
-                out << yM_t[i][g][k] << "\t";
+                out << yM_t[i](g, k) << "\t";
             }
         }
 
         for (int k = 0; k<10; k++)
         {
-            out << prev_all[i][k] << "\t";
+            out << prev_all(i, k) << "\t";
         }
 
         // Write output for age categories U5 and U10
         /*for (int k = 0; k<10; k++)
         {
-            out << prev_U5[i][k] << "\t";
+            out << prev_U5(i, k) << "\t";
         }
 
         for (int k = 0; k<10; k++)
         {
-            out << prev_U10[i][k] << "\t";
+            out << prev_U10(i, k) << "\t";
         }*/
 
         out << EIR_t[i] << "\t";
