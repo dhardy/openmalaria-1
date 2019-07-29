@@ -112,6 +112,8 @@ void Simulation::run(Params& theta, Population& POP, Intervention& INTVEN)
 
     for (int i = 0; i<N_time; i++)
     {
+        theta.step = i;
+        
         if (t_vec[i] / 365.0 - floor(t_vec[i] / 365.0) < 0.5*t_step / 365.0)
         {
             cout << "time = " << t_vec[i] / 365.0 << "\t" << 100.0*(t_vec[i] - t_vec[0]) / (double(t_step*N_time)) << "% complete" << endl;

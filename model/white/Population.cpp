@@ -1175,15 +1175,8 @@ void Population::equi_pop_setup(Params& theta)
     //////////////////////////////////////////
     // Fill out vector of lagged lam_M*S_M
 
-    theta.lam_S_M_track.resize(N_spec);
-
-    for (int g = 0; g<N_spec; g++)
-    {
-        for (int k = 0; k < theta.M_track; k++)
-        {
-            theta.lam_S_M_track[g].push_back(theta.lam_M[g] * yM(g, 3));
-        }
-    }
+    theta.lam_S_M_track.resize(N_spec, theta.M_track);
+    theta.lam_S_M_track.colwise() = theta.lam_M * yM.col(3);
 
 
     //////////////////////////////////////////////////////////////

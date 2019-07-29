@@ -22,6 +22,7 @@
 #include <vector>
 
 using Eigen::Array;
+using Eigen::Dynamic;
 
 namespace OM { namespace white {
 
@@ -77,6 +78,10 @@ struct Params
     //////////////////////////////////////////////////////////////////////////
     //  Data
     //////////////////////////////////////////////////////////////////////////
+    
+    
+    // Simulation step, starting from 0
+    int step;
 
     
     /////////////////////////////////////
@@ -202,16 +207,16 @@ struct Params
     Array<double, N_spec, 1> lam_M;              // Force of infection on mosquites - updated dynamically
 
     int M_track;                           // Number of steps for tracking lagged lam_M*S_M (needed for lag due to duration of sporogony)
-    vector<vector<double>> lam_S_M_track;  // Lagged force of infection on moquitoes
+    Array<double, N_spec, Dynamic> lam_S_M_track;  // Lagged force of infection on moquitoes
 
 
     ////////////////////////////////
     // Seasonality paramters
 
-    double dry_seas[N_spec];        // Proportion of dry season transmission compared to mean 
-    double kappa_seas[N_spec];      // Shape parameter for seasonality
-    double t_peak_seas[N_spec];     // Offset for seasonal transmission
-    double denom_seas[N_spec];      // Denominator for seasonality
+    Array<double, N_spec, 1> dry_seas;        // Proportion of dry season transmission compared to mean 
+    Array<double, N_spec, 1> kappa_seas;      // Shape parameter for seasonality
+    Array<double, N_spec, 1> t_peak_seas;     // Offset for seasonal transmission
+    Array<double, N_spec, 1> denom_seas;      // Denominator for seasonality
 
 
     ///////////////////////////////
