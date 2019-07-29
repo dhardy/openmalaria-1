@@ -267,9 +267,9 @@ void Population::summary()
         ////////////////////////////////////////
         // Incidence
 
-        prev_all[6]  += people[n].I_PCR_new;
-        prev_all[7]  += people[n].I_LM_new;
-        prev_all[8]  += people[n].I_D_new;
+        prev_all[6]  += people[n].infected_new(Individual::I_DETECT_PCR);
+        prev_all[7]  += people[n].infected_new(Individual::I_DETECT_LM);
+        prev_all[8]  += people[n].infected_new(Individual::I_DETECT_D);
         prev_all[9]  += people[n].ACT_treat;
         prev_all[10] += people[n].PQ_treat;
 
@@ -300,9 +300,9 @@ void Population::summary()
             ////////////////////////////////////////
             // Incidence
 
-            prev_U5[6] += people[n].I_PCR_new;
-            prev_U5[7] += people[n].I_LM_new;
-            prev_U5[8] += people[n].I_D_new;
+            prev_U5[6]  += people[n].infected_new(Individual::I_DETECT_PCR);
+            prev_U5[7]  += people[n].infected_new(Individual::I_DETECT_LM);
+            prev_U5[8]  += people[n].infected_new(Individual::I_DETECT_D);
             prev_U5[9] += people[n].ACT_treat;
             prev_U5[10] += people[n].PQ_treat;
         }
@@ -333,9 +333,9 @@ void Population::summary()
             ////////////////////////////////////////
             // Incidence
 
-            prev_U10[6]  += people[n].I_PCR_new;
-            prev_U10[7]  += people[n].I_LM_new;
-            prev_U10[8]  += people[n].I_D_new;
+            prev_U10[6]  += people[n].infected_new(Individual::I_DETECT_PCR);
+            prev_U10[7]  += people[n].infected_new(Individual::I_DETECT_LM);
+            prev_U10[8]  += people[n].infected_new(Individual::I_DETECT_D);
             prev_U10[9]  += people[n].ACT_treat;
             prev_U10[10] += people[n].PQ_treat;
         }

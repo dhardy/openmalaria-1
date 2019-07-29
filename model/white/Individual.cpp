@@ -56,7 +56,8 @@ Individual::Individual(Params& theta, double a, double zeta) :
     
     S(false), I_PCR(false), I_LM(false), I_D(false), T(false), P(false),
     Hyp(0),
-    I_PCR_new(false), I_LM_new(false), I_D_new(false), ACT_treat(false), PQ_treat(false),
+    I_new(0),
+    ACT_treat(false), PQ_treat(false),
     PQ_effective(false), PQ_overtreat(false), PQ_overtreat_9m(false),
     A_par(0.0), A_clin(0.0),
     A_par_mat(0.0), A_clin_mat(0.0),
@@ -146,20 +147,99 @@ void Individual::state_mover(Params& theta, double lam_bite)
 
     // Lagged total force of infection
     double lam_H_lag = lam_bite_lag + lam_rel_lag;
+    
+    auto do_new_inf = [this, &theta](double lam_lag) {
+        if (util::random::bernoulli(lam_lag))
+        {
+            if (PQ_proph == 0)
+            {
+                Hyp += 1;
+            }
+        }
+
+        if (A_par_boost == 1)
+        {
+            A_par += 1.0;
+            A_par_timer = theta.u_par;
+            A_par_boost = 0;
+        }
+
+        if (A_clin_boost == 1)
+        {
+            A_clin += 1.0;
+            A_clin_timer = theta.u_clin;
+            A_clin_boost = 0;
+        }
+    };
 
 
     ///////////////////////////////////
     // Indicators for new events
 
-    I_PCR_new = 0;
-    I_LM_new = 0;
-    I_D_new = 0;
+    I_new = 0;
     ACT_treat = 0;
     PQ_treat = 0;
 
     PQ_effective    = 0;
     PQ_overtreat    = 0;
     PQ_overtreat_9m = 0;
+    
+    auto do_pq_admin = [this, &theta](bool is_PQ_effective) {
+        /////////////////////////////////////////////////////////////////////
+        // Is PQ administered?
+        // For efficiency, the PQ related commands are only implemented if
+        // PQ is available
+
+        if( util::random::bernoulli(theta.PQ_treat_PQavail) ) {
+            PQ_treat = 1;
+
+            /////////////////////////////////////////////////////////////////////
+            // Exclude PQ because of G6PD deficiency
+
+            if ((theta.PQ_treat_G6PD_risk == 1) && is_G6PD_deficient())
+            {
+                PQ_treat = 0;
+            }
+
+            /////////////////////////////////////////////////////////////////////
+            // Exclude PQ because of pregancy
+
+            if ((theta.PQ_treat_preg_risk == 1) && pregnant)
+            {
+                PQ_treat = 0;
+            }
+
+            /////////////////////////////////////////////////////////////////////
+            // Exclude PQ because of young age
+
+            if (age < theta.PQ_treat_low_age)
+            {
+                PQ_treat = 0;
+            }
+
+
+            /////////////////////////////////////////////////////////////////////
+            // Is PQ effective?
+
+            PQ_effective = 0;
+
+            if (util::random::bernoulli(theta.PQ_treat_PQeff))
+            {
+                PQ_effective = is_PQ_effective;
+            }
+
+            if ((theta.PQ_treat_CYP2D6_risk == 1) && has_low_cyp2d6_action())
+            {
+                PQ_effective = 0;
+            }
+
+            if ((PQ_treat == 1) && (PQ_effective == 1))
+            {
+                Hyp = 0;
+                PQ_proph = 1;
+            }
+        }
+    };
 
 
     //////////////////////////////////////////////////////////////////////
@@ -189,145 +269,42 @@ void Individual::state_mover(Params& theta, double lam_bite)
             size_t CH_move = CH_sample(CH_prob, 4);
 
             ////////////////////////////////
-            // S -> I_PCR
+            // Behaviour common to all transitions
+            
+            do_new_inf(lam_bite_lag / lam_H_lag);
+            
+            T_last_BS = 0.0;
+            
+            if (CH_move == 0) {
+                ////////////////////////////////
+                // S -> I_PCR
 
-            if (CH_move == 0)
-            {
-                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
-                {
-                    if (PQ_proph == 0)
-                    {
-                        Hyp += 1;
-                    }
-                }
-
-                if (A_par_boost == 1)
-                {
-                    A_par += 1.0;
-                    A_par_timer = theta.u_par;
-                    A_par_boost = 0;
-                }
-
-                if (A_clin_boost == 1)
-                {
-                    A_clin += 1.0;
-                    A_clin_timer = theta.u_clin;
-                    A_clin_boost = 0;
-                }
-
-                I_PCR_new = 1;
-
-                T_last_BS = 0.0;
+                I_new = I_DETECT_PCR;
 
                 S = 0;
                 I_PCR = 1;
+                
+            } else if (CH_move == 1) {
+                ////////////////////////////////
+                // S -> I_LM
 
-                return;
-            }
-
-            ////////////////////////////////
-            // S -> I_LM
-
-            if (CH_move == 1)
-            {
-                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
-                {
-                    if (PQ_proph == 0)
-                    {
-                        Hyp += 1;
-                    }
-                }
-
-                if (A_par_boost == 1)
-                {
-                    A_par += 1.0;
-                    A_par_timer = theta.u_par;
-                    A_par_boost = 0;
-                }
-
-                if (A_clin_boost == 1)
-                {
-                    A_clin += 1.0;
-                    A_clin_timer = theta.u_clin;
-                    A_clin_boost = 0;
-                }
-
-                I_LM_new = 1;
-                I_PCR_new = 1;
-
-                T_last_BS = 0.0;
+                I_new = I_DETECT_PCR | I_DETECT_LM;
 
                 S = 0;
                 I_LM = 1;
+                
+            } else if (CH_move == 2) {
+                ////////////////////////////////
+                // S -> I_D
 
-                return;
-            }
-
-            ////////////////////////////////
-            // S -> I_D
-
-            if (CH_move == 2)
-            {
-                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
-                {
-                    if (PQ_proph == 0)
-                    {
-                        Hyp += 1;
-                    }
-                }
-
-                if (A_par_boost == 1)
-                {
-                    A_par += 1.0;
-                    A_par_timer = theta.u_par;
-                    A_par_boost = 0;
-                }
-
-                if (A_clin_boost == 1)
-                {
-                    A_clin += 1.0;
-                    A_clin_timer = theta.u_clin;
-                    A_clin_boost = 0;
-                }
-
-                I_PCR_new = 1;
-                I_LM_new = 1;
-                I_D_new = 1;
-
-                T_last_BS = 0.0;
+                I_new = I_DETECT_PCR | I_DETECT_LM | I_DETECT_D;
 
                 S = 0;
                 I_D = 1;
-
-                return;
-            }
-
-            ////////////////////////////////
-            // S -> T
-
-            if (CH_move == 3)
-            {
-                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
-                {
-                    if (PQ_proph == 0)
-                    {
-                        Hyp += 1;
-                    }
-                }
-
-                if (A_par_boost == 1)
-                {
-                    A_par += 1.0;
-                    A_par_timer = theta.u_par;
-                    A_par_boost = 0;
-                }
-
-                if (A_clin_boost == 1)
-                {
-                    A_clin += 1.0;
-                    A_clin_timer = theta.u_clin;
-                    A_clin_boost = 0;
-                }
+                
+            } else if (CH_move == 3) {
+                ////////////////////////////////
+                // S -> T
 
                 /////////////////////////////////////////////////////////////////////
                 // Blood-stage drug administered
@@ -340,74 +317,13 @@ void Individual::state_mover(Params& theta, double lam_bite)
                     T = 1;
                 }
 
+                I_new = I_DETECT_PCR | I_DETECT_LM | I_DETECT_D;
 
-                I_PCR_new = 1;
-                I_LM_new = 1;
-                I_D_new = 1;
-
-                T_last_BS = 0.0;
-
-
-                /////////////////////////////////////////////////////////////////////
-                // Is PQ administered?
-                // For efficiency, the PQ related commands are only implemented if
-                // PQ is available
-
-                if( util::random::bernoulli(theta.PQ_treat_PQavail) )
-                {
-                    PQ_treat = 1;
-
-
-                    /////////////////////////////////////////////////////////////////////
-                    // Exclude PQ because of G6PD deficiency
-
-                    if ((theta.PQ_treat_G6PD_risk == 1) && is_G6PD_deficient())
-                    {
-                        PQ_treat = 0;
-                    }
-
-                    /////////////////////////////////////////////////////////////////////
-                    // Exclude PQ because of pregancy
-
-                    if ((theta.PQ_treat_preg_risk == 1) && pregnant)
-                    {
-                        PQ_treat = 0;
-                    }
-
-                    /////////////////////////////////////////////////////////////////////
-                    // Exclude PQ because of young age
-
-                    if (age < theta.PQ_treat_low_age)
-                    {
-                        PQ_treat = 0;
-                    }
-
-
-                    /////////////////////////////////////////////////////////////////////
-                    // Is PQ effective?
-
-                    PQ_effective = 0;
-
-                    if (util::random::bernoulli(theta.PQ_treat_PQeff))
-                    {
-                        PQ_effective = 0;
-                    }
-
-                    if ((theta.PQ_treat_CYP2D6_risk == 1) && has_low_cyp2d6_action())
-                    {
-                        PQ_effective = 0;
-                    }
-
-                    if ((PQ_treat == 1) && (PQ_effective == 1))
-                    {
-                        Hyp = 0;
-                        PQ_proph = 1;
-                    }
-                }
-
-
-                return;
+                // FIXME: why is PQ treatment not effective in this case? Was this a bug?
+                do_pq_admin(false);
             }
+            
+            return;
         }
     }
 
@@ -442,230 +358,74 @@ void Individual::state_mover(Params& theta, double lam_bite)
             };
             size_t CH_move = CH_sample(CH_prob, 5);
 
-            ////////////////////////////////
-            // I_PCR -> S
 
-            if (CH_move == 0)
-            {
+            if (CH_move == 0) {
+                ////////////////////////////////
+                // I_PCR -> S
+                
                 I_PCR = 0;
                 S = 1;
+                
+            } else {
+                ////////////////////////////////
+                // Behaviour common to all infected transitions
 
-                return;
-            }
+                do_new_inf(lam_bite_lag / lam_H_lag);
+                
+                
+                if (CH_move == 1) {
+                    ////////////////////////////////
+                    // I_PCR -> I_PCR
+                    // 
+                    // This is a super-infection event and we assumes boosting of immunity
+                    // 
+                    // No additional actions
+                    
+                    // FIXME: should we set I_new = I_DETECT_PCR ?
+                    
+                } else if (CH_move == 2) {
+                    ////////////////////////////////
+                    // I_PCR -> I_LM
 
-            ////////////////////////////////
-            // I_PCR -> I_PCR
-            // 
-            // This is a super-infection event and we assumes boosting of immunity
+                    I_new = I_DETECT_PCR | I_DETECT_LM;
 
-            if (CH_move == 1)
-            {
-                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
-                {
-                    if (PQ_proph == 0)
-                    {
-                        Hyp += 1;
-                    }
-                }
-
-                if (A_par_boost == 1)
-                {
-                    A_par += 1.0;
-                    A_par_timer = theta.u_par;
-                    A_par_boost = 0;
-                }
-
-                if (A_clin_boost == 1)
-                {
-                    A_clin += 1.0;
-                    A_clin_timer = theta.u_clin;
-                    A_clin_boost = 0;
-                }
-
-                return;
-            }
-
-            ////////////////////////////////
-            // I_PCR -> I_LM
-
-            if (CH_move == 2)
-            {
-                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
-                {
-                    if (PQ_proph == 0)
-                    {
-                        Hyp += 1;
-                    }
-                }
-
-                if (A_par_boost == 1)
-                {
-                    A_par += 1.0;
-                    A_par_timer = theta.u_par;
-                    A_par_boost = 0;
-                }
-
-                if (A_clin_boost == 1)
-                {
-                    A_clin += 1.0;
-                    A_clin_timer = theta.u_clin;
-                    A_clin_boost = 0;
-                }
-
-                I_PCR_new = 1;
-                I_LM_new = 1;
-
-                I_PCR = 0;
-                I_LM = 1;
-
-                return;
-            }
-
-            ////////////////////////////////
-            // I_PCR -> I_D
-
-            if (CH_move == 3)
-            {
-                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
-                {
-                    if (PQ_proph == 0)
-                    {
-                        Hyp += 1;
-                    }
-                }
-
-                if (A_par_boost == 1)
-                {
-                    A_par += 1.0;
-                    A_par_timer = theta.u_par;
-                    A_par_boost = 0;
-                }
-
-                if (A_clin_boost == 1)
-                {
-                    A_clin += 1.0;
-                    A_clin_timer = theta.u_clin;
-                    A_clin_boost = 0;
-                }
-
-                I_PCR_new = 1;
-                I_LM_new = 1;
-                I_D_new = 1;
-
-                I_PCR = 0;
-                I_D = 1;
-
-                return;
-            }
-
-
-            ////////////////////////////////
-            // I_PCR -> T
-
-            if (CH_move == 4)
-            {
-                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
-                {
-                    if (PQ_proph == 0)
-                    {
-                        Hyp += 1;
-                    }
-                }
-
-                if (A_par_boost == 1)
-                {
-                    A_par += 1.0;
-                    A_par_timer = theta.u_par;
-                    A_par_boost = 0;
-                }
-
-                if (A_clin_boost == 1)
-                {
-                    A_clin += 1.0;
-                    A_clin_timer = theta.u_clin;
-                    A_clin_boost = 0;
-                }
-
-                /////////////////////////////////////////////////////////////////////
-                // Blood-stage drug administered
-
-                ACT_treat = 1;
-
-                if (util::random::bernoulli(theta.treat_BSeff))
-                {
                     I_PCR = 0;
-                    T = 1;
+                    I_LM = 1;
+                    
+                } else if (CH_move == 3) {
+                    ////////////////////////////////
+                    // I_PCR -> I_D
+
+                    I_new = I_DETECT_PCR | I_DETECT_LM | I_DETECT_D;
+
+                    I_PCR = 0;
+                    I_D = 1;
+                    
+                } else if (CH_move == 4) {
+                    ////////////////////////////////
+                    // I_PCR -> T
+
+                    /////////////////////////////////////////////////////////////////////
+                    // Blood-stage drug administered
+
+                    ACT_treat = 1;
+
+                    if (util::random::bernoulli(theta.treat_BSeff))
+                    {
+                        I_PCR = 0;
+                        T = 1;
+                    }
+
+
+                    I_new = I_DETECT_PCR | I_DETECT_LM | I_DETECT_D;
+
+                    T_last_BS = 0.0;
+
+                    do_pq_admin(true);
                 }
-
-
-                I_PCR_new = 1;
-                I_LM_new = 1;
-                I_D_new = 1;
-
-                T_last_BS = 0.0;
-
-
-                /////////////////////////////////////////////////////////////////////
-                // Is PQ administered?
-                // For efficiency, the PQ related commands are only implemented if
-                // PQ is available
-
-                if (util::random::bernoulli(theta.PQ_treat_PQavail))
-                {
-                    PQ_treat = 1;
-
-
-                    /////////////////////////////////////////////////////////////////////
-                    // Exclude PQ because of G6PD deficiency
-
-                    if ((theta.PQ_treat_G6PD_risk == 1) && is_G6PD_deficient())
-                    {
-                        PQ_treat = 0;
-                    }
-
-                    /////////////////////////////////////////////////////////////////////
-                    // Exclude PQ because of pregancy
-
-                    if ((theta.PQ_treat_preg_risk == 1) && pregnant)
-                    {
-                        PQ_treat = 0;
-                    }
-
-                    /////////////////////////////////////////////////////////////////////
-                    // Exclude PQ because of young age
-
-                    if (age < theta.PQ_treat_low_age)
-                    {
-                        PQ_treat = 0;
-                    }
-
-
-                    /////////////////////////////////////////////////////////////////////
-                    // Is PQ effective?
-
-                    PQ_effective = 0;
-
-                    if (util::random::bernoulli(theta.PQ_treat_PQeff))
-                    {
-                        PQ_effective = 1;
-                    }
-
-                    if ((theta.PQ_treat_CYP2D6_risk == 1) && has_low_cyp2d6_action())
-                    {
-                        PQ_effective = 0;
-                    }
-
-                    if ((PQ_treat == 1) && (PQ_effective == 1))
-                    {
-                        Hyp = 0;
-                        PQ_proph = 1;
-                    }
-                }
-
-
-                return;
             }
 
+            return;
         }
     }
 
@@ -697,197 +457,64 @@ void Individual::state_mover(Params& theta, double lam_bite)
             };
             size_t CH_move = CH_sample(CH_prob, 4);
 
-            ////////////////////////////////
-            // I_LM -> I_PCR
+            if (CH_move == 0) {
+                ////////////////////////////////
+                // I_LM -> I_PCR
 
-            if (CH_move == 0)
-            {
                 I_LM = 0;
                 I_PCR = 1;
 
-                return;
-            }
+            } else {
+                ////////////////////////////////
+                // Behaviour common to all infected transitions
+
+                do_new_inf(lam_bite_lag / lam_H_lag);
 
 
-            ////////////////////////////////
-            // I_LM -> I_LM
-            //
-            // Super-infection boosts immunity
+                if (CH_move == 1) {
+                    ////////////////////////////////
+                    // I_LM -> I_LM
+                    //
+                    // Super-infection boosts immunity
+                    // 
+                    // No additional actions
 
-            if (CH_move == 1)
-            {
-                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
-                {
-                    if (PQ_proph == 0)
-                    {
-                        Hyp += 1;
-                    }
-                }
+                    // FIXME: should we set I_new = I_DETECT_LM ?
+                    
+                } else if (CH_move == 2) {
+                    ////////////////////////////////
+                    // I_LM -> I_D
 
-                if (A_par_boost == 1)
-                {
-                    A_par += 1.0;
-                    A_par_timer = theta.u_par;
-                    A_par_boost = 0;
-                }
+                    I_new = I_DETECT_PCR | I_DETECT_LM | I_DETECT_D;
 
-                if (A_clin_boost == 1)
-                {
-                    A_clin += 1.0;
-                    A_clin_timer = theta.u_clin;
-                    A_clin_boost = 0;
-                }
-
-                return;
-            }
-
-
-            ////////////////////////////////
-            // I_LM -> I_D
-
-            if (CH_move == 2)
-            {
-                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
-                {
-                    if (PQ_proph == 0)
-                    {
-                        Hyp += 1;
-                    }
-                }
-
-                if (A_par_boost == 1)
-                {
-                    A_par += 1.0;
-                    A_par_timer = theta.u_par;
-                    A_par_boost = 0;
-                }
-
-                if (A_clin_boost == 1)
-                {
-                    A_clin += 1.0;
-                    A_clin_timer = theta.u_clin;
-                    A_clin_boost = 0;
-                }
-
-                I_PCR_new = 1;
-                I_LM_new = 1;
-                I_D_new = 1;
-
-                I_LM = 0;
-                I_D = 1;
-
-                return;
-            }
-
-
-            ////////////////////////////////
-            // I_LM -> T
-
-            if (CH_move == 3)
-            {
-                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
-                {
-                    if (PQ_proph == 0)
-                    {
-                        Hyp += 1;
-                    }
-                }
-
-                if (A_par_boost == 1)
-                {
-                    A_par += 1.0;
-                    A_par_timer = theta.u_par;
-                    A_par_boost = 0;
-                }
-
-                if (A_clin_boost == 1)
-                {
-                    A_clin += 1.0;
-                    A_clin_timer = theta.u_clin;
-                    A_clin_boost = 0;
-                }
-
-                /////////////////////////////////////////////////////////////////////
-                // Blood-stage drug administered
-
-                ACT_treat = 1;
-
-                if (util::random::bernoulli(theta.treat_BSeff))
-                {
                     I_LM = 0;
-                    T = 1;
+                    I_D = 1;
+
+                } else if (CH_move == 3) {
+                    ////////////////////////////////
+                    // I_LM -> T
+
+                    /////////////////////////////////////////////////////////////////////
+                    // Blood-stage drug administered
+
+                    ACT_treat = 1;
+
+                    if (util::random::bernoulli(theta.treat_BSeff))
+                    {
+                        I_LM = 0;
+                        T = 1;
+                    }
+
+
+                    I_new = I_DETECT_PCR | I_DETECT_LM | I_DETECT_D;
+
+                    T_last_BS = 0.0;
+
+                    do_pq_admin(true);
                 }
-
-
-
-                I_PCR_new = 1;
-                I_LM_new = 1;
-                I_D_new = 1;
-
-                T_last_BS = 0.0;
-
-
-                /////////////////////////////////////////////////////////////////////
-                // Is PQ administered?
-                // For efficiency, the PQ related commands are only implemented if
-                // PQ is available
-
-                if (util::random::bernoulli(theta.PQ_treat_PQavail))
-                {
-                    PQ_treat = 1;
-
-
-                    /////////////////////////////////////////////////////////////////////
-                    // Exclude PQ because of G6PD deficiency
-
-                    if ((theta.PQ_treat_G6PD_risk == 1) && is_G6PD_deficient())
-                    {
-                        PQ_treat = 0;
-                    }
-
-                    /////////////////////////////////////////////////////////////////////
-                    // Exclude PQ because of pregancy
-
-                    if ((theta.PQ_treat_preg_risk == 1) && pregnant)
-                    {
-                        PQ_treat = 0;
-                    }
-
-                    /////////////////////////////////////////////////////////////////////
-                    // Exclude PQ because of young age
-
-                    if (age < theta.PQ_treat_low_age)
-                    {
-                        PQ_treat = 0;
-                    }
-
-
-                    /////////////////////////////////////////////////////////////////////
-                    // Is PQ effective?
-
-                    PQ_effective = 0;
-
-                    if (util::random::bernoulli(theta.PQ_treat_PQeff))
-                    {
-                        PQ_effective = 1;
-                    }
-
-                    if ((theta.PQ_treat_CYP2D6_risk == 1) && has_low_cyp2d6_action())
-                    {
-                        PQ_effective = 0;
-                    }
-
-                    if ((PQ_treat == 1) && (PQ_effective == 1))
-                    {
-                        Hyp = 0;
-                        PQ_proph = 1;
-                    }
-                }
-
-
-                return;
             }
 
+            return;
         }
     }
 
@@ -912,48 +539,22 @@ void Individual::state_mover(Params& theta, double lam_bite)
             };
             size_t CH_move = CH_sample(CH_prob, 2);
 
-            ////////////////////////////////
-            // I_D -> I_LM
+            if (CH_move == 0) {
+                ////////////////////////////////
+                // I_D -> I_LM
 
-            if (CH_move == 0)
-            {
                 I_D = 0;
                 I_LM = 1;
 
-                return;
+            } else if (CH_move == 1) {
+                ////////////////////////////////
+                // I_D -> I_D
+
+                do_new_inf(lam_bite_lag / lam_H_lag);
+
             }
 
-
-            ////////////////////////////////
-            // I_D -> I_D
-
-            if (CH_move == 1)
-            {
-                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
-                {
-                    if (PQ_proph == 0)
-                    {
-                        Hyp += 1;
-                    }
-                }
-
-                if (A_par_boost == 1)
-                {
-                    A_par += 1.0;
-                    A_par_timer = theta.u_par;
-                    A_par_boost = 0;
-                }
-
-                if (A_clin_boost == 1)
-                {
-                    A_clin += 1.0;
-                    A_clin_timer = theta.u_clin;
-                    A_clin_boost = 0;
-                }
-
-                return;
-            }
-
+            return;
         }
     }
 
@@ -978,52 +579,25 @@ void Individual::state_mover(Params& theta, double lam_bite)
             };
             size_t CH_move = CH_sample(CH_prob, 2);
 
-            ////////////////////////////////
-            // T -> P
+            if (CH_move == 0) {
+                ////////////////////////////////
+                // T -> P
 
-            if (CH_move == 0)
-            {
                 T = 0;
                 P = 1;
 
-                return;
+            } else if (CH_move == 1) {
+                ////////////////////////////////
+                // T -> T
+                //
+                // Note that we don't allow immune boosting but we do
+                // allow for the accumulation of new hypnozoites
+
+                do_new_inf(lam_bite_lag / lam_H_lag);
+
             }
 
-
-            ////////////////////////////////
-            // T -> T
-            //
-            // Note that we don't allow immune boosting but we do
-            // allow for the accumulation of new hypnozoites
-
-
-            if (CH_move == 1)
-            {
-                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
-                {
-                    if (PQ_proph == 0)
-                    {
-                        Hyp += 1;
-                    }
-                }
-
-                if (A_par_boost == 1)
-                {
-                    A_par += 1.0;
-                    A_par_timer = theta.u_par;
-                    A_par_boost = 0;
-                }
-
-                if (A_clin_boost == 1)
-                {
-                    A_clin += 1.0;
-                    A_clin_timer = theta.u_clin;
-                    A_clin_boost = 0;
-                }
-
-                return;
-            }
-
+            return;
         }
     }
 
@@ -1050,55 +624,24 @@ void Individual::state_mover(Params& theta, double lam_bite)
             };
             size_t CH_move = CH_sample(CH_prob, 2);
 
-            ////////////////////////////////
-            // P -> S
+            if (CH_move == 0) {
+                ////////////////////////////////
+                // P -> S
 
-            if (CH_move == 0)
-            {
                 P = 0;
                 S = 1;
 
-                return;
+            } else if (CH_move == 1) {
+                ////////////////////////////////
+                // P -> P
+                //
+                // Note that we don't allow immune boosting but we do
+                // allow for the accumulation of new hypnozoites
+
+                do_new_inf(lam_bite_lag / lam_H_lag);
             }
-
-
-            ////////////////////////////////
-            // P -> P
-            //
-            // Note that we don't allow immune boosting but we do
-            // allow for the accumulation of new hypnozoites
-
-
-            if (CH_move == 1)
-            {
-                if (util::random::bernoulli(lam_bite_lag / lam_H_lag))
-                {
-                    if (PQ_proph == 0)
-                    {
-                        Hyp += 1;
-                    }
-                }
-
-                if (A_par_boost == 1)
-                {
-                    A_par += 1.0;
-                    A_par_timer = theta.u_par;
-                    A_par_boost = 0;
-                }
-
-                if (A_clin_boost == 1)
-                {
-                    A_clin += 1.0;
-                    A_clin_timer = theta.u_clin;
-                    A_clin_boost = 0;
-                }
-
-                return;
-            }
-
         }
     }
-
 }
 
 

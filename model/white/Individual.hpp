@@ -80,7 +80,19 @@ public:
         return CYP2D6_low;
     }
 
+    static const uint32_t I_DETECT_PCR = 1 << 0;    // detectable by PCR
+    static const uint32_t I_DETECT_LM  = 1 << 1;    // detectable by Microscopy
+    static const uint32_t I_DETECT_D   = 1 << 2;    // detectable by Disease
+    
+    /// Query whether individual is newly infected.
+    /// 
+    /// @param detection One or more of the I_DETECT_* bit-flags
+    inline bool infected_new(uint32_t detection) const {
+        return I_new & detection;
+    }
 
+private:
+public: // TODO: access control
     //////////////////////////////////////////////////////////////////////////
     //  Data
     //////////////////////////////////////////////////////////////////////////
@@ -130,9 +142,10 @@ public:
     ////////////////////////////////////////////////////
     //  0.2.6. Indicators for new events
 
-    bool I_PCR_new;    // New PCR-detectable infection (I_LM, I_D & T included here)
-    bool I_LM_new;     // New LM-detectable infection (I_D & T included here)
-    bool I_D_new;      // New clinical episode (treated or untreated)  
+private:
+    uint32_t I_new;  // indicators for new infections (see I_DIAG_* flags)
+    
+public: // TODO: access control
     bool ACT_treat;    // 
     bool PQ_treat;     // 
 
