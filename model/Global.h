@@ -39,6 +39,10 @@
 // extra brackets are necessary since isnan etc. may be defined as macros!
 // explicit namespace usage avoids confusion with std versions available sometimes
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 // Checkpointing and time-step operations are used _everywhere_:
 #include "sim.h"    // includes util/checkpoint.h and util/mod.h
 

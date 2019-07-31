@@ -33,8 +33,6 @@ namespace OM { namespace white {
 //                                                                          //
 //  2.1. Derivatives of mosquito ODE model                                  //
 //                                                                          //
-//  0.01721421 = 2*pi/365                                                   //
-//                                                                          //
 //////////////////////////////////////////////////////////////////////////////
 
 void mosq_derivs(const double t,
@@ -47,7 +45,7 @@ void mosq_derivs(const double t,
     Karry_seas_inv = 1.0
         / (theta.Karry
             * (theta.dry_seas + (1.0 - theta.dry_seas)
-                * pow(0.5 + 0.5 * cos(0.01721421 * (t - theta.t_peak_seas)), theta.kappa_seas)
+                * pow(0.5 + 0.5 * cos((2.0 * M_PI / 365.0) * (t - theta.t_peak_seas)), theta.kappa_seas)
                 / theta.denom_seas));
 
     //Karry_seas_inv = 1.0 / theta.Karry;

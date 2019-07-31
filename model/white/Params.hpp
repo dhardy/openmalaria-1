@@ -18,6 +18,7 @@
 #ifndef PVIVAX_MODEL_PARAMS
 #define PVIVAX_MODEL_PARAMS
 
+#include "Global.h"
 #include "util/sampler.h"
 #include <vector>
 
