@@ -11,6 +11,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "white/Simulation.hpp"
+#include "util/errors.h"
 
 #include <iostream>
 #include <fstream>
@@ -28,23 +29,16 @@ using std::endl;
 ////////////////////////////////////////////////////////////
 
 // Defined in Mosquito.cpp
-void mosquito_step(double t, Params& theta, Population& POP);
+void mosquito_step(Params& theta, Population& POP);
 
 
-Simulation::Simulation(SimTimes times):
-    times(times)
+Simulation::Simulation(SimTimes times)
 {
-    /////////////////////////////////////////////////////////////////////////
-    // 1.9.1. Vector of simulation times
-
-    // Number of time steps for simulation:
-    N_time = (1 / t_step)*(times.burnin + times.end - times.start) * 365;
-
-    for (int i = 0; i<N_time; i++)
-    {
-        t_vec.push_back((double)(times.start * 365 - times.burnin * 365 + i*t_step));
-    }
-
+    sim::s_start = SimDate::origin() + times.start;
+    sim::s_end = SimDate::origin() + times.end;
+    N_time = (times.burnin + times.end - times.start).inSteps();
+    m_burnin = times.burnin;
+    
 
     /////////////////////////////////////////////////////////////////////////
     // 1.9.2. Create storage for output
@@ -80,21 +74,29 @@ Simulation::Simulation(SimTimes times):
 
 void Simulation::run(Params& theta, Population& POP, Intervention& INTVEN)
 {
+    sim::s_t0 = SimTime::zero();
+    sim::s_t1 = SimTime::never();
+    sim::s_interv = SimTime::zero() - m_burnin;
 
     for (int i = 0; i<N_time; i++)
     {
-        theta.step = i;
-        
-        if (t_vec[i] / 365.0 - floor(t_vec[i] / 365.0) < 0.5*t_step / 365.0)
-        {
-            cout << "time = " << t_vec[i] / 365.0 << "\t" << 100.0*(t_vec[i] - t_vec[0]) / (double(t_step*N_time)) << "% complete" << endl;
+        if (sim::now().inDays() % 365 == 0) {
+            cout
+                << sim::intervDate()
+                << "\t"
+                << 100.0*i / (double(N_time))
+                << "% complete"
+                << endl;
         }
-
+        
         POP.human_step(theta);
 
-        mosquito_step(t_vec[i], theta, POP);
+        mosquito_step(theta, POP);
+        
+        INTVEN.distribute(theta, POP);
 
-        INTVEN.distribute(t_vec[i], theta, POP);
+        sim::s_t0 += SimTime::oneTS();
+        sim::s_interv += SimTime::oneTS();
 
         POP.summary();
 
@@ -170,9 +172,12 @@ PQ_overtreat\t\
 PQ_overtreat_9m\t\
 " << endl;
 
-    for (int i = (int) (1/t_step)*(times.burnin)*365; i<N_time; i++)
+    SimTime time_offset = sim::startDate() - SimDate::origin() - m_burnin;
+    
+    for (int i = m_burnin.inSteps(); i<N_time; i++)
     {
-        out << t_vec[i] << "\t";
+        double t = (time_offset + SimTime::oneTS() * i).inDays();
+        out << t << "\t";
 
         for (int k = 0; k<N_H_comp; k++)
         {

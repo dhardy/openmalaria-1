@@ -122,7 +122,7 @@ void mosq_rk4(const double t, const double t_step_mosq,
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-void mosquito_step(double t, Params& theta, Population& POP)
+void mosquito_step(Params& theta, Population& POP)
 {
     //////////////////////////////////
     // Force of infection on mosquitoes
@@ -142,11 +142,12 @@ void mosquito_step(double t, Params& theta, Population& POP)
     //////////////////////////////////////
     // Carry out the mosq_steps
     
+    double t = (sim::intervDate() - SimDate::origin()).inDays();
     double t_step_mosq = (double(t_step)) / (double(mosq_steps));
 
     for (size_t j = 0; j<mosq_steps; j++)
     {
-        size_t step = theta.step * mosq_steps + j;
+        size_t step = sim::ts0().inSteps() * mosq_steps + j;
         size_t track_index = step % theta.lam_S_M_track.cols();
         
         mosq_rk4(t, t_step_mosq, POP.yM, track_index, theta, POP);

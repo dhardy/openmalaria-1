@@ -55,7 +55,9 @@ const double CONST_LOG_2 = 0.6931471805599453094172321214581766L;
 
 
 struct SimTimes {
-    double start, end, burnin;
+    SimTime start;  // simulation start date
+    SimTime end;    // simulation end date
+    SimTime burnin; // length of burn-in phase
 };
 
 
@@ -78,11 +80,6 @@ struct Params
     //////////////////////////////////////////////////////////////////////////
     //  Data
     //////////////////////////////////////////////////////////////////////////
-    
-    
-    // Simulation step, starting from 0
-    int step;
-
     
     /////////////////////////////////////
     // Equilibrium EIR (no seasonality)

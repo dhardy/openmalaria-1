@@ -41,6 +41,7 @@ SimTimes Params::read(const std::string& parameter_File, const std::string mosqu
     cout << endl;
 
     std::string discard;
+    double d;
     
     std::ifstream parameter_Stream(parameter_File);
 
@@ -61,9 +62,12 @@ SimTimes Params::read(const std::string& parameter_File, const std::string mosqu
     }
 
     SimTimes times;
-    parameter_Stream >> discard >> times.start >> discard;                  // Start time for simulation
-    parameter_Stream >> discard >> times.end >> discard;                    // End time for simulation
-    parameter_Stream >> discard >> times.burnin >> discard;                 // End time for simulation
+    parameter_Stream >> discard >> d >> discard;
+    times.start = SimTime::fromYearsN(d);
+    parameter_Stream >> discard >> d >> discard;
+    times.end = SimTime::fromYearsN(d);
+    parameter_Stream >> discard >> d >> discard;
+    times.burnin = SimTime::fromYearsN(d);
 
 
     /////////////////////////////////

@@ -260,8 +260,10 @@ Intervention::Intervention(const std::string& coverage_File)
 //////////////////////////////////////////////////////////////////////////////
 
 
-void Intervention::distribute(double t, Params& theta, Population& POP)
+void Intervention::distribute(Params& theta, Population& POP)
 {
+    double t = (sim::intervDate() - SimDate::origin()).inDays();
+    
     double QQ;
 
     bool BS_effective;

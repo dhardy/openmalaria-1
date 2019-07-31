@@ -37,6 +37,9 @@ namespace scnXml {
 }
 
 namespace OM {
+namespace white {
+    class Simulation;
+}
 
 class SimTime;
 
@@ -432,6 +435,7 @@ private:
     static SimTime s_interv;
     
     friend class Simulator;
+    friend class white::Simulation;
     friend class ::UnittestUtil;
 };
 

@@ -62,7 +62,7 @@ public:
     
     /////////////////////////////////////
     // Distribute interventions
-    void distribute(double t, Params& theta, Population& POP);
+    void distribute(Params& theta, Population& POP);
     
 
 private:

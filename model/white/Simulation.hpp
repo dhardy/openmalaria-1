@@ -61,12 +61,10 @@ private:
 
     
     //////////////////////////////////////////
-    // 0.5.1. Vector of simulation times
+    // 0.5.1. Simulation times
 
     int N_time;
-    SimTimes times;
-
-    vector<double> t_vec;   // units: days
+    SimTime m_burnin;
 
 
     //////////////////////////////////////////
