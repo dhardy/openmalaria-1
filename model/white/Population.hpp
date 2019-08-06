@@ -59,6 +59,11 @@ public:
     ////////////////////////////////////////////////////
     // Summarise population outputs
     void summary();
+    
+    /// Get access to people
+    inline vector<Individual>& people() {
+        return m_people;
+    }
 
 
 private:
@@ -68,7 +73,6 @@ private:
 
     void gauher(Params& theta);
 
-public:
     //////////////////////////////////////////////////////////////////////////
     //  Data
     //////////////////////////////////////////////////////////////////////////
@@ -80,6 +84,7 @@ public:
 
     vector<Individual> m_people;        // A vector of individuals
 
+public:
     Array<double, N_spec, Dynamic> pi_n;    // Proportion of bites on humans that person n receives
     Array<double, N_spec, Dynamic> lam_n;   // Biting rate of a single mosquito on person n
 

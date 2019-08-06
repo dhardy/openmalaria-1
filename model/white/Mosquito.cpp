@@ -128,7 +128,7 @@ void mosquito_step(Params& theta, Population& POP)
     theta.lam_M.setZero();
 
     size_t n = 0;
-    for (const Individual& person: POP.m_people) {
+    for (const Individual& person: POP.people()) {
         theta.lam_M += POP.lam_n.col(n) * (
                   theta.c_PCR * person.I_PCR
                 + theta.c_LM * person.I_LM

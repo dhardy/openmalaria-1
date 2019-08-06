@@ -291,7 +291,7 @@ void Intervention::distribute(Params& theta, Population& POP)
 
             QQ = phi_inv(LLIN_cover[m], 0.0, sqrt(1.0 + theta.sig_round_LLIN*theta.sig_round_LLIN));
 
-            for (Individual& person: POP.m_people) {
+            for (Individual& person: POP.people()) {
                 if (util::random::normal(person.zz_int[0], theta.sig_round_LLIN) < QQ)
                 {
                     person.LLIN = 1;
@@ -316,7 +316,7 @@ void Intervention::distribute(Params& theta, Population& POP)
 
             QQ = phi_inv(IRS_cover[m], 0.0, sqrt(1.0 + theta.sig_round_IRS*theta.sig_round_IRS));
 
-            for (Individual& person: POP.m_people) {
+            for (Individual& person: POP.people()) {
                 if (util::random::normal(person.zz_int[1], theta.sig_round_IRS) < QQ)
                 {
                     person.IRS = 1;
@@ -435,7 +435,7 @@ void Intervention::distribute(Params& theta, Population& POP)
 
             QQ = phi_inv(theta.MDA_BS_BScover, 0.0, sqrt(1.0 + theta.sig_round_MDA*theta.sig_round_MDA));
 
-            for (Individual& person: POP.m_people) {
+            for (Individual& person: POP.people()) {
                 if (util::random::normal(person.zz_int[2], theta.sig_round_MDA) < QQ)
                 {
                     person.ACT_treat = 1;
@@ -474,7 +474,7 @@ void Intervention::distribute(Params& theta, Population& POP)
 
             QQ = phi_inv(theta.MDA_PQ_BScover, 0.0, sqrt(1.0 + theta.sig_round_MDA*theta.sig_round_MDA));
 
-            for (Individual& person: POP.m_people) {
+            for (Individual& person: POP.people()) {
                 if (util::random::normal(person.zz_int[3], theta.sig_round_MDA) < QQ)
                 {
                     /////////////////////////////////////////////////////
@@ -613,7 +613,7 @@ void Intervention::distribute(Params& theta, Population& POP)
 
             QQ = phi_inv(theta.MSAT_PQ_BScover, 0.0, sqrt(1.0 + theta.sig_round_MDA*theta.sig_round_MDA));
 
-            for (Individual& person: POP.m_people) {
+            for (Individual& person: POP.people()) {
                 if (util::random::normal(person.zz_int[4], theta.sig_round_MDA) < QQ)
                 {
                     /////////////////////////////////////////////////////
@@ -790,7 +790,7 @@ void Intervention::distribute(Params& theta, Population& POP)
 
             QQ = phi_inv(theta.SSAT_PQ_BScover, 0.0, sqrt(1.0 + theta.sig_round_MDA*theta.sig_round_MDA));
 
-            for (Individual& person: POP.m_people) {
+            for (Individual& person: POP.people()) {
                 if (util::random::normal(person.zz_int[5], theta.sig_round_MDA) < QQ)
                 {
                     /////////////////////////////////////////////////////
