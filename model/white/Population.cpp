@@ -29,8 +29,8 @@ using Eigen::Matrix;
 
 Population::Population(size_t N_pop, Params& theta):
     N_pop(N_pop),
-    pi_n(N_pop, N_spec),
-    lam_n(N_pop, N_spec)
+    pi_n(N_spec, N_pop),
+    lam_n(N_spec, N_pop)
 {
     ///////////////////////////////////////////////////////////////////////////
     //                                                                       //
@@ -163,12 +163,12 @@ void Population::human_step(Params& theta)
     size_t n = 0;
     for (const Individual& person: m_people) {
         double pi = person.zeta_het*(1.0 - theta.rho_age*exp(-person.age*theta.age_0_inv));
-        pi_n.row(n) = pi;
+        pi_n.col(n) = pi;
         n++;
     }
 
-    auto sigma_pi = pi_n.colwise().sum().inverse();
-    pi_n.rowwise() *= sigma_pi;
+    auto sigma_pi = pi_n.rowwise().sum().inverse();
+    pi_n.colwise() *= sigma_pi;
 
 
     ///////////////////////////////////////////////////
@@ -177,7 +177,7 @@ void Population::human_step(Params& theta)
     SUM_pi_w.setZero();
     n = 0;
     for (const Individual& person: m_people) {
-        SUM_pi_w += pi_n.row(n).transpose() * person.w_VC;
+        SUM_pi_w += pi_n.col(n) * person.w_VC;
         n++;
     }
 
@@ -207,9 +207,9 @@ void Population::human_step(Params& theta)
         ///////////////////////////////////////////////////
         // 2.4.9. Update individual-level force of infection on humans
 
-        auto lam = aa_VC * pi_n.row(n).transpose() * person.w_VC / SUM_pi_w;
+        auto lam = aa_VC * pi_n.col(n) * person.w_VC / SUM_pi_w;
         
-        lam_n.row(n).transpose() = lam;
+        lam_n.col(n) = lam;
         
         double lam_bite = (lam * lam_bite_base).sum();
         
@@ -1401,17 +1401,16 @@ void Population::equi_pop_setup(Params& theta)
 
     size_t n = 0;
     for (const Individual& person: m_people) {
-        for (int g = 0; g < N_spec; g++) {
-            pi_n(n, g) = person.zeta_het*(1.0 - theta.rho_age*exp(-person.age*theta.age_0_inv));
-        }
+        double pi = person.zeta_het*(1.0 - theta.rho_age*exp(-person.age*theta.age_0_inv));
+        pi_n.col(n) = pi;
         n++;
     }
 
 
 
-    Array<double, N_spec, 1> SIGMA_PI = pi_n.colwise().sum();
+    Array<double, N_spec, 1> SIGMA_PI = pi_n.rowwise().sum();
     for (int g = 0; g < N_spec; g++) {
-        pi_n.col(g) /= SIGMA_PI[g];
+        pi_n.row(g) /= SIGMA_PI[g];
     }
 
     ///////////////////////////////////////////////////////////
@@ -1423,15 +1422,12 @@ void Population::equi_pop_setup(Params& theta)
     SUM_pi_w = 0;
     SUM_pi_z = 0;
     
-    for (int g = 0; g < N_spec; g++)
-    {
-        n = 0;
-        for (const Individual& person: m_people) {
-            SUM_pi_w[g] += pi_n(n, g) * person.w_VC[g];
-            SUM_pi_z[g] += pi_n(n, g) * person.z_VC[g];
-        }
-        n++;
+    n = 0;
+    for (const Individual& person: m_people) {
+        SUM_pi_w += pi_n.col(n) * person.w_VC;
+        SUM_pi_z += pi_n.col(n) * person.z_VC;
     }
+    n++;
 
 
     W_VC = 1.0 - theta.Q_0 + theta.Q_0 * SUM_pi_w;
@@ -1457,10 +1453,7 @@ void Population::equi_pop_setup(Params& theta)
 
     for (int n = 0; n < N_pop; n++)
     {
-        for (int g = 0; g < N_spec; g++)
-        {
-            lam_n(n, g) = theta.aa[g] * pi_n(n, g);
-        }
+        lam_n.col(n) = theta.aa * pi_n.col(n);
     }
 
 

@@ -129,7 +129,7 @@ void mosquito_step(Params& theta, Population& POP)
 
     size_t n = 0;
     for (const Individual& person: POP.m_people) {
-        theta.lam_M += POP.lam_n.row(n) * (
+        theta.lam_M += POP.lam_n.col(n) * (
                   theta.c_PCR * person.I_PCR
                 + theta.c_LM * person.I_LM
                 + theta.c_D * person.I_D

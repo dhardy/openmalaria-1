@@ -80,8 +80,8 @@ public:
 
     vector<Individual> m_people;        // A vector of individuals
 
-    Array<double, Dynamic, N_spec> pi_n;    // Proportion of bites on humans that person n receives
-    Array<double, Dynamic, N_spec> lam_n;   // Biting rate of a single mosquito on person n
+    Array<double, N_spec, Dynamic> pi_n;    // Proportion of bites on humans that person n receives
+    Array<double, N_spec, Dynamic> lam_n;   // Biting rate of a single mosquito on person n
 
 
     ///////////////////////////////////////////////
