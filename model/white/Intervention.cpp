@@ -125,12 +125,17 @@ Intervention::Intervention(const std::string& coverage_File)
 
     for (int j = 0; j<N_cov_rounds; j++)
     {
+        // skip rows without year
+        if (!(coverage[0][j] > -0.5)) continue;
+        
+        SimDate date_on = SimDate::origin() + SimTime::fromYearsN(coverage[0][j]);
+        
         //////////////////////////////////////////////////////////////
         // LLINs
 
-        if ((coverage[0][j] > -0.5) && (coverage[1][j] > -0.5))
+        if (coverage[1][j] > -0.5)
         {
-            LLIN_year.push_back(  coverage[0][j]*365.0 );
+            LLIN_date.push_back(  date_on );
             LLIN_cover.push_back( coverage[1][j] );
         }
 
@@ -138,9 +143,9 @@ Intervention::Intervention(const std::string& coverage_File)
         //////////////////////////////////////////////////////////////
         // IRS
 
-        if ((coverage[0][j] > -0.5) && (coverage[2][j] > -0.5))
+        if (coverage[2][j] > -0.5)
         {
-            IRS_year.push_back(  coverage[0][j]*365.0 );
+            IRS_date.push_back(  date_on );
             IRS_cover.push_back( coverage[2][j] );
         }
 
@@ -148,10 +153,11 @@ Intervention::Intervention(const std::string& coverage_File)
         //////////////////////////////////////////////////////////////
         // Front-line treatment - blood-stage drugs
 
-        if ((coverage[0][j] > -0.5) && (coverage[4][j] > -0.5))
+        if (coverage[4][j] > -0.5)
         {
-            BS_treat_year_on.push_back(  coverage[0][j]*365.0 );
-            BS_treat_year_off.push_back( coverage[3][j]*365.0 );
+            BS_treat_date_on.push_back(  date_on );
+            SimDate date_off = SimDate::origin() + SimTime::fromYearsN(coverage[3][j]);
+            BS_treat_date_off.push_back( date_off );
             BS_treat_BScover.push_back(  coverage[4][j] );
             BS_treat_BSeff.push_back(    coverage[5][j] );
             BS_treat_BSproph.push_back(  coverage[6][j] );
@@ -161,10 +167,11 @@ Intervention::Intervention(const std::string& coverage_File)
         //////////////////////////////////////////////////////////////
         // Front-line treatment - primaquine
 
-        if ((coverage[0][j] > -0.5) && (coverage[8][j] > -0.5))
+        if (coverage[8][j] > -0.5)
         {
-            PQ_treat_year_on.push_back(     coverage[0][j]*365.0 );
-            PQ_treat_year_off.push_back(    coverage[7][j]*365.0 );
+            PQ_treat_date_on.push_back(     date_on );
+            SimDate date_off = SimDate::origin() + SimTime::fromYearsN(coverage[7][j]);
+            PQ_treat_date_off.push_back(    date_off );
             PQ_treat_BScover.push_back(     coverage[8][j] );
             PQ_treat_BSeff.push_back(       coverage[9][j] );
             PQ_treat_BSproph.push_back(     coverage[10][j] );
@@ -181,9 +188,9 @@ Intervention::Intervention(const std::string& coverage_File)
         //////////////////////////////////////////////////////////////
         // MDA - blood-stage drugs
 
-        if ((coverage[0][j] > -0.5) && (coverage[18][j] > -0.5))
+        if (coverage[18][j] > -0.5)
         {
-            MDA_BS_year.push_back(    coverage[0][j]*365.0 );
+            MDA_BS_date.push_back(    date_on );
             MDA_BS_BScover.push_back( coverage[18][j] );
             MDA_BS_BSeff.push_back(   coverage[19][j] );
             MDA_BS_BSproph.push_back( coverage[20][j] );
@@ -193,9 +200,9 @@ Intervention::Intervention(const std::string& coverage_File)
         //////////////////////////////////////////////////////////////
         // MDA - blood-stage drugs plus primaquine
 
-        if ((coverage[0][j] > -0.5) && (coverage[21][j] > -0.5))
+        if (coverage[21][j] > -0.5)
         {
-            MDA_PQ_year.push_back(        coverage[0][j]*365.0 );
+            MDA_PQ_date.push_back(        date_on );
             MDA_PQ_BScover.push_back(     coverage[21][j] );
             MDA_PQ_BSeff.push_back(       coverage[22][j] );
             MDA_PQ_BSproph.push_back(     coverage[23][j] );
@@ -212,9 +219,9 @@ Intervention::Intervention(const std::string& coverage_File)
         //////////////////////////////////////////////////////////////
         // MSAT - blood-stage drugs plus primaquine
 
-        if ((coverage[0][j] > -0.5) && (coverage[31][j] > -0.5))
+        if (coverage[31][j] > -0.5)
         {
-            MSAT_PQ_year.push_back(        coverage[0][j]*365.0 );
+            MSAT_PQ_date.push_back(        date_on );
             MSAT_PQ_BScover.push_back(     coverage[31][j]);
             MSAT_PQ_RDT_PCR.push_back(     coverage[32][j] );
             MSAT_PQ_sens.push_back(        coverage[33][j] );
@@ -232,9 +239,9 @@ Intervention::Intervention(const std::string& coverage_File)
         //////////////////////////////////////////////////////////////
         // SSAT - blood-stage drugs plus primaquine
 
-        if ((coverage[0][j] > -0.5) && (coverage[43][j] > -0.5))
+        if (coverage[43][j] > -0.5)
         {
-            SSAT_PQ_year.push_back(        coverage[0][j]*365.0 );
+            SSAT_PQ_date.push_back(        date_on );
             SSAT_PQ_BScover.push_back(     coverage[43][j] );
             SSAT_PQ_sens.push_back(        coverage[44][j] );
             SSAT_PQ_spec.push_back(        coverage[45][j] );
@@ -262,7 +269,7 @@ Intervention::Intervention(const std::string& coverage_File)
 
 void Intervention::distribute(Params& theta, Population& POP)
 {
-    double t = (sim::intervDate() - SimDate::origin()).inDays();
+    SimDate date = sim::intervDate();
     
     double QQ;
 
@@ -276,11 +283,9 @@ void Intervention::distribute(Params& theta, Population& POP)
     //////////////////////////////////////////////////////////
     // Intervention 1: LLINS
 
-    for (size_t m = 0; m<LLIN_year.size(); m++)
+    for (size_t m = 0; m<LLIN_date.size(); m++)
     {
-        if ((t > LLIN_year[m] - 0.5*t_step) &&
-            (t < LLIN_year[m] + 0.51*t_step))
-        {
+        if (date == LLIN_date[m]) {
             cout << "LLIN distribution" << endl;
 
             QQ = phi_inv(LLIN_cover[m], 0.0, sqrt(1.0 + theta.sig_round_LLIN*theta.sig_round_LLIN));
@@ -304,11 +309,9 @@ void Intervention::distribute(Params& theta, Population& POP)
     //////////////////////////////////////////////////////////
     // Intervention 2: IRS
 
-    for (size_t m = 0; m<IRS_year.size(); m++)
+    for (size_t m = 0; m<IRS_date.size(); m++)
     {
-        if ((t > IRS_year[m] - 0.5*t_step) &&
-            (t < IRS_year[m] + 0.51*t_step))
-        {
+        if (date == IRS_date[m]) {
             cout << "IRS distribution" << endl;
 
             QQ = phi_inv(IRS_cover[m], 0.0, sqrt(1.0 + theta.sig_round_IRS*theta.sig_round_IRS));
@@ -332,11 +335,9 @@ void Intervention::distribute(Params& theta, Population& POP)
     //////////////////////////////////////////////////////////
     // Intervention 3: first-line treatment (blood-stage)
 
-    for (size_t m = 0; m<BS_treat_year_on.size(); m++)
+    for (size_t m = 0; m<BS_treat_date_on.size(); m++)
     {
-        if ((t > BS_treat_year_on[m] - 0.5*t_step) &&
-            (t < BS_treat_year_on[m] + 0.51*t_step))
-        {
+        if (date == BS_treat_date_on[m]) {
             cout << "New front-line BS treatment" << endl;
 
             theta.BS_treat_BScover = BS_treat_BScover[m];
@@ -354,11 +355,9 @@ void Intervention::distribute(Params& theta, Population& POP)
     //////////////////////////////////////////////////////////
     // Switching back to baseline.
 
-    for (size_t m = 0; m<BS_treat_year_on.size(); m++)
+    for (size_t m = 0; m<BS_treat_date_on.size(); m++)
     {
-        if ((t > BS_treat_year_off[m] - 0.5*t_step) &&
-            (t < BS_treat_year_off[m] + 0.51*t_step))
-        {
+        if (date == BS_treat_date_off[m]) {
             cout << "End of changing front-line BS treatment" << endl;
 
             theta.treat_BScover = theta.BS_treat_BScover_base;
@@ -372,11 +371,9 @@ void Intervention::distribute(Params& theta, Population& POP)
     //////////////////////////////////////////////////////////
     // Intervention 4: first-line treatment (primaquine)
 
-    for (size_t m = 0; m<PQ_treat_year_on.size(); m++)
+    for (size_t m = 0; m<PQ_treat_date_on.size(); m++)
     {
-        if ((t > PQ_treat_year_on[m] - 0.5*t_step) &&
-            (t < PQ_treat_year_on[m] + 0.51*t_step))
-        {
+        if (date == PQ_treat_date_on[m]) {
             cout << "New front-line PQ treatment" << endl;
 
             theta.PQ_treat_BScover     = PQ_treat_BScover[m];
@@ -401,11 +398,9 @@ void Intervention::distribute(Params& theta, Population& POP)
     //////////////////////////////////////////////////////////
     // Switching back to baseline.
 
-    for (size_t m = 0; m<PQ_treat_year_on.size(); m++)
+    for (size_t m = 0; m<PQ_treat_date_on.size(); m++)
     {
-        if ((t > PQ_treat_year_off[m] - 0.5*t_step) &&
-            (t < PQ_treat_year_off[m] + 0.51*t_step))
-        {
+        if (date == PQ_treat_date_off[m]) {
             cout << "End of changing front-line PQ treatment" << endl;
 
             theta.PQ_treat_BScover     = 0.0;
@@ -430,11 +425,9 @@ void Intervention::distribute(Params& theta, Population& POP)
     //////////////////////////////////////////////////////////
     // Intervention 5: MDA (blood-stage)
 
-    for (size_t m = 0; m<MDA_BS_year.size(); m++)
+    for (size_t m = 0; m<MDA_BS_date.size(); m++)
     {
-        if ((t > MDA_BS_year[m] - 0.5*t_step) &&
-            (t < MDA_BS_year[m] + 0.51*t_step))
-        {
+        if (date == MDA_BS_date[m]) {
             cout << "MDA (BS) distribution" << endl;
 
             theta.MDA_BS_BScover = MDA_BS_BScover[m];
@@ -465,11 +458,9 @@ void Intervention::distribute(Params& theta, Population& POP)
     //////////////////////////////////////////////////////////
     // Intervention 6: MDA (blood-stage and liver-stage)
 
-    for (size_t m = 0; m<MDA_PQ_year.size(); m++)
+    for (size_t m = 0; m<MDA_PQ_date.size(); m++)
     {
-        if ((t > MDA_PQ_year[m] - 0.5*t_step) &&
-            (t < MDA_PQ_year[m] + 0.51*t_step))
-        {
+        if (date == MDA_PQ_date[m]) {
             cout << "MDA (BS+PQ) distribution" << endl;
 
             theta.MDA_PQ_BScover     = MDA_PQ_BScover[m];
@@ -606,11 +597,9 @@ void Intervention::distribute(Params& theta, Population& POP)
     //////////////////////////////////////////////////////////
     // Intervention 7: MSAT (blood-stage and liver-stage)
 
-    for (size_t m = 0; m < MSAT_PQ_year.size(); m++)
+    for (size_t m = 0; m < MSAT_PQ_date.size(); m++)
     {
-        if( (t > MSAT_PQ_year[m] - 0.5*t_step) &&
-            (t < MSAT_PQ_year[m] + 0.51*t_step) )
-        {
+        if (date == MSAT_PQ_date[m]) {
             cout << "MSAT (BS+PQ) distribution" << endl;
 
             theta.MSAT_PQ_BScover     = MSAT_PQ_BScover[m];
@@ -787,11 +776,9 @@ void Intervention::distribute(Params& theta, Population& POP)
     //////////////////////////////////////////////////////////
     // Intervention 8: SSAT (blood-stage and liver-stage)
 
-    for (size_t m = 0; m<SSAT_PQ_year.size(); m++)
+    for (size_t m = 0; m<SSAT_PQ_date.size(); m++)
     {
-        if ((t > SSAT_PQ_year[m] - 0.5*t_step) &&
-            (t < SSAT_PQ_year[m] + 0.51*t_step))
-        {
+        if (date == SSAT_PQ_date[m]) {
             cout << "SSAT (BS+PQ) distribution" << endl;
 
             theta.SSAT_PQ_BScover     = SSAT_PQ_BScover[m];

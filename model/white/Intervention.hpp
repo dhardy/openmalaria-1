@@ -74,21 +74,21 @@ private:
     ////////////////////////////////
     // LLINs
 
-    vector<double> LLIN_year;
+    vector<SimDate> LLIN_date;
     vector<double> LLIN_cover;
 
 
     ////////////////////////////////
     // IRS
 
-    vector<double> IRS_year;
+    vector<SimDate> IRS_date;
     vector<double> IRS_cover;
 
     ////////////////////////////////
     // First-line treatment - blood-stage drugs
 
-    vector<double> BS_treat_year_on;
-    vector<double> BS_treat_year_off;
+    vector<SimDate> BS_treat_date_on;
+    vector<SimDate> BS_treat_date_off;
     vector<double> BS_treat_BScover;
     vector<double> BS_treat_BSeff;
     vector<double> BS_treat_BSproph;
@@ -98,8 +98,8 @@ private:
     // First-line treatment - blood-stage drugs
     // plus primaquine
 
-    vector<double> PQ_treat_year_on;
-    vector<double> PQ_treat_year_off;
+    vector<SimDate> PQ_treat_date_on;
+    vector<SimDate> PQ_treat_date_off;
     vector<double> PQ_treat_BScover;
     vector<double> PQ_treat_BSeff;
     vector<double> PQ_treat_BSproph;
@@ -115,7 +115,7 @@ private:
     ////////////////////////////////
     // MDA - blood-stage drugs
 
-    vector<double> MDA_BS_year;
+    vector<SimDate> MDA_BS_date;
     vector<double> MDA_BS_BScover;
     vector<double> MDA_BS_BSeff;
     vector<double> MDA_BS_BSproph;
@@ -124,7 +124,7 @@ private:
     ////////////////////////////////
     // MDA - blood-stage drugs + primaquine
 
-    vector<double> MDA_PQ_year;
+    vector<SimDate> MDA_PQ_date;
     vector<double> MDA_PQ_BScover;
     vector<double> MDA_PQ_BSeff;
     vector<double> MDA_PQ_BSproph;
@@ -140,7 +140,7 @@ private:
     ////////////////////////////////
     // MSAT - RDT or PCR with blood-stage drugs + primaquine
 
-    vector<double> MSAT_PQ_year;
+    vector<SimDate> MSAT_PQ_date;
     vector<int>    MSAT_PQ_RDT_PCR;
     vector<double> MSAT_PQ_sens;
     vector<double> MSAT_PQ_spec;
@@ -159,7 +159,7 @@ private:
     ////////////////////////////////
     // SSAT - blood-stage drugs + primaquine
 
-    vector<double> SSAT_PQ_year;
+    vector<SimDate> SSAT_PQ_date;
     vector<double> SSAT_PQ_sens;
     vector<double> SSAT_PQ_spec;
     vector<double> SSAT_PQ_BScover;

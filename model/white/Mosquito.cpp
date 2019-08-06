@@ -140,7 +140,7 @@ void mosquito_step(Params& theta, Population& POP)
     //////////////////////////////////////
     // Carry out the mosq_steps
     
-    double t = (sim::intervDate() - SimDate::origin()).inDays();
+    double t = sim::ts0().inDays();
     double t_step_mosq = (double(t_step)) / (double(mosq_steps));
 
     for (size_t j = 0; j<mosq_steps; j++)
