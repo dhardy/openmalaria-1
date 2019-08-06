@@ -75,15 +75,15 @@ Simulation::Simulation(SimTimes times)
 
 void Simulation::run(Params& theta, Intervention& INTVEN)
 {
-    sim::s_t0 = SimTime::zero();
-    sim::s_t1 = SimTime::never();
-    sim::s_interv = SimTime::zero() - m_burnin;
-    
     // Initialise the population
     Population POP{ OM::Population::size(), theta };
 
     cout << "Starting model simulations......." << endl;
 
+    sim::s_t0 = SimTime::zero();
+    sim::s_t1 = SimTime::never();
+    sim::s_interv = SimTime::zero() - m_burnin;
+    
     for (int i = 0; i<N_time; i++)
     {
         if (sim::now().inDays() % 365 == 0) {
