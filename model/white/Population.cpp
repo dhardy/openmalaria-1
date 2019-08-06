@@ -1377,7 +1377,7 @@ void Population::equi_pop_setup(Params& theta)
         ////////////////////////////////////////////
         //  3.7.4.2.6. A vector for storing lagged force of infection
 
-        for (int k = 0; k<theta.H_track; k++)
+        for (int k = 0; k<theta.H_track.inSteps(); k++)
         {
             HH.lam_bite_track[k] = lam_eq(i_index, j_index);
             HH.lam_rel_track[k] = HH.Hyp*theta.ff;

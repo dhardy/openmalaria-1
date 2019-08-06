@@ -51,8 +51,8 @@ Individual::Individual(Params& theta, double a, double zeta) :
     preg_age(false), pregnant(false), preg_timer(0.0),
     
     // Lagged exposure equals zero - they're not born yet!
-    lam_bite_track(theta.H_track, 0.0),
-    lam_rel_track(theta.H_track, 0.0),
+    lam_bite_track(theta.H_track.inSteps(), 0.0),
+    lam_rel_track(theta.H_track.inSteps(), 0.0),
     
     S(false), I_PCR(false), I_LM(false), I_D(false), T(false), P(false),
     Hyp(0),

@@ -118,8 +118,7 @@ struct Params
     double c_D;                    // human -> mosquito transmission probability - clinical disease
     double c_T;                    // human -> mosquito transmission probability - treatment
 
-    double d_latent;               // duration of latency in the liver
-    int H_track;                   // Number of steps for tracking lagged lam_H (due to duration of latency)
+    SimTime H_track;    // duration of latency in the liver; is the number of steps to track for lam_H
 
 
     /////////////////////////////////

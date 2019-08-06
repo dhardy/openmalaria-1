@@ -104,7 +104,9 @@ SimTimes Params::read(const std::string& parameter_File, const std::string mosqu
     ////////////////////////////////
     // Human recovery paramters
 
-    parameter_Stream >> discard >> d_latent >> discard;             // latent period in liver
+    parameter_Stream >> discard >> d >> discard;             // latent period in liver
+    H_track = SimTime::fromDays(d);
+    
     parameter_Stream >> discard >> r_LM >> discard;                 // rate of recovery from LM detectable infection
     parameter_Stream >> discard >> r_D >> discard;                  // rate of recovery from symptomatic disease
     parameter_Stream >> discard >> r_T >> discard;                  // rate of progression through treatment 
@@ -118,8 +120,6 @@ SimTimes Params::read(const std::string& parameter_File, const std::string mosqu
     parameter_Stream >> discard >> A_PCR_50pc >> discard;           // PCR_detectable infection scale parameter
     parameter_Stream >> discard >> K_PCR >> discard;                // PCR_detectable infection shape parameter
 
-
-    H_track = int(d_latent / t_step);                       // Number of time steps for duration of latency
 
     treat_BScover = BS_treat_BScover_base;                  // Treatment coverage
     treat_BSeff   = BS_treat_BSeff_base;                    // Efficacy of treatment
