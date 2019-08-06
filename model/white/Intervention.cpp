@@ -160,7 +160,7 @@ Intervention::Intervention(const std::string& coverage_File)
             BS_treat_date_off.push_back( date_off );
             BS_treat_BScover.push_back(  coverage[4][j] );
             BS_treat_BSeff.push_back(    coverage[5][j] );
-            BS_treat_BSproph.push_back(  coverage[6][j] );
+            BS_treat_BSproph.push_back(  SimTime::fromDays(coverage[6][j]) );
         }
 
 
@@ -174,10 +174,10 @@ Intervention::Intervention(const std::string& coverage_File)
             PQ_treat_date_off.push_back(    date_off );
             PQ_treat_BScover.push_back(     coverage[8][j] );
             PQ_treat_BSeff.push_back(       coverage[9][j] );
-            PQ_treat_BSproph.push_back(     coverage[10][j] );
+            PQ_treat_BSproph.push_back(     SimTime::fromDays(coverage[10][j]) );
             PQ_treat_PQavail.push_back(     coverage[11][j] );
             PQ_treat_PQeff.push_back(       coverage[12][j] );
-            PQ_treat_PQproph.push_back(     coverage[13][j] );
+            PQ_treat_PQproph.push_back(     SimTime::fromDays(coverage[13][j]) );
             PQ_treat_G6PD_risk.push_back(   (int)(coverage[14][j]) );
             PQ_treat_CYP2D6_risk.push_back( (int)(coverage[15][j]) );
             PQ_treat_preg_risk.push_back(   (int)(coverage[16][j]) );
@@ -193,7 +193,7 @@ Intervention::Intervention(const std::string& coverage_File)
             MDA_BS_date.push_back(    date_on );
             MDA_BS_BScover.push_back( coverage[18][j] );
             MDA_BS_BSeff.push_back(   coverage[19][j] );
-            MDA_BS_BSproph.push_back( coverage[20][j] );
+            MDA_BS_BSproph.push_back( SimTime::fromDays(coverage[20][j]) );
         }
 
 
@@ -205,10 +205,10 @@ Intervention::Intervention(const std::string& coverage_File)
             MDA_PQ_date.push_back(        date_on );
             MDA_PQ_BScover.push_back(     coverage[21][j] );
             MDA_PQ_BSeff.push_back(       coverage[22][j] );
-            MDA_PQ_BSproph.push_back(     coverage[23][j] );
+            MDA_PQ_BSproph.push_back(     SimTime::fromDays(coverage[23][j]) );
             MDA_PQ_PQavail.push_back(     coverage[24][j] );
             MDA_PQ_PQeff.push_back(       coverage[25][j] );
-            MDA_PQ_PQproph.push_back(     coverage[26][j] );
+            MDA_PQ_PQproph.push_back(SimTime::fromDays(coverage[26][j]));
             MDA_PQ_G6PD_risk.push_back(   (int)(coverage[27][j]) );
             MDA_PQ_CYP2D6_risk.push_back( (int)(coverage[28][j]) );
             MDA_PQ_preg_risk.push_back(   (int)(coverage[29][j]) );
@@ -226,10 +226,10 @@ Intervention::Intervention(const std::string& coverage_File)
             MSAT_PQ_RDT_PCR.push_back(     coverage[32][j] );
             MSAT_PQ_sens.push_back(        coverage[33][j] );
             MSAT_PQ_BSeff.push_back(       coverage[34][j] );
-            MSAT_PQ_BSproph.push_back(     coverage[35][j] );
+            MSAT_PQ_BSproph.push_back(     SimTime::fromDays(coverage[35][j]) );
             MSAT_PQ_PQavail.push_back(     coverage[36][j] );
             MSAT_PQ_PQeff.push_back(       coverage[37][j] );
-            MSAT_PQ_PQproph.push_back(     coverage[38][j] );
+            MSAT_PQ_PQproph.push_back(SimTime::fromDays(coverage[38][j]));
             MSAT_PQ_G6PD_risk.push_back(   (int)(coverage[39][j]) );
             MSAT_PQ_CYP2D6_risk.push_back( (int)(coverage[40][j]) );
             MSAT_PQ_preg_risk.push_back(   (int)(coverage[41][j]) );
@@ -246,10 +246,10 @@ Intervention::Intervention(const std::string& coverage_File)
             SSAT_PQ_sens.push_back(        coverage[44][j] );
             SSAT_PQ_spec.push_back(        coverage[45][j] );
             SSAT_PQ_BSeff.push_back(       coverage[46][j] );
-            SSAT_PQ_BSproph.push_back(     coverage[47][j] );
+            SSAT_PQ_BSproph.push_back(     SimTime::fromDays(coverage[47][j]) );
             SSAT_PQ_PQavail.push_back(     coverage[48][j] );
             SSAT_PQ_PQeff.push_back(       coverage[49][j] );
-            SSAT_PQ_PQproph.push_back(     coverage[50][j] );
+            SSAT_PQ_PQproph.push_back(SimTime::fromDays(coverage[50][j]));
             SSAT_PQ_G6PD_risk.push_back(   (int)(coverage[51][j]) );
             SSAT_PQ_CYP2D6_risk.push_back( (int)(coverage[52][j]) );
             SSAT_PQ_preg_risk.push_back(   (int)(coverage[53][j]) );
@@ -347,7 +347,7 @@ void Intervention::distribute(Params& theta, Population& POP)
             theta.treat_BScover = theta.BS_treat_BScover;
             theta.treat_BSeff   = theta.BS_treat_BSeff;
             theta.treat_PQavail = 0.0;
-            theta.r_P           = 1.0 / theta.BS_treat_BSproph;
+            theta.r_P           = 1.0 / theta.BS_treat_BSproph.inDays();
         }
     }
 
@@ -390,7 +390,7 @@ void Intervention::distribute(Params& theta, Population& POP)
             theta.treat_BScover = theta.PQ_treat_BScover;
             theta.treat_BSeff   = theta.PQ_treat_BSeff;
             theta.treat_PQavail = theta.PQ_treat_PQavail;
-            theta.r_P           = 1.0 / theta.PQ_treat_BSproph;
+            theta.r_P           = 1.0 / theta.PQ_treat_BSproph.inDays();
         }
     }
 
@@ -405,10 +405,10 @@ void Intervention::distribute(Params& theta, Population& POP)
 
             theta.PQ_treat_BScover     = 0.0;
             theta.PQ_treat_BSeff       = 0.0;
-            theta.PQ_treat_BSproph     = 10.0;
+            theta.PQ_treat_BSproph     = SimTime::fromDays(10);
             theta.PQ_treat_PQavail     = 0.0;
             theta.PQ_treat_PQeff       = 0.0;
-            theta.PQ_treat_PQproph     = 10.0;
+            theta.PQ_treat_PQproph     = SimTime::fromDays(10);
             theta.PQ_treat_G6PD_risk   = 1;
             theta.PQ_treat_CYP2D6_risk = 1;
             theta.PQ_treat_preg_risk   = 1;
@@ -585,8 +585,7 @@ void Intervention::distribute(Params& theta, Population& POP)
                     {
                         POP.people[n].Hyp = 0;
 
-                        POP.people[n].PQ_proph = 1;
-                        POP.people[n].PQ_proph_timer = theta.MDA_PQ_PQproph;
+                        POP.people[n].PQ_proph = sim::now() + theta.MDA_PQ_PQproph;
                     }
                 }
             }
@@ -764,8 +763,7 @@ void Intervention::distribute(Params& theta, Population& POP)
                     {
                         POP.people[n].Hyp = 0;
 
-                        POP.people[n].PQ_proph = 1;
-                        POP.people[n].PQ_proph_timer = theta.MSAT_PQ_PQproph;
+                        POP.people[n].PQ_proph = sim::now() + theta.MSAT_PQ_PQproph;
                     }
                 }
             }
@@ -942,8 +940,7 @@ void Intervention::distribute(Params& theta, Population& POP)
                     {
                         POP.people[n].Hyp = 0;
 
-                        POP.people[n].PQ_proph = 1;
-                        POP.people[n].PQ_proph_timer = theta.SSAT_PQ_PQproph;
+                        POP.people[n].PQ_proph = sim::now() + theta.SSAT_PQ_PQproph;
                     }
                 }
             }

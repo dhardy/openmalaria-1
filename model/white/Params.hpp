@@ -240,14 +240,14 @@ struct Params
 
     double BS_treat_BScover;        // Coverage of first-line treatment with BS drugs
     double BS_treat_BSeff;          // Efficacy of first-line treatment with BS drugs
-    double BS_treat_BSproph;        // Duration of prophylaxis with first-line BS drugs
+    SimTime BS_treat_BSproph;       // Duration of prophylaxis with first-line BS drugs
 
     double PQ_treat_BScover;        // Coverage of BS treatment in combined BS & PQ first-line regimen
     double PQ_treat_BSeff;          // Efficacy of BS treatment
-    double PQ_treat_BSproph;        // Duration of BS prophylaxis 
+    SimTime PQ_treat_BSproph;       // Duration of BS prophylaxis 
     double PQ_treat_PQavail;        // Availability of PQ treatment (as a proportion of those receiving BS treatment)
     double PQ_treat_PQeff;          // Efficacy of PQ treatment
-    double PQ_treat_PQproph;        // Duration of PQ prophylaxis (i.e. for how long does PQ prevent new hypnozoites)
+    SimTime PQ_treat_PQproph;       // Duration of PQ prophylaxis (i.e. for how long does PQ prevent new hypnozoites)
     int PQ_treat_G6PD_risk;         // Risk in G6PD - deficient individuals
     int PQ_treat_CYP2D6_risk;       // Risk of not working in low CYP2D6 metabolizers
     int PQ_treat_preg_risk;         // Risk in pregnant women
@@ -255,14 +255,14 @@ struct Params
 
     double MDA_BS_BScover;          // Coverage of blood - stage drugs
     double MDA_BS_BSeff;            // Efficacy of blood - stage drugs
-    double MDA_BS_BSproph;          // Duration of blood - stage prophylaxis
+    SimTime MDA_BS_BSproph;         // Duration of blood - stage prophylaxis
 
     double MDA_PQ_BScover;          // Coverage of blood - stage drugs
     double MDA_PQ_BSeff;            // Efficacy of blood - stage drugs
-    double MDA_PQ_BSproph;          // Duration of blood - stage prophylaxis
+    SimTime MDA_PQ_BSproph;         // Duration of blood - stage prophylaxis
     double MDA_PQ_PQavail;          // Availability of primaquine
     double MDA_PQ_PQeff;            // Efficacy of primaquine
-    double MDA_PQ_PQproph;          // Duration of primaquine prophylaxis(prevents new hypnozoites)
+    SimTime MDA_PQ_PQproph;         // Duration of primaquine prophylaxis(prevents new hypnozoites)
     int MDA_PQ_G6PD_risk;           // Risk in G6PD - deficient individuals
     int MDA_PQ_CYP2D6_risk;         // Risk of not working in low CYP2D6 metabolizers
     int MDA_PQ_preg_risk;           // Risk in pregnant women
@@ -272,10 +272,10 @@ struct Params
     double MSAT_PQ_sens;            // Sensitivity of diagnostic tool
     double MSAT_PQ_BScover;         // Coverage of blood - stage drugs
     double MSAT_PQ_BSeff;           // Efficacy of blood - stage drugs
-    double MSAT_PQ_BSproph;         // Duration of blood - stage prophylaxis
+    SimTime MSAT_PQ_BSproph;        // Duration of blood - stage prophylaxis
     double MSAT_PQ_PQavail;         // Availability of primaquine
     double MSAT_PQ_PQeff;           // Efficacy of primaquine
-    double MSAT_PQ_PQproph;         // Duration of primaquine prophylaxis(prevents new hypnozoites)
+    SimTime MSAT_PQ_PQproph;        // Duration of primaquine prophylaxis(prevents new hypnozoites)
     int MSAT_PQ_G6PD_risk;          // Risk in G6PD - deficient individuals
     int MSAT_PQ_CYP2D6_risk;        // Risk of not working in low CYP2D6 metabolizers
     int MSAT_PQ_preg_risk;          // Risk in pregnant women
@@ -285,10 +285,10 @@ struct Params
     double SSAT_PQ_spec;            // Sensitivity of diagnostic tool
     double SSAT_PQ_BScover;         // Coverage of blood - stage drugs
     double SSAT_PQ_BSeff;           // Efficacy of blood - stage drugs
-    double SSAT_PQ_BSproph;         // Duration of blood - stage prophylaxis
+    SimTime SSAT_PQ_BSproph;        // Duration of blood - stage prophylaxis
     double SSAT_PQ_PQavail;         // Availability of primaquine
     double SSAT_PQ_PQeff;           // Efficacy of primaquine
-    double SSAT_PQ_PQproph;         // Duration of primaquine prophylaxis(prevents new hypnozoites)
+    SimTime SSAT_PQ_PQproph;        // Duration of primaquine prophylaxis(prevents new hypnozoites)
     int SSAT_PQ_G6PD_risk;          // Risk in G6PD - deficient individuals
     int SSAT_PQ_CYP2D6_risk;        // Risk of not working in low CYP2D6 metabolizers
     int SSAT_PQ_preg_risk;          // Risk in pregnant women

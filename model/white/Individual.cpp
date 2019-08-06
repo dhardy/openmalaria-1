@@ -63,7 +63,6 @@ Individual::Individual(Params& theta, double a, double zeta) :
     A_par_mat(0.0), A_clin_mat(0.0),
     A_par_boost(false), A_clin_boost(false),
     A_par_timer(-1.0), A_clin_timer(-1.0),
-    PQ_proph(false), PQ_proph_timer(-1.0),
 
     LLIN(false), LLIN_age(numeric_limits<double>::quiet_NaN()),
     IRS(false), IRS_age(numeric_limits<double>::quiet_NaN()),
@@ -149,7 +148,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
     auto do_new_inf = [this, &theta](double lam_lag) {
         if (util::random::bernoulli(lam_lag))
         {
-            if (PQ_proph == 0)
+            if (PQ_proph < sim::ts0())
             {
                 Hyp += 1;
             }
@@ -234,7 +233,7 @@ void Individual::state_mover(Params& theta, double lam_bite)
             if ((PQ_treat == 1) && (PQ_effective == 1))
             {
                 Hyp = 0;
-                PQ_proph = 1;
+                PQ_proph = max(PQ_proph, sim::ts0() + SimTime::oneTS());
             }
         }
     };
@@ -753,20 +752,6 @@ void Individual::ager(Params& theta)
         if (A_clin_timer < 0.0)
         {
             A_clin_boost = 1;
-        }
-    }
-
-
-    //////////////////////////////////////////////////////
-    // Switches for primaquine prophylaxis
-
-    if (PQ_proph == 1)
-    {
-        PQ_proph_timer = PQ_proph_timer - t_step;
-
-        if (PQ_proph_timer < 0.0)
-        {
-            PQ_proph = 0;
         }
     }
 

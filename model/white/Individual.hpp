@@ -170,8 +170,7 @@ public: // TODO: access control
     double A_par_timer;
     double A_clin_timer;
 
-    bool PQ_proph;
-    double PQ_proph_timer;
+    SimTime PQ_proph;         // protected when PQ_proph >= sim::ts0()
 
 
     //////////////////////////////////////////////////////////

@@ -128,10 +128,10 @@ SimTimes Params::read(const std::string& parameter_File, const std::string mosqu
 
     PQ_treat_BScover     = 0.0;
     PQ_treat_BSeff       = 0.0;
-    PQ_treat_BSproph     = 10.0;
+    PQ_treat_BSproph     = SimTime::fromDays(10);
     PQ_treat_PQavail     = 0.0;
     PQ_treat_PQeff       = 0.0;
-    PQ_treat_PQproph     = 0.0;
+    PQ_treat_PQproph     = SimTime::fromDays(0);
     PQ_treat_G6PD_risk   = 1;
     PQ_treat_CYP2D6_risk = 1;
     PQ_treat_preg_risk   = 1;

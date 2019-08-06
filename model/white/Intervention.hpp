@@ -91,7 +91,7 @@ private:
     vector<SimDate> BS_treat_date_off;
     vector<double> BS_treat_BScover;
     vector<double> BS_treat_BSeff;
-    vector<double> BS_treat_BSproph;
+    vector<SimTime> BS_treat_BSproph;
 
 
     ////////////////////////////////
@@ -102,10 +102,10 @@ private:
     vector<SimDate> PQ_treat_date_off;
     vector<double> PQ_treat_BScover;
     vector<double> PQ_treat_BSeff;
-    vector<double> PQ_treat_BSproph;
+    vector<SimTime> PQ_treat_BSproph;
     vector<double> PQ_treat_PQavail;
     vector<double> PQ_treat_PQeff;
-    vector<double> PQ_treat_PQproph;
+    vector<SimTime> PQ_treat_PQproph;
     vector<int>    PQ_treat_G6PD_risk;
     vector<int>    PQ_treat_CYP2D6_risk;
     vector<int>    PQ_treat_preg_risk;
@@ -118,7 +118,7 @@ private:
     vector<SimDate> MDA_BS_date;
     vector<double> MDA_BS_BScover;
     vector<double> MDA_BS_BSeff;
-    vector<double> MDA_BS_BSproph;
+    vector<SimTime> MDA_BS_BSproph;
 
 
     ////////////////////////////////
@@ -127,10 +127,10 @@ private:
     vector<SimDate> MDA_PQ_date;
     vector<double> MDA_PQ_BScover;
     vector<double> MDA_PQ_BSeff;
-    vector<double> MDA_PQ_BSproph;
+    vector<SimTime> MDA_PQ_BSproph;
     vector<double> MDA_PQ_PQavail;
     vector<double> MDA_PQ_PQeff;
-    vector<double> MDA_PQ_PQproph;
+    vector<SimTime> MDA_PQ_PQproph;
     vector<int>    MDA_PQ_G6PD_risk;
     vector<int>    MDA_PQ_CYP2D6_risk;
     vector<int>    MDA_PQ_preg_risk;
@@ -146,10 +146,10 @@ private:
     vector<double> MSAT_PQ_spec;
     vector<double> MSAT_PQ_BScover;
     vector<double> MSAT_PQ_BSeff;
-    vector<double> MSAT_PQ_BSproph;
+    vector<SimTime> MSAT_PQ_BSproph;
     vector<double> MSAT_PQ_PQavail;
     vector<double> MSAT_PQ_PQeff;
-    vector<double> MSAT_PQ_PQproph;
+    vector<SimTime> MSAT_PQ_PQproph;
     vector<int>    MSAT_PQ_G6PD_risk;
     vector<int>    MSAT_PQ_CYP2D6_risk;
     vector<int>    MSAT_PQ_preg_risk;
@@ -164,10 +164,10 @@ private:
     vector<double> SSAT_PQ_spec;
     vector<double> SSAT_PQ_BScover;
     vector<double> SSAT_PQ_BSeff;
-    vector<double> SSAT_PQ_BSproph;
+    vector<SimTime> SSAT_PQ_BSproph;
     vector<double> SSAT_PQ_PQavail;
     vector<double> SSAT_PQ_PQeff;
-    vector<double> SSAT_PQ_PQproph;
+    vector<SimTime> SSAT_PQ_PQproph;
     vector<int>    SSAT_PQ_G6PD_risk;
     vector<int>    SSAT_PQ_CYP2D6_risk;
     vector<int>    SSAT_PQ_preg_risk;
