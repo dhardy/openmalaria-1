@@ -49,7 +49,6 @@
 #include "white/Simulation.hpp"
 #include "util/errors.h"
 #include "util/CommandLine.h"
-#include "Population.h"
 
 #include <iostream>
 #include <cmath>
@@ -60,7 +59,6 @@ namespace OM { namespace white {
 using std::cout;
 using std::endl;
 
-unique_ptr<Population> PNG_pop;
 unique_ptr<Params> Pv_mod_par;
 SimTimes times;
 unique_ptr<Intervention> PNG_intven;
@@ -101,26 +99,8 @@ void init_model( const scnXml::Scenario& scenario ) {
     
     Pv_mod_par = unique_ptr<Params>(new Params{});
     times = Pv_mod_par->read(parameter_File, mosquito_File);
-    PNG_pop = unique_ptr<Population>(new Population{ OM::Population::size() });
 
     PNG_intven = unique_ptr<Intervention>(new Intervention{ coverage_File });
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                                                       //
-    // 1.8. Initialise Population of individuals                             //
-    //      Note that they begin with exponential age distribution           //
-    //      and susceptible without immunity                                 //
-    //                                                                       // 
-    ///////////////////////////////////////////////////////////////////////////
-
-    cout << "Initialise population of individuals for simulation at equilbirium EIR of "
-            << 365.0 * Pv_mod_par->EIR_equil << endl;
-    cout << endl;
-
-    PNG_pop->equi_pop_setup(*Pv_mod_par);
-
-    cout << "Population of size " << PNG_pop->N_pop << " initialised!" << endl;
-    cout << endl;
 }
 
 void run_model() {
@@ -139,12 +119,7 @@ void run_model() {
     //                                                  //
     ////////////////////////////////////////////////////// 
 
-    cout << "Starting model simulations......." << endl;
-
-    PNG_sim.run(*Pv_mod_par, *PNG_pop, *PNG_intven);
-
-    cout << "Model simulations completed....." << endl;
-    cout << endl;
+    PNG_sim.run(*Pv_mod_par, *PNG_intven);
 
 
     //////////////////////////////////////////////////////

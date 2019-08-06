@@ -11,6 +11,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "white/Simulation.hpp"
+#include "Population.h"
 #include "util/errors.h"
 
 #include <iostream>
@@ -72,11 +73,16 @@ Simulation::Simulation(SimTimes times)
 //                                                                          //
 //////////////////////////////////////////////////////////////////////////////
 
-void Simulation::run(Params& theta, Population& POP, Intervention& INTVEN)
+void Simulation::run(Params& theta, Intervention& INTVEN)
 {
     sim::s_t0 = SimTime::zero();
     sim::s_t1 = SimTime::never();
     sim::s_interv = SimTime::zero() - m_burnin;
+    
+    // Initialise the population
+    Population POP{ OM::Population::size(), theta };
+
+    cout << "Starting model simulations......." << endl;
 
     for (int i = 0; i<N_time; i++)
     {
@@ -124,8 +130,10 @@ void Simulation::run(Params& theta, Population& POP, Intervention& INTVEN)
 
         A_par_mean_t[i] = POP.A_par_mean_t;
         A_clin_mean_t[i] = POP.A_clin_mean_t;
-
     }
+    
+    cout << "Model simulations completed....." << endl;
+    cout << endl;
 }
 
 

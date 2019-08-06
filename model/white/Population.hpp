@@ -46,16 +46,12 @@ class Population
 {
 public:
     /// Constructor
-    Population(size_t N_pop);
+    Population(size_t N_pop, Params& theta);
     
     //////////////////////////////////////////////////////////////////////////
     //  Class member functions
     //////////////////////////////////////////////////////////////////////////
     
-    ////////////////////////////////////////////////////
-    // Initialise a population of individuals at equilibrium
-    void equi_pop_setup(Params& theta);
-
     ////////////////////////////////////////////////////
     // Update human individuals
     void human_step(Params& theta);
@@ -66,6 +62,10 @@ public:
 
 
 private:
+    ////////////////////////////////////////////////////
+    // Initialise a population of individuals at equilibrium
+    void equi_pop_setup(Params& theta);
+
     void gauher(Params& theta);
 
 public:

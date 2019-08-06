@@ -47,7 +47,7 @@ public:
     
     /////////////////////////////////////
     //  2.6. Simulate the model and store the output
-    void run(Params& theta, Population& POP, Intervention& INTVEN);
+    void run(Params& theta, Intervention& INTVEN);
 
     /////////////////////////////////////
     // Write output file

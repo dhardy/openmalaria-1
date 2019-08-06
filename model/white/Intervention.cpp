@@ -255,8 +255,9 @@ Intervention::Intervention(const std::string& coverage_File)
             SSAT_PQ_preg_risk.push_back(   (int)(coverage[53][j]) );
             SSAT_PQ_low_age.push_back(     coverage[54][j] );
         }
-
     }
+    
+    cout << endl;
 }
 
 

@@ -27,11 +27,26 @@ using Eigen::MatrixXd;
 using Eigen::Matrix;
 
 
-Population::Population(size_t N_pop):
+Population::Population(size_t N_pop, Params& theta):
     N_pop(N_pop),
     pi_n(N_pop, N_spec),
     lam_n(N_pop, N_spec)
 {
+    ///////////////////////////////////////////////////////////////////////////
+    //                                                                       //
+    // 1.8. Initialise Population of individuals                             //
+    //      Note that they begin with exponential age distribution           //
+    //      and susceptible without immunity                                 //
+    //                                                                       // 
+    ///////////////////////////////////////////////////////////////////////////
+
+    cout << "Initialise population of individuals for simulation at equilbirium EIR of "
+            << 365.0 * theta.EIR_equil << endl;
+    
+    equi_pop_setup(theta);
+    
+    cout << "Population of size " << N_pop << " initialised!" << endl;
+    cout << endl;
 }
 
 //////////////////////////////////////////////////////////////////////////////
