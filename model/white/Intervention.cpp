@@ -291,16 +291,15 @@ void Intervention::distribute(Params& theta, Population& POP)
 
             QQ = phi_inv(LLIN_cover[m], 0.0, sqrt(1.0 + theta.sig_round_LLIN*theta.sig_round_LLIN));
 
-            for (int n = 0; n<POP.N_pop; n++)
-            {
-                if (util::random::normal(POP.people[n].zz_int[0], theta.sig_round_LLIN) < QQ)
+            for (Individual& person: POP.m_people) {
+                if (util::random::normal(person.zz_int[0], theta.sig_round_LLIN) < QQ)
                 {
-                    POP.people[n].LLIN = 1;
-                    POP.people[n].LLIN_age = 0.0;
+                    person.LLIN = 1;
+                    person.LLIN_age = 0.0;
 
-                    POP.people[n].d_LLIN = theta.d_LLIN_0;
-                    POP.people[n].r_LLIN = theta.r_LLIN_0;
-                    POP.people[n].s_LLIN = 1.0 - POP.people[n].d_LLIN - POP.people[n].r_LLIN;
+                    person.d_LLIN = theta.d_LLIN_0;
+                    person.r_LLIN = theta.r_LLIN_0;
+                    person.s_LLIN = 1.0 - person.d_LLIN - person.r_LLIN;
                 }
             }
         }
@@ -317,16 +316,15 @@ void Intervention::distribute(Params& theta, Population& POP)
 
             QQ = phi_inv(IRS_cover[m], 0.0, sqrt(1.0 + theta.sig_round_IRS*theta.sig_round_IRS));
 
-            for (int n = 0; n<POP.N_pop; n++)
-            {
-                if (util::random::normal(POP.people[n].zz_int[1], theta.sig_round_IRS) < QQ)
+            for (Individual& person: POP.m_people) {
+                if (util::random::normal(person.zz_int[1], theta.sig_round_IRS) < QQ)
                 {
-                    POP.people[n].IRS = 1;
-                    POP.people[n].IRS_age = 0.0;
+                    person.IRS = 1;
+                    person.IRS_age = 0.0;
 
-                    POP.people[n].d_IRS = theta.d_IRS_0;
-                    POP.people[n].r_IRS = theta.r_IRS_0;
-                    POP.people[n].s_IRS = 1.0 - POP.people[n].d_IRS - POP.people[n].r_IRS;
+                    person.d_IRS = theta.d_IRS_0;
+                    person.r_IRS = theta.r_IRS_0;
+                    person.s_IRS = 1.0 - person.d_IRS - person.r_IRS;
                 }
             }
         }
@@ -437,18 +435,17 @@ void Intervention::distribute(Params& theta, Population& POP)
 
             QQ = phi_inv(theta.MDA_BS_BScover, 0.0, sqrt(1.0 + theta.sig_round_MDA*theta.sig_round_MDA));
 
-            for (int n = 0; n<POP.N_pop; n++)
-            {
-                if (util::random::normal(POP.people[n].zz_int[2], theta.sig_round_MDA) < QQ)
+            for (Individual& person: POP.m_people) {
+                if (util::random::normal(person.zz_int[2], theta.sig_round_MDA) < QQ)
                 {
-                    POP.people[n].ACT_treat = 1;
+                    person.ACT_treat = 1;
 
                     if (util::random::bernoulli(theta.MDA_BS_BSeff))
                     {
-                        if (POP.people[n].S == 1    ) { POP.people[n].S = 0;     POP.people[n].P = 1; }
-                        if (POP.people[n].I_PCR == 1) { POP.people[n].I_PCR = 0; POP.people[n].P = 1; }
-                        if (POP.people[n].I_LM == 1 ) { POP.people[n].I_LM = 0;  POP.people[n].P = 1; }
-                        if (POP.people[n].I_D == 1  ) { POP.people[n].I_D = 0;   POP.people[n].T = 1; }
+                        if (person.S == 1    ) { person.S = 0;     person.P = 1; }
+                        if (person.I_PCR == 1) { person.I_PCR = 0; person.P = 1; }
+                        if (person.I_LM == 1 ) { person.I_LM = 0;  person.P = 1; }
+                        if (person.I_D == 1  ) { person.I_D = 0;   person.T = 1; }
                     }
                 }
             }
@@ -477,9 +474,8 @@ void Intervention::distribute(Params& theta, Population& POP)
 
             QQ = phi_inv(theta.MDA_PQ_BScover, 0.0, sqrt(1.0 + theta.sig_round_MDA*theta.sig_round_MDA));
 
-            for (int n = 0; n<POP.N_pop; n++)
-            {
-                if (util::random::normal(POP.people[n].zz_int[3], theta.sig_round_MDA) < QQ)
+            for (Individual& person: POP.m_people) {
+                if (util::random::normal(person.zz_int[3], theta.sig_round_MDA) < QQ)
                 {
                     /////////////////////////////////////////////////////
                     // Blood-stage treatment is always administered
@@ -507,7 +503,7 @@ void Intervention::distribute(Params& theta, Population& POP)
                     /////////////////////////////////////////////////////////////////////
                     // Exclude PQ because of G6PD deficiency
 
-                    if( (theta.MDA_PQ_G6PD_risk == 1) && (POP.people[n].is_G6PD_deficient()) )
+                    if( (theta.MDA_PQ_G6PD_risk == 1) && (person.is_G6PD_deficient()) )
                     {
                         PQ_treat = 0;
                     }
@@ -516,7 +512,7 @@ void Intervention::distribute(Params& theta, Population& POP)
                     /////////////////////////////////////////////////////////////////////
                     // Exclude PQ because of pregancy
 
-                    if( (theta.MDA_PQ_preg_risk == 1) && POP.people[n].pregnant )
+                    if( (theta.MDA_PQ_preg_risk == 1) && person.pregnant )
                     {
                         PQ_treat = 0;
                     }
@@ -525,14 +521,14 @@ void Intervention::distribute(Params& theta, Population& POP)
                     /////////////////////////////////////////////////////////////////////
                     // Exclude PQ because of young age
 
-                    if (POP.people[n].age < theta.MDA_PQ_low_age)
+                    if (person.age < theta.MDA_PQ_low_age)
                     {
                         PQ_treat = 0;
                     }
 
                     if (PQ_treat == 1)
                     {
-                        POP.people[n].PQ_treat = 1;
+                        person.PQ_treat = 1;
                     }
 
                     /////////////////////////////////////////////////////////////////////
@@ -545,7 +541,7 @@ void Intervention::distribute(Params& theta, Population& POP)
                         PQ_effective = 0;
                     }
 
-                    if( (theta.MDA_PQ_CYP2D6_risk == 1) && POP.people[n].has_low_cyp2d6_action() )
+                    if( (theta.MDA_PQ_CYP2D6_risk == 1) && person.has_low_cyp2d6_action() )
                     {
                         PQ_effective = 0;
                     }
@@ -554,28 +550,28 @@ void Intervention::distribute(Params& theta, Population& POP)
                     /////////////////////////////////////////////////////////////////////
                     // Was there PQ overtreatment?
 
-                    if( (PQ_treat == 1) && (POP.people[n].Hyp == 0) )
+                    if( (PQ_treat == 1) && (person.Hyp == 0) )
                     {
-                        POP.people[n].PQ_overtreat = 1;
+                        person.PQ_overtreat = 1;
                     }
 
-                    if( (PQ_treat == 1) && (POP.people[n].T_last_BS > 270.0) )
+                    if( (PQ_treat == 1) && (person.T_last_BS > 270.0) )
                     {
-                        POP.people[n].PQ_overtreat_9m = 1;
+                        person.PQ_overtreat_9m = 1;
                     }
 
 
                     /////////////////////////////////////////////////////////////////////
                     // ACTION: administer blood-stage drug
 
-                    POP.people[n].ACT_treat = 1;
+                    person.ACT_treat = 1;
 
                     if (BS_effective == 1)
                     {
-                        if (POP.people[n].S == 1) {     POP.people[n].S = 0;     POP.people[n].P = 1; }
-                        if (POP.people[n].I_PCR == 1) { POP.people[n].I_PCR = 0; POP.people[n].P = 1; }
-                        if (POP.people[n].I_LM == 1) {  POP.people[n].I_LM = 0;  POP.people[n].P = 1; }
-                        if (POP.people[n].I_D == 1) {   POP.people[n].I_D = 0;   POP.people[n].T = 1; }
+                        if (person.S == 1) {     person.S = 0;     person.P = 1; }
+                        if (person.I_PCR == 1) { person.I_PCR = 0; person.P = 1; }
+                        if (person.I_LM == 1) {  person.I_LM = 0;  person.P = 1; }
+                        if (person.I_D == 1) {   person.I_D = 0;   person.T = 1; }
                     }
 
 
@@ -584,9 +580,9 @@ void Intervention::distribute(Params& theta, Population& POP)
 
                     if ((PQ_treat == 1) && (PQ_effective == 1))
                     {
-                        POP.people[n].Hyp = 0;
+                        person.Hyp = 0;
 
-                        POP.people[n].PQ_proph = sim::now() + theta.MDA_PQ_PQproph;
+                        person.PQ_proph = sim::now() + theta.MDA_PQ_PQproph;
                     }
                 }
             }
@@ -617,9 +613,8 @@ void Intervention::distribute(Params& theta, Population& POP)
 
             QQ = phi_inv(theta.MSAT_PQ_BScover, 0.0, sqrt(1.0 + theta.sig_round_MDA*theta.sig_round_MDA));
 
-            for (int n = 0; n < POP.N_pop; n++)
-            {
-                if (util::random::normal(POP.people[n].zz_int[4], theta.sig_round_MDA) < QQ)
+            for (Individual& person: POP.m_people) {
+                if (util::random::normal(person.zz_int[4], theta.sig_round_MDA) < QQ)
                 {
                     /////////////////////////////////////////////////////
                     // Blood-stage treatment is always administered
@@ -631,7 +626,7 @@ void Intervention::distribute(Params& theta, Population& POP)
 
                     if (theta.MSAT_PQ_RDT_PCR == 1)
                     {
-                        if ((POP.people[n].I_LM == 1) || (POP.people[n].I_D == 1) || (POP.people[n].T == 1))
+                        if ((person.I_LM == 1) || (person.I_D == 1) || (person.T == 1))
                         {
                             if (util::random::bernoulli(theta.MSAT_PQ_sens))
                             {
@@ -646,7 +641,7 @@ void Intervention::distribute(Params& theta, Population& POP)
 
                     if (theta.MSAT_PQ_RDT_PCR == 2)
                     {
-                        if ((POP.people[n].I_PCR == 1) || (POP.people[n].I_LM == 1) || (POP.people[n].I_D == 1) || (POP.people[n].T == 1))
+                        if ((person.I_PCR == 1) || (person.I_LM == 1) || (person.I_D == 1) || (person.T == 1))
                         {
                             if (util::random::bernoulli(theta.MSAT_PQ_sens))
                             {
@@ -684,7 +679,7 @@ void Intervention::distribute(Params& theta, Population& POP)
                     /////////////////////////////////////////////////////////////////////
                     // Exclude PQ because of G6PD deficiency
 
-                    if ( (theta.MSAT_PQ_G6PD_risk == 1) && (POP.people[n].is_G6PD_deficient()) )
+                    if ( (theta.MSAT_PQ_G6PD_risk == 1) && (person.is_G6PD_deficient()) )
                     {
                         PQ_treat = 0;
                     }
@@ -692,7 +687,7 @@ void Intervention::distribute(Params& theta, Population& POP)
                     /////////////////////////////////////////////////////////////////////
                     // Exclude PQ because of pregancy
 
-                    if ( (theta.MSAT_PQ_preg_risk == 1) && POP.people[n].pregnant )
+                    if ( (theta.MSAT_PQ_preg_risk == 1) && person.pregnant )
                     {
                         PQ_treat = 0;
                     }
@@ -700,14 +695,14 @@ void Intervention::distribute(Params& theta, Population& POP)
                     /////////////////////////////////////////////////////////////////////
                     // Exclude PQ because of young age
 
-                    if (POP.people[n].age < theta.MSAT_PQ_low_age)
+                    if (person.age < theta.MSAT_PQ_low_age)
                     {
                         PQ_treat = 0;
                     }
 
                     if (PQ_treat == 1)
                     {
-                        POP.people[n].PQ_treat = 1;
+                        person.PQ_treat = 1;
                     }
 
                     /////////////////////////////////////////////////////////////////////
@@ -720,7 +715,7 @@ void Intervention::distribute(Params& theta, Population& POP)
                         PQ_effective = 0;
                     }
 
-                    if ((theta.MSAT_PQ_CYP2D6_risk == 1) && POP.people[n].has_low_cyp2d6_action())
+                    if ((theta.MSAT_PQ_CYP2D6_risk == 1) && person.has_low_cyp2d6_action())
                     {
                         PQ_effective = 0;
                     }
@@ -729,14 +724,14 @@ void Intervention::distribute(Params& theta, Population& POP)
                     /////////////////////////////////////////////////////////////////////
                     // Was there PQ overtreatment?
 
-                    if ((PQ_treat == 1) && (POP.people[n].Hyp == 0))
+                    if ((PQ_treat == 1) && (person.Hyp == 0))
                     {
-                        POP.people[n].PQ_overtreat = 1;
+                        person.PQ_overtreat = 1;
                     }
 
-                    if ((PQ_treat == 1) && (POP.people[n].T_last_BS > 270.0))
+                    if ((PQ_treat == 1) && (person.T_last_BS > 270.0))
                     {
-                        POP.people[n].PQ_overtreat_9m = 1;
+                        person.PQ_overtreat_9m = 1;
                     }
 
 
@@ -745,14 +740,14 @@ void Intervention::distribute(Params& theta, Population& POP)
 
                     if (MSAT_pos == 1)
                     {
-                        POP.people[n].ACT_treat = 1;
+                        person.ACT_treat = 1;
 
                         if (BS_effective == 1)
                         {
-                            if (POP.people[n].S == 1) {     POP.people[n].S = 0;     POP.people[n].P = 1; }
-                            if (POP.people[n].I_PCR == 1) { POP.people[n].I_PCR = 0; POP.people[n].P = 1; }
-                            if (POP.people[n].I_LM == 1) {  POP.people[n].I_LM = 0;  POP.people[n].P = 1; }
-                            if (POP.people[n].I_D == 1) {   POP.people[n].I_D = 0;   POP.people[n].T = 1; }
+                            if (person.S == 1) {     person.S = 0;     person.P = 1; }
+                            if (person.I_PCR == 1) { person.I_PCR = 0; person.P = 1; }
+                            if (person.I_LM == 1) {  person.I_LM = 0;  person.P = 1; }
+                            if (person.I_D == 1) {   person.I_D = 0;   person.T = 1; }
                         }
                     }
 
@@ -762,9 +757,9 @@ void Intervention::distribute(Params& theta, Population& POP)
 
                     if ((PQ_treat == 1) && (PQ_effective == 1))
                     {
-                        POP.people[n].Hyp = 0;
+                        person.Hyp = 0;
 
-                        POP.people[n].PQ_proph = sim::now() + theta.MSAT_PQ_PQproph;
+                        person.PQ_proph = sim::now() + theta.MSAT_PQ_PQproph;
                     }
                 }
             }
@@ -795,14 +790,13 @@ void Intervention::distribute(Params& theta, Population& POP)
 
             QQ = phi_inv(theta.SSAT_PQ_BScover, 0.0, sqrt(1.0 + theta.sig_round_MDA*theta.sig_round_MDA));
 
-            for (int n = 0; n < POP.N_pop; n++)
-            {
-                if (util::random::normal(POP.people[n].zz_int[5], theta.sig_round_MDA) < QQ)
+            for (Individual& person: POP.m_people) {
+                if (util::random::normal(person.zz_int[5], theta.sig_round_MDA) < QQ)
                 {
                     /////////////////////////////////////////////////////
                     // Blood-stage treatment is always administered
 
-                    POP.people[n].ACT_treat = 1;
+                    person.ACT_treat = 1;
 
 
                     /////////////////////////////////////////////////////
@@ -826,12 +820,12 @@ void Intervention::distribute(Params& theta, Population& POP)
 
                     // OPTION 1
 /*
-                    if( (POP.people[n].T_last_BS <= 270.0) && (util::random::bernoulli(theta.SSAT_PQ_sens)) )
+                    if( (person.T_last_BS <= 270.0) && (util::random::bernoulli(theta.SSAT_PQ_sens)) )
                     {
                         SSAT_pos = 1;
                     }
 
-                    if( (POP.people[n].T_last_BS > 270.0) && (!util::random::bernoulli(theta.SSAT_PQ_spec)) )
+                    if( (person.T_last_BS > 270.0) && (!util::random::bernoulli(theta.SSAT_PQ_spec)) )
                     {
                         SSAT_pos = 1;
                     }
@@ -839,12 +833,12 @@ void Intervention::distribute(Params& theta, Population& POP)
 
                     // OPTION 2
 
-                    if ((POP.people[n].Hyp > 0) && (util::random::bernoulli(theta.SSAT_PQ_sens)))
+                    if ((person.Hyp > 0) && (util::random::bernoulli(theta.SSAT_PQ_sens)))
                     {
                         SSAT_pos = 1;
                     }
 
-                    if ((POP.people[n].Hyp == 0) && (!util::random::bernoulli(theta.SSAT_PQ_spec)))
+                    if ((person.Hyp == 0) && (!util::random::bernoulli(theta.SSAT_PQ_spec)))
                     {
                         SSAT_pos = 1;
                     }
@@ -867,7 +861,7 @@ void Intervention::distribute(Params& theta, Population& POP)
                     /////////////////////////////////////////////////////////////////////
                     // Exclude PQ because of G6PD deficiency
 
-                    if( (theta.SSAT_PQ_G6PD_risk == 1) && (POP.people[n].is_G6PD_deficient()) )
+                    if( (theta.SSAT_PQ_G6PD_risk == 1) && (person.is_G6PD_deficient()) )
                     {
                         PQ_treat = 0;
                     }
@@ -875,7 +869,7 @@ void Intervention::distribute(Params& theta, Population& POP)
                     /////////////////////////////////////////////////////////////////////
                     // Exclude PQ because of pregancy
 
-                    if( (theta.SSAT_PQ_preg_risk == 1) && POP.people[n].pregnant )
+                    if( (theta.SSAT_PQ_preg_risk == 1) && person.pregnant )
                     {
                         PQ_treat = 0;
                     }
@@ -883,14 +877,14 @@ void Intervention::distribute(Params& theta, Population& POP)
                     /////////////////////////////////////////////////////////////////////
                     // Exclude PQ because of young age
 
-                    if( POP.people[n].age < theta.SSAT_PQ_low_age )
+                    if( person.age < theta.SSAT_PQ_low_age )
                     {
                         PQ_treat = 0;
                     }
 
                     if( PQ_treat == 1 )
                     {
-                        POP.people[n].PQ_treat = 1;
+                        person.PQ_treat = 1;
                     }
 
                     /////////////////////////////////////////////////////////////////////
@@ -903,7 +897,7 @@ void Intervention::distribute(Params& theta, Population& POP)
                         PQ_effective = 1;
                     }
 
-                    if( (theta.SSAT_PQ_CYP2D6_risk == 1) && POP.people[n].has_low_cyp2d6_action() )
+                    if( (theta.SSAT_PQ_CYP2D6_risk == 1) && person.has_low_cyp2d6_action() )
                     {
                         PQ_effective = 0;
                     }
@@ -912,14 +906,14 @@ void Intervention::distribute(Params& theta, Population& POP)
                     /////////////////////////////////////////////////////////////////////
                     // Was there PQ overtreatment?
 
-                    if ((PQ_treat == 1) && (POP.people[n].Hyp == 0))
+                    if ((PQ_treat == 1) && (person.Hyp == 0))
                     {
-                        POP.people[n].PQ_overtreat = 1;
+                        person.PQ_overtreat = 1;
                     }
 
-                    if ((PQ_treat == 1) && (POP.people[n].T_last_BS > 270.0))
+                    if ((PQ_treat == 1) && (person.T_last_BS > 270.0))
                     {
-                        POP.people[n].PQ_overtreat_9m = 1;
+                        person.PQ_overtreat_9m = 1;
                     }
 
 
@@ -928,10 +922,10 @@ void Intervention::distribute(Params& theta, Population& POP)
 
                     if( BS_effective == 1 )
                     {
-                        if (POP.people[n].S     == 1) { POP.people[n].S = 0;     POP.people[n].P = 1; }
-                        if (POP.people[n].I_PCR == 1) { POP.people[n].I_PCR = 0; POP.people[n].P = 1; }
-                        if (POP.people[n].I_LM  == 1) { POP.people[n].I_LM = 0;  POP.people[n].P = 1; }
-                        if (POP.people[n].I_D   == 1) { POP.people[n].I_D = 0;   POP.people[n].T = 1; }
+                        if (person.S     == 1) { person.S = 0;     person.P = 1; }
+                        if (person.I_PCR == 1) { person.I_PCR = 0; person.P = 1; }
+                        if (person.I_LM  == 1) { person.I_LM = 0;  person.P = 1; }
+                        if (person.I_D   == 1) { person.I_D = 0;   person.T = 1; }
                     }
 
                     /////////////////////////////////////////////////////////////////////
@@ -939,9 +933,9 @@ void Intervention::distribute(Params& theta, Population& POP)
 
                     if( (PQ_treat == 1) && (PQ_effective == 1) )
                     {
-                        POP.people[n].Hyp = 0;
+                        person.Hyp = 0;
 
-                        POP.people[n].PQ_proph = sim::now() + theta.SSAT_PQ_PQproph;
+                        person.PQ_proph = sim::now() + theta.SSAT_PQ_PQproph;
                     }
                 }
             }

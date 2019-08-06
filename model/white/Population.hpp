@@ -78,7 +78,7 @@ public:
 
     size_t N_pop;                      // Population size - we have balanced demography at the moment so this will be effectively constant 
 
-    vector<Individual> people;      // A vector of individuals
+    vector<Individual> m_people;        // A vector of individuals
 
     Array<double, Dynamic, N_spec> pi_n;    // Proportion of bites on humans that person n receives
     Array<double, Dynamic, N_spec> lam_n;   // Biting rate of a single mosquito on person n

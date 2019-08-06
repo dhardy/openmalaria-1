@@ -62,9 +62,8 @@ void Population::human_step(Params& theta)
     ///////////////////////////////////////////////
     // 2.4.2. Apply ageing
 
-    for (int n = 0; n<N_pop; n++)
-    {
-        people[n].ager(theta);
+    for (Individual& person: m_people) {
+        person.ager(theta);
     }
 
 
@@ -75,30 +74,24 @@ void Population::human_step(Params& theta)
 
     int N_dead = 0;
 
-    for (size_t n = 0; n<people.size(); n++)
-    {
+    for (auto person = m_people.begin(); person != m_people.end(); ) {
         /////////////////////////////////////////////
         // Everyone has an equal probability of dying
 
-        if (util::random::bernoulli(theta.P_dead))
-        {
-            people.erase(people.begin() + n);
+        if (util::random::bernoulli(theta.P_dead)) {
+            person = m_people.erase(person);
 
             N_dead += 1;
-            n = n - 1;      // If we erase something, the next one moves into it's place so we don't want to step forward.
-        }
-        else {
-
+        } else if (person->age > theta.age_max) {
             ///////////////////////////////////////////
             // People die once they reach the maximum age
+            
+            person = m_people.erase(person);
 
-            if (people[n].age > theta.age_max)
-            {
-                people.erase(people.begin() + n);
-
-                N_dead += 1;
-                n = n - 1;       // If we erase something, the next one moves into it's place so we don't want to step forward.
-            }
+            N_dead += 1;
+        } else {
+            // manually advance the iterator
+            person++;
         }
     }
 
@@ -127,16 +120,16 @@ void Population::human_step(Params& theta)
 
         double het_dif_track = 1e10;
 
-        for (size_t j = 0; j<people.size(); j++)
+        for (const Individual& person: m_people)
         {
-            if (people[j].preg_age)
+            if (person.preg_age)
             {
-                if (abs(HH.zeta_het - people[j].zeta_het) < het_dif_track)
+                if (abs(HH.zeta_het - person.zeta_het) < het_dif_track)
                 {
-                    HH.A_par_mat = theta.P_mat*people[j].A_par_mat;
-                    HH.A_clin_mat = theta.P_mat*people[j].A_clin_mat;
+                    HH.A_par_mat = theta.P_mat*person.A_par_mat;
+                    HH.A_clin_mat = theta.P_mat*person.A_clin_mat;
 
-                    het_dif_track = (HH.zeta_het - people[j].zeta_het)*(HH.zeta_het - people[j].zeta_het);
+                    het_dif_track = (HH.zeta_het - person.zeta_het)*(HH.zeta_het - person.zeta_het);
                 }
             }
         }
@@ -145,7 +138,7 @@ void Population::human_step(Params& theta)
         /////////////////////////////////////////////////////////////////
         // 2.4.5. Push the created individual onto the vector of people
 
-        people.push_back(std::move(HH));
+        m_people.push_back(std::move(HH));
     }
 
 
@@ -153,9 +146,8 @@ void Population::human_step(Params& theta)
     ///////////////////////////////////////////////////
     // 2.4.6. Update individual-level vector control
 
-    for (int n = 0; n<N_pop; n++)
-    {
-        people[n].intervention_updater(theta);
+    for (Individual& person: m_people) {
+        person.intervention_updater(theta);
     }
 
 
@@ -168,10 +160,11 @@ void Population::human_step(Params& theta)
     //        Should be able to make this quicker
 
 
-    for (int n = 0; n<N_pop; n++)
-    {
-        double pi = people[n].zeta_het*(1.0 - theta.rho_age*exp(-people[n].age*theta.age_0_inv));
+    size_t n = 0;
+    for (const Individual& person: m_people) {
+        double pi = person.zeta_het*(1.0 - theta.rho_age*exp(-person.age*theta.age_0_inv));
         pi_n.row(n) = pi;
+        n++;
     }
 
     auto sigma_pi = pi_n.colwise().sum().inverse();
@@ -182,8 +175,10 @@ void Population::human_step(Params& theta)
     // 2.4.8 Update population-level vector control quantities
 
     SUM_pi_w.setZero();
-    for (int n = 0; n < N_pop; n++) {
-        SUM_pi_w += pi_n.row(n).transpose() * people[n].w_VC;
+    n = 0;
+    for (const Individual& person: m_people) {
+        SUM_pi_w += pi_n.row(n).transpose() * person.w_VC;
+        n++;
     }
 
 
@@ -205,28 +200,26 @@ void Population::human_step(Params& theta)
     beta_VC = theta.eps_max * mu_M_VC / (exp(delta_VC * mu_M_VC) - 1.0);
 
 
-    ///////////////////////////////////////////////////
-    // 2.4.9. Update individual-level force of infection on humans
-
-    for (int n = 0; n < N_pop; n++) {
-        lam_n.row(n).transpose() = aa_VC * pi_n.row(n).transpose() * people[n].w_VC / SUM_pi_w;
-    }
-
-
-    ///////////////////////////////////////////////////
-    // 2.4.10. Implement moves between compartments
-    //
-    // TO DO: Can take some multiplications out of the loop.
-
     Array<double, N_spec, 1> lam_bite_base = N_pop * theta.bb * yM.col(5);
 
-    for (int n = 0; n<N_pop; n++)
-    {
-        double lam_bite = (lam_n.row(n).transpose() * lam_bite_base).sum();
-        
-        people[n].state_mover(theta, lam_bite);
-    }
+    n = 0;
+    for (Individual& person: m_people) {
+        ///////////////////////////////////////////////////
+        // 2.4.9. Update individual-level force of infection on humans
 
+        auto lam = aa_VC * pi_n.row(n).transpose() * person.w_VC / SUM_pi_w;
+        
+        lam_n.row(n).transpose() = lam;
+        
+        double lam_bite = (lam * lam_bite_base).sum();
+        
+        ///////////////////////////////////////////////////
+        // 2.4.10. Implement moves between compartments
+
+        person.state_mover(theta, lam_bite);
+        
+        n++;
+    }
 }
 
 
@@ -245,17 +238,16 @@ void Population::summary()
     prev_U10.setZero();
 
 
-    for (int n = 0; n<N_pop; n++)
-    {
+    for (const Individual& person: m_people) {
         ////////////////////////////////////////
         // Numbers in each compartment
 
-        yH[0] += people[n].S;
-        yH[1] += people[n].I_PCR;
-        yH[2] += people[n].I_LM;
-        yH[3] += people[n].I_D;
-        yH[4] += people[n].T;
-        yH[5] += people[n].P;
+        yH[0] += person.S;
+        yH[1] += person.I_PCR;
+        yH[2] += person.I_LM;
+        yH[3] += person.I_D;
+        yH[4] += person.T;
+        yH[5] += person.P;
 
 
         //////////////////////////////////////////////
@@ -266,93 +258,93 @@ void Population::summary()
         // Prevalence
 
         prev_all[0] += 1;                                                                        // Numbers - denominator
-        prev_all[1] += people[n].I_PCR + people[n].I_LM +
-                                            + people[n].I_D + people[n].T;                                      // PCR detectable infections
-        prev_all[2] += people[n].I_LM + people[n].I_D + people[n].T;                // LM detectable infections
-        prev_all[3] += people[n].I_D + people[n].T;                                      // Clinical episodes
+        prev_all[1] += person.I_PCR + person.I_LM +
+                                            + person.I_D + person.T;                                      // PCR detectable infections
+        prev_all[2] += person.I_LM + person.I_D + person.T;                // LM detectable infections
+        prev_all[3] += person.I_D + person.T;                                      // Clinical episodes
 
-        if (people[n].Hyp > 0)
+        if (person.Hyp > 0)
         {
             prev_all[4] += 1;                     // Hypnozoite positive
 
-            prev_all[5] += people[n].Hyp;    // Number of batches of hypnozoites
+            prev_all[5] += person.Hyp;    // Number of batches of hypnozoites
         }
 
 
         ////////////////////////////////////////
         // Incidence
 
-        prev_all[6]  += people[n].infected_new(Individual::I_DETECT_PCR);
-        prev_all[7]  += people[n].infected_new(Individual::I_DETECT_LM);
-        prev_all[8]  += people[n].infected_new(Individual::I_DETECT_D);
-        prev_all[9]  += people[n].ACT_treat;
-        prev_all[10] += people[n].PQ_treat;
+        prev_all[6]  += person.infected_new(Individual::I_DETECT_PCR);
+        prev_all[7]  += person.infected_new(Individual::I_DETECT_LM);
+        prev_all[8]  += person.infected_new(Individual::I_DETECT_D);
+        prev_all[9]  += person.ACT_treat;
+        prev_all[10] += person.PQ_treat;
 
 
         //////////////////////////////////////////////
         //////////////////////////////////////////////
         // Summary - under 5's
 
-        if (people[n].age < 1825.0)
+        if (person.age < 1825.0)
         {
             ////////////////////////////////////////
             // Prevalence
 
             prev_U5[0] += 1;                                                                // Numbers - denominator
-            prev_U5[1] += people[n].I_PCR + people[n].I_LM
-                                              + people[n].I_D + people[n].T;                              // PCR detectable infections
-            prev_U5[2] += people[n].I_LM + people[n].I_D + people[n].T;        // LM detectable infections
-            prev_U5[3] += people[n].I_D + people[n].T;                              // Clinical episodes
+            prev_U5[1] += person.I_PCR + person.I_LM
+                                              + person.I_D + person.T;                              // PCR detectable infections
+            prev_U5[2] += person.I_LM + person.I_D + person.T;        // LM detectable infections
+            prev_U5[3] += person.I_D + person.T;                              // Clinical episodes
 
-            if (people[n].Hyp > 0)
+            if (person.Hyp > 0)
             {
                 prev_U5[4] += 1;                     // Hypnozoite positive
 
-                prev_U5[5] += people[n].Hyp;    // Number of batches of hypnozoites
+                prev_U5[5] += person.Hyp;    // Number of batches of hypnozoites
             }
 
 
             ////////////////////////////////////////
             // Incidence
 
-            prev_U5[6]  += people[n].infected_new(Individual::I_DETECT_PCR);
-            prev_U5[7]  += people[n].infected_new(Individual::I_DETECT_LM);
-            prev_U5[8]  += people[n].infected_new(Individual::I_DETECT_D);
-            prev_U5[9] += people[n].ACT_treat;
-            prev_U5[10] += people[n].PQ_treat;
+            prev_U5[6]  += person.infected_new(Individual::I_DETECT_PCR);
+            prev_U5[7]  += person.infected_new(Individual::I_DETECT_LM);
+            prev_U5[8]  += person.infected_new(Individual::I_DETECT_D);
+            prev_U5[9] += person.ACT_treat;
+            prev_U5[10] += person.PQ_treat;
         }
 
         //////////////////////////////////////////////
         //////////////////////////////////////////////
         // Summary - under 10's
 
-        if (people[n].age < 3650.0)
+        if (person.age < 3650.0)
         {
             ////////////////////////////////////////
             // Prevalence
 
             prev_U10[0] += 1;                                                            // Numbers - denominator
-            prev_U10[1] += people[n].I_PCR + people[n].I_LM
-                                                + people[n].I_D + people[n].T;                          // PCR detectable infections
-            prev_U10[2] += people[n].I_LM + people[n].I_D + people[n].T;    // LM detectable infections
-            prev_U10[3] += people[n].I_D + people[n].T;                          // Clinical episodes
+            prev_U10[1] += person.I_PCR + person.I_LM
+                                                + person.I_D + person.T;                          // PCR detectable infections
+            prev_U10[2] += person.I_LM + person.I_D + person.T;    // LM detectable infections
+            prev_U10[3] += person.I_D + person.T;                          // Clinical episodes
 
-            if (people[n].Hyp > 0)
+            if (person.Hyp > 0)
             {
                 prev_U10[4] += 1;                     // Hypnozoite positive
 
-                prev_U10[5] += people[n].Hyp;    // Number of batches of hypnozoites
+                prev_U10[5] += person.Hyp;    // Number of batches of hypnozoites
             }
 
 
             ////////////////////////////////////////
             // Incidence
 
-            prev_U10[6]  += people[n].infected_new(Individual::I_DETECT_PCR);
-            prev_U10[7]  += people[n].infected_new(Individual::I_DETECT_LM);
-            prev_U10[8]  += people[n].infected_new(Individual::I_DETECT_D);
-            prev_U10[9]  += people[n].ACT_treat;
-            prev_U10[10] += people[n].PQ_treat;
+            prev_U10[6]  += person.infected_new(Individual::I_DETECT_PCR);
+            prev_U10[7]  += person.infected_new(Individual::I_DETECT_LM);
+            prev_U10[8]  += person.infected_new(Individual::I_DETECT_D);
+            prev_U10[9]  += person.ACT_treat;
+            prev_U10[10] += person.PQ_treat;
         }
     }
 
@@ -370,16 +362,15 @@ void Population::summary()
     PQ_overtreat_9m_t = 0;
 
 
-    for (int n = 0; n<N_pop; n++)
-    {
-        LLIN_cov_t  += people[n].LLIN;
-        IRS_cov_t   += people[n].IRS;
-        ACT_treat_t += people[n].ACT_treat;
-        PQ_treat_t  += people[n].PQ_treat;
-        pregnant_t  += (people[n].pregnant ? 1 : 0);
+    for (const Individual& person: m_people) {
+        LLIN_cov_t  += person.LLIN;
+        IRS_cov_t   += person.IRS;
+        ACT_treat_t += person.ACT_treat;
+        PQ_treat_t  += person.PQ_treat;
+        pregnant_t  += (person.pregnant ? 1 : 0);
 
-        PQ_overtreat_t    += people[n].PQ_overtreat;
-        PQ_overtreat_9m_t += people[n].PQ_overtreat_9m;
+        PQ_overtreat_t    += person.PQ_overtreat;
+        PQ_overtreat_9m_t += person.PQ_overtreat_9m;
     }
 
 
@@ -388,10 +379,9 @@ void Population::summary()
 
     double A_par_mean = 0.0, A_clin_mean = 0.0;
 
-    for (int n = 0; n<N_pop; n++)
-    {
-        A_par_mean += people[n].A_par;
-        A_clin_mean += people[n].A_clin;
+    for (const Individual& person: m_people) {
+        A_par_mean += person.A_par;
+        A_clin_mean += person.A_clin;
     }
 
     A_par_mean_t = A_par_mean / ((double)N_pop);
@@ -1403,18 +1393,18 @@ void Population::equi_pop_setup(Params& theta)
         ////////////////////////////////////////////////////
         // 3.7.4.3.. Add this person to the vector of people
 
-        people.push_back(std::move(HH));
+        m_people.push_back(std::move(HH));
     }
 
     ///////////////////////////////////////////////////////////
     // 3.7.5.1. Proportion of bites received by each person
 
-    for (int n = 0; n<N_pop; n++)
-    {
-        for (int g = 0; g < N_spec; g++)
-        {
-            pi_n(n, g) = people[n].zeta_het*(1.0 - theta.rho_age*exp(-people[n].age*theta.age_0_inv));
+    size_t n = 0;
+    for (const Individual& person: m_people) {
+        for (int g = 0; g < N_spec; g++) {
+            pi_n(n, g) = person.zeta_het*(1.0 - theta.rho_age*exp(-person.age*theta.age_0_inv));
         }
+        n++;
     }
 
 
@@ -1435,11 +1425,12 @@ void Population::equi_pop_setup(Params& theta)
     
     for (int g = 0; g < N_spec; g++)
     {
-        for (int n = 0; n < N_pop; n++)
-        {
-            SUM_pi_w[g] += pi_n(n, g) * people[n].w_VC[g];
-            SUM_pi_z[g] += pi_n(n, g) * people[n].z_VC[g];
+        n = 0;
+        for (const Individual& person: m_people) {
+            SUM_pi_w[g] += pi_n(n, g) * person.w_VC[g];
+            SUM_pi_z[g] += pi_n(n, g) * person.z_VC[g];
         }
+        n++;
     }
 
 
@@ -1481,14 +1472,13 @@ void Population::equi_pop_setup(Params& theta)
     double S_ind = 0.0, I_PCR_ind = 0.0, I_LM_ind = 0.0, I_D_ind = 0.0, T_ind = 0.0, P_ind = 0.0;
     double S_eqq = 0.0, I_PCR_eqq = 0.0, I_LM_eqq = 0.0, I_D_eqq = 0.0, T_eqq = 0.0, P_eqq = 0.0;
 
-    for (int n = 0; n<N_pop; n++)
-    {
-        S_ind += people[n].S;
-        I_PCR_ind += people[n].I_PCR;
-        I_LM_ind += people[n].I_LM;
-        I_D_ind += people[n].I_D;
-        T_ind += people[n].T;
-        P_ind += people[n].P;
+    for (const Individual& person: m_people) {
+        S_ind += person.S;
+        I_PCR_ind += person.I_PCR;
+        I_LM_ind += person.I_LM;
+        I_D_ind += person.I_D;
+        T_ind += person.T;
+        P_ind += person.P;
     }
 
 
