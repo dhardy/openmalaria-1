@@ -151,7 +151,7 @@ public:
     /** @brief Availability of host to mosquitoes */
     //@{
     /** Return true if the human has been removed from transmission. */
-    inline bool isOutsideTransmission() {
+    inline bool isOutsideTransmission() const {
         return outsideTransmission;
     }
     
