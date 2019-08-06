@@ -62,7 +62,6 @@ Individual::Individual(Params& theta, double a, double zeta) :
     A_par(0.0), A_clin(0.0),
     A_par_mat(0.0), A_clin_mat(0.0),
     A_par_boost(false), A_clin_boost(false),
-    A_par_timer(-1.0), A_clin_timer(-1.0),
 
     LLIN(false), LLIN_age(numeric_limits<double>::quiet_NaN()),
     IRS(false), IRS_age(numeric_limits<double>::quiet_NaN()),
@@ -157,14 +156,14 @@ void Individual::state_mover(Params& theta, double lam_bite)
         if (A_par_boost == 1)
         {
             A_par += 1.0;
-            A_par_timer = theta.u_par;
+            A_par_expiry = sim::ts0() + SimTime::fromDays(theta.u_par);
             A_par_boost = 0;
         }
 
         if (A_clin_boost == 1)
         {
             A_clin += 1.0;
-            A_clin_timer = theta.u_clin;
+            A_clin_expiry = sim::ts0() + SimTime::fromDays(theta.u_clin);
             A_clin_boost = 0;
         }
     };
@@ -737,9 +736,7 @@ void Individual::ager(Params& theta)
 
     if (A_par_boost == 0)
     {
-        A_par_timer = A_par_timer - t_step;
-
-        if (A_par_timer < 0.0)
+        if (A_par_expiry < sim::ts0())
         {
             A_par_boost = 1;
         }
@@ -747,9 +744,7 @@ void Individual::ager(Params& theta)
 
     if (A_clin_boost == 0)
     {
-        A_clin_timer = A_clin_timer - t_step;
-
-        if (A_clin_timer < 0.0)
+        if (A_clin_expiry < sim::ts0())
         {
             A_clin_boost = 1;
         }

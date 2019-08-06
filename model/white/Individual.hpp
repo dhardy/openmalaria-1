@@ -167,8 +167,8 @@ public: // TODO: access control
     bool A_par_boost;
     bool A_clin_boost;
 
-    double A_par_timer;
-    double A_clin_timer;
+    SimTime A_par_expiry;     // active when >= sim::ts0()
+    SimTime A_clin_expiry;    // active when >= sim::ts0()
 
     SimTime PQ_proph;         // protected when PQ_proph >= sim::ts0()
 
