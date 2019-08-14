@@ -1,22 +1,27 @@
+/* This file is part of OpenMalaria.
+ * 
+ * Copyright (C) 2019 Swiss Tropical and Public Health Institute
+ * Copyright (c) 2018 MWhite-InstitutPasteur
+ * 
+ * OpenMalaria is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 ///                                                                       ///
 ///  Individual-based Plasmodium vivax transmission model.                ///
-///                                                                       ///
-///  Dr Michael White                                                     ///
-///  Institut Pasteur                                                     ///
-///  michael.white@pasteur.fr                                             ///
-///                                                                       ///
-///  With contributions from Dr Thomas Obadia                             /// 
-///                                                                       ///
-///  Please feel free to use and modify if you wish. However,             ///
-///  please provide appropriate acknowledgement and get in touch          ///
-///  if you have any questions. This is not necessarily the               ///
-///  final, canonical version of the code - contact me to get that.       ///
-///                                                                       ///
-///  There is a prize of a pint for reporting any serious bugs or         ///
-///  finding something new that results in >20% speed up.                 ///
-///                                                                       ///
 ///                                                                       ///
 ///  Model code is split up into multiple files as follows:               ///
 ///                                                                       ///
