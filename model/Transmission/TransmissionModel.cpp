@@ -35,14 +35,17 @@
 
 #include <cmath>
 #include <cfloat>
+#include <mutex>
 #include <gsl/gsl_vector.h>
 
 namespace OM { namespace Transmission {
 namespace vectors = util::vectors;
 
 // Reporting data. Doesn't need checkpointing due to reset every time-step.
-static double tsAdultEntoInocs = 0.0;  // accumulator for time step EIR of adults
-static int tsNumAdults = 0; // accumulator for time step adults requesting EIR
+// TODO(C++20): can use atomic<double>
+std::mutex tsAdultInocsMutex;
+static double tsAdultEntoInocs(0.0);  // accumulator for time step EIR of adults
+static int tsNumAdults(0); // accumulator for time step adults requesting EIR
 
 
 TransmissionModel* TransmissionModel::createTransmissionModel (
@@ -201,6 +204,7 @@ double TransmissionModel::getEIR( Host::Human& human, SimTime age,
     
     double allEIR = vectors::sum( EIR );
     if( age >= adultAge ){
+        std::lock_guard<std::mutex> lock(tsAdultInocsMutex);
         tsAdultEntoInocs += allEIR;
         tsNumAdults += 1;
     }
