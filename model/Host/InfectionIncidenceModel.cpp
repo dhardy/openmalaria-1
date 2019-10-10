@@ -56,6 +56,9 @@ double Simm;
 double Xstar_pInv;
 //!1 over the critical value of EIR in Phase A pre-erythrocytic model 
 double EstarInv;
+
+//! Variance of Infection Rate according to fielddata 
+const double totalInfectionrateVariance= 1.0;
 //@}
 
 // model options:

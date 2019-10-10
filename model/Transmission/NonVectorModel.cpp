@@ -33,7 +33,6 @@ namespace OM { namespace Transmission {
     namespace vectors = util::vectors;
 
 //static (class) variables
-const double NonVectorModel::totalInfectionrateVariance= 1.0;
 const double NonVectorModel::min_EIR_mult= 0.01;
 
 const int nYearsWarmupData = 5;

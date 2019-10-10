@@ -97,9 +97,6 @@ private:
    * There shouldn't be any need to checkpoint these, at least before
    * interventions take effect. */
   //@{
-  //! Variance of Infection Rate according to fielddata 
-  static const double totalInfectionrateVariance; 
-  
   //! The duration of sporogony in time steps
   // doesn't need checkpointing
   SimTime nSpore;
