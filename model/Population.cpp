@@ -36,6 +36,7 @@
 #include <schema/scenario.h>
 
 #include <cmath>
+#include <thread>
 #include <boost/format.hpp>
 #include <boost/assign.hpp>
 
@@ -44,6 +45,45 @@ namespace OM
     using namespace OM::util;
     using namespace boost::assign;
     using Transmission::TransmissionModel;
+
+// -----  utility: thread pool  -----
+
+/// A simple thread pool.
+class ThreadPool {
+    std::vector<std::thread> threads;
+    
+public:
+    explicit ThreadPool(size_t num) {
+        threads.reserve(num - 1);
+    }
+    
+    template<typename T, class Function>
+    void for_each(std::vector<T>& v, Function&& f) {
+        std::atomic<size_t> count(0);
+        while (threads.size() < threads.capacity()) {
+            threads.emplace_back([&] {
+                while (true) {
+                    size_t i = count.fetch_add(1);
+                    if (i >= v.size()) return;
+                    f(v[i]);
+                }
+            });
+        }
+        
+        // also do work within the master thread
+        while (true) {
+            size_t i = count.fetch_add(1);
+            if (i >= v.size()) break;
+            f(v[i]);
+        }
+        
+        for (auto& thread : threads) {
+            thread.join();
+        }
+        threads.clear();
+    }
+};
+
 
 // -----  Population: static data / methods  -----
 
@@ -181,8 +221,9 @@ void Population::update( const Transmission::TransmissionModel& transmission, Si
     // (until humans old enough to be pregnate get updated and can be infected).
     Host::NeonatalMortality::update (*this);
     
-    // Update each human in turn
-    for (Host::Human& human : population) {
+    // FIXME: use of mon::report(..) during human update
+    ThreadPool pool(1);
+    pool.for_each(population, [&transmission, firstVecInitTS](Host::Human& human) {
         // Update human, and remove if too old.
         // We only need to update humans who will survive past the end of the
         // "one life span" init phase (this is an optimisation). lastPossibleTS
@@ -190,7 +231,7 @@ void Population::update( const Transmission::TransmissionModel& transmission, Si
         SimTime lastPossibleTS = human.getDateOfBirth() + sim::maxHumanAge();   // this is last time of possible update
         if (lastPossibleTS >= firstVecInitTS)
             human.update(transmission);
-    }
+    });
     
     //NOTE: other parts of code are not set up to handle changing population size. Also
     // populationSize is assumed to be the _actual and exact_ population size by other code.
