@@ -222,7 +222,7 @@ void Population::update( const Transmission::TransmissionModel& transmission, Si
     Host::NeonatalMortality::update (*this);
     
     // FIXME: use of mon::report(..) during human update
-    ThreadPool pool(1);
+    ThreadPool pool(4);
     pool.for_each(population, [&transmission, firstVecInitTS](Host::Human& human) {
         // Update human, and remove if too old.
         // We only need to update humans who will survive past the end of the
@@ -232,6 +232,18 @@ void Population::update( const Transmission::TransmissionModel& transmission, Si
         if (lastPossibleTS >= firstVecInitTS)
             human.update(transmission);
     });
+    
+    for (Host::Human& human : population) {
+        if (human.remove()) continue;
+        
+        // Update human, and remove if too old.
+        // We only need to update humans who will survive past the end of the
+        // "one life span" init phase (this is an optimisation). lastPossibleTS
+        // is the time step they die at (some code still runs on this step).
+        SimTime lastPossibleTS = human.getDateOfBirth() + sim::maxHumanAge();   // this is last time of possible update
+        if (lastPossibleTS >= firstVecInitTS)
+            human.update1(transmission);
+    }
     
     //NOTE: other parts of code are not set up to handle changing population size. Also
     // populationSize is assumed to be the _actual and exact_ population size by other code.

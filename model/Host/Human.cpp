@@ -95,19 +95,21 @@ vector<double> EIR_per_genotype;        // cache (not thread safe)
 void Human::update(const Transmission::TransmissionModel& transmission) {
     // For integer age checks we use age0 to e.g. get 73 steps comparing less than 1 year old
     SimTime age0 = age(sim::ts0());
+    util::streamValidate( age0.inDays() );
+    
     if (clinicalModel->isDead(age0)) {
         m_remove = true;
         return;
     }
     
-    util::streamValidate( age0.inDays() );
-    // Age at  the end of the update period. In most cases
-    // the difference between this and age at the start is not especially
-    // important in the model design, but since we parameterised with
-    // ageYears1 we should stick with it.
-    double ageYears1 = age(sim::ts1()).inYears();
     // monitoringAgeGroup is the group for the start of the time step.
     monitoringAgeGroup.update( age0 );
+}
+
+void Human::update1(const Transmission::TransmissionModel& transmission) {
+    // For integer age checks we use age0 to e.g. get 73 steps comparing less than 1 year old
+    SimTime age0 = age(sim::ts0());
+    
     // check sub-pop expiry
     for( auto expIt = m_subPopExp.begin(), expEnd = m_subPopExp.end(); expIt != expEnd; ) {
         if( !(expIt->second >= sim::ts0()) ){       // membership expired
@@ -121,6 +123,12 @@ void Human::update(const Transmission::TransmissionModel& transmission) {
             ++expIt;
         }
     }
+    
+    // Age at  the end of the update period. In most cases
+    // the difference between this and age at the start is not especially
+    // important in the model design, but since we parameterised with
+    // ageYears1 we should stick with it.
+    double ageYears1 = age(sim::ts1()).inYears();
     // ageYears1 used only in PerHost::relativeAvailabilityAge(); difference to age0 should be minor
     double EIR = transmission.getEIR( *this, age0, ageYears1,
             EIR_per_genotype );
